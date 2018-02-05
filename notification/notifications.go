@@ -1,15 +1,16 @@
 package notification
 
 import (
-"html/template"
-"net/http"
-"time"
+	"html/template"
+	"net/http"
+	"time"
 
-"golang.org/x/net/context"
-"google.golang.org/appengine"
-"google.golang.org/appengine/datastore"
-"google.golang.org/appengine/user"
-	"google.golang.org/api/calendar/v3"
+	"golang.org/x/net/context"
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/user"
+	"fmt"
+	"io/ioutil"
 )
 
 // [START notification_struct]
@@ -19,6 +20,25 @@ type Notification struct {
 	Date    time.Time
 }
 
+///*
+//{
+//  "kind": "api#channel",
+//  "id": string,
+//  "resourceId": string,
+//  "resourceUri": string,
+//  "token": string,
+//  "expiration": long
+//}
+// */
+//type WatchResponse struct {
+//	Kind        string `json:"kind"`
+//	ID          string `json:"id"`
+//	ResourceID  string `json:"resourceId"`
+//	ResourceURI string `json:"resourceUri"`
+//	Token       string `json:"token"`
+//	Expiration  int64  `json:"expiration"`
+//}
+
 // [END notification_struct]
 
 func init() {
@@ -26,10 +46,10 @@ func init() {
 	http.HandleFunc("/notification", notification)
 }
 
-// guestbookKey returns the key used for all guestbook entries.
-func guestbookKey(c context.Context) *datastore.Key {
+// logkKey returns the key used for all guestbook entries.
+func logkKey(c context.Context) *datastore.Key {
 	// The string "default_guestbook" here could be varied to have multiple guestbooks.
-	return datastore.NewKey(c, "Guestbook", "default_guestbook", 0, nil)
+	return datastore.NewKey(c, "Notification", "default_notification", 0, nil)
 }
 
 // [START func_root]
@@ -41,7 +61,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 	// a slight chance that Notification that had just been written would not
 	// show up in a query.
 	// [START query]
-	q := datastore.NewQuery("Notification").Ancestor(guestbookKey(c)).Order("-Date").Limit(10)
+	q := datastore.NewQuery("Notification").Ancestor(logkKey(c)).Order("-Date").Limit(10)
 	// [END query]
 	// [START getall]
 	notifications := make([]Notification, 0, 10)
@@ -82,12 +102,16 @@ func notification(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	// [END new_context]
 
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Printf("Error parsing response: %s\n", err)
+	}
 
+	fmt.Printf("%s\n", string(body))
 
 	g := Notification{
-		Content: r.FormValue("content"),
+		Content: string(body),
 		Date:    time.Now(),
-
 	}
 	// [START if_user]
 	if u := user.Current(c); u != nil {
@@ -97,8 +121,8 @@ func notification(w http.ResponseWriter, r *http.Request) {
 	// is in the same entity group. Queries across the single entity group
 	// will be consistent. However, the write rate to a single entity group
 	// should be limited to ~1/second.
-	key := datastore.NewIncompleteKey(c, "Notification", guestbookKey(c))
-	_, err := datastore.Put(c, key, &g)
+	key := datastore.NewIncompleteKey(c, "Notification", logkKey(c))
+	_, err = datastore.Put(c, key, &g)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -108,4 +132,3 @@ func notification(w http.ResponseWriter, r *http.Request) {
 }
 
 // [END func_sign]
-

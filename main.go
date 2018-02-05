@@ -13,8 +13,18 @@ func main() {
 
 	ShowEvents(cal)
 
-	channel := calendar.Channel{}
-	cal.Events.Watch("primary", &channel)
+	channel := calendar.Channel{
+		Id: "unique_id_seriously_look_424242",
+		Address: "https://calendar-cron.appspot.com/notification",
+		Type: "web_hook",
+	}
+	resp, err := cal.Events.Watch("primary", &channel).Do()
+	if err != nil {
+		log.Fatalf("Error sending watch request: %s", err.Error())
+	}
+	fmt.Println(resp)
+
+	AddSomeEvent(cal, "Sprzątanie 4")
 }
 
 func ListCalendars(cal *calendar.Service) {
@@ -30,9 +40,9 @@ func ListCalendars(cal *calendar.Service) {
 	}
 }
 
-func AddSomeEvent(cal *calendar.Service) {
+func AddSomeEvent(cal *calendar.Service, summary string) {
 	event := &calendar.Event{
-		Summary:     "Sprzatanie",
+		Summary:     summary,
 		Location:    "800 Howard St., San Francisco, CA 94103",
 		Description: "Sprzatanie jakiegos miejsca",
 		Start: &calendar.EventDateTime{
