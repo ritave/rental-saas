@@ -1,7 +1,7 @@
-package main
+package src
 
 import (
-	"calendar-synch/service"
+	"calendar-synch/src/service"
 	"log"
 	"fmt"
 	"google.golang.org/api/calendar/v3"

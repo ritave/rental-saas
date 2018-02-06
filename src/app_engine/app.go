@@ -8,7 +8,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
-	"calendar-synch/endpoints"
+	"calendar-synch/src/endpointsints"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
 	
