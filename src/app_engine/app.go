@@ -8,12 +8,11 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
-	"calendar-synch/src/endpointsints"
+	gae_log "google.golang.org/appengine/log"
+	"calendar-synch/src/endpoints"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
-	
 	"log"
-	"fmt"
 )
 
 // [START notification_struct]
@@ -24,8 +23,7 @@ type Notification struct {
 }
 
 func init() {
-	fmt.Println("Where are my fucking logs")
-	log.Println("I seriously need them now")
+	log.Println("Logging test 1")
 	var background = context.Background()
 
 	account, err := appengine.ServiceAccount(context.Background())
@@ -50,6 +48,7 @@ func init() {
 // [START func_root]
 func root(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
+	gae_log.Debugf(c, "Logging test 2")
 	// Ancestor queries, as shown here, are strongly consistent with the High
 	// Replication Datastore. Queries that span entity groups are eventually
 	// consistent. If we omitted the .Ancestor from this query there would be

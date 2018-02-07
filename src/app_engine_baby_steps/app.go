@@ -6,19 +6,23 @@ import (
 	"log"
 	"fmt"
 	"google.golang.org/appengine"
+	gae_log "google.golang.org/appengine/log"
 )
 
 func init() {
-	fmt.Println("Where are my fucking logs")
-	log.Println("I seriously need them now")
+	log.Println("Technology sucks")
 	http.HandleFunc("/", root)
 }
 
 // [START func_root]
 func root(w http.ResponseWriter, r *http.Request) {
 
-	message := fmt.Sprintf("Is dev server? %b", appengine.IsDevAppServer())
+	c := appengine.NewContext(r)
+
+	message := fmt.Sprintf("Is dev server? %t", appengine.IsDevAppServer())
 	log.Println(message)
+
+	gae_log.Infof(c, message)
 
 	if err := guestbookTemplate.Execute(w, message); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
