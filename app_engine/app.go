@@ -9,10 +9,11 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 	gae_log "google.golang.org/appengine/log"
-	"calendar-synch/src/endpoints"
+	"calendar-synch/endpoints"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
 	"log"
+	"io/ioutil"
 )
 
 // [START notification_struct]
@@ -22,20 +23,25 @@ type Notification struct {
 	Date    time.Time
 }
 
+const serviceClientJsonLocation = "secrets/service_client.json"
+const readWriteCalendars = "https://www.googleapis.com/auth/calendar"
+
 func init() {
 	log.Println("Logging test 1")
 	var background = context.Background()
 
-	account, err := appengine.ServiceAccount(context.Background())
+	b, err := ioutil.ReadFile(serviceClientJsonLocation)
 	if err != nil {
-		log.Fatalf("Service Account error: %s", err.Error())
+		log.Fatalf("Unable to read client secret file: %v", err)
 	}
 
-	sdkConfig, err := google.NewSDKConfig(account)
+	config, err := google.JWTConfigFromJSON(b, readWriteCalendars)
 	if err != nil {
-		log.Fatalf("NewSDKConfig: %s", err.Error())
+		log.Fatalf("Unable to parse service client secret file to config: %v", err)
 	}
-	service, err := calendar.New(sdkConfig.Client(background))
+	client := config.Client(background)
+
+	service, err := calendar.New(client)
 	if err != nil {
 		log.Fatalf("New service: %s", err.Error())
 	}
