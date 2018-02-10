@@ -1,4 +1,4 @@
-package app_engine
+package main
 
 import (
 	"html/template"
@@ -9,7 +9,6 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 	gae_log "google.golang.org/appengine/log"
-	"calendar-synch/endpoints"
 	"log"
 )
 
@@ -20,12 +19,20 @@ type Notification struct {
 	Date    time.Time
 }
 
-func init() {
-	http.HandleFunc("/", root)
-	http.HandleFunc("/notify", endpoints.NotifyListen)
-	http.HandleFunc("/createEvent", endpoints.CreateNewEvent)
+func main() {
+	bindEndpoints()
+	appengine.Main()
+}
 
-	log.Println("Running...")
+func bindEndpoints() {
+	http.HandleFunc("/", root)
+	http.HandleFunc("/notify", NotifyListen)
+	http.HandleFunc("/createEvent", CreateNewEvent)
+	log.Println("Bound endpoints...")
+}
+
+func init() {
+	log.Println("Initialized stuff...")
 }
 
 // [START func_root]

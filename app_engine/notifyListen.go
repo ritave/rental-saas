@@ -1,4 +1,4 @@
-package endpoints
+package main
 
 import (
 	"io/ioutil"
@@ -8,7 +8,6 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/user"
 	"google.golang.org/appengine/datastore"
-	"context"
 )
 
 type NotificationEntity struct {
@@ -47,8 +46,3 @@ func NotifyListen(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// logkKey returns the key used for all notification entries.
-func logkKey(c context.Context) *datastore.Key {
-	// The string "default_guestbook" here could be varied to have multiple notifications.
-	return datastore.NewKey(c, "NotificationEntity", "default_notification", 0, nil)
-}
