@@ -7,6 +7,9 @@ import (
 	"fmt"
 
 	"log"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/appengine"
+	"io/ioutil"
 )
 
 type CreateNewEventRequest struct {
@@ -17,11 +20,42 @@ type CreateNewEventRequest struct {
 	Location string `json:"location"`
 }
 
-func CreateNewEvent(s *calendar.Service, w http.ResponseWriter, r *http.Request) {
+func GetServiceAccount(r *http.Request) *calendar.Service {
+	if !appengine.IsDevAppServer() {
+		client, err := google.DefaultClient(appengine.NewContext(r), calendar.CalendarScope)
+		if err != nil {
+			log.Fatalf("Default client failed: %s", err.Error())
+		}
+		srv, err := calendar.New(client)
+		if err != nil {
+			log.Fatalf("Creating calendar service on the spot failed: %s", err.Error())
+		}
+		return srv
+	} else {
+		b, err := ioutil.ReadFile("secrets/service_client_default.json")
+		if err != nil {
+			log.Fatalf("Unable to read client secret file: %v", err)
+		}
 
-	msg := fmt.Sprintf("Added from the cloud by %S", s.UserAgent)
-	AddSomeEventToCalendar(s, msg)
+		config, err := google.JWTConfigFromJSON(b, calendar.CalendarScope)
+		if err != nil {
+			log.Fatalf("Unable to parse service client secret file to config: %v", err)
+		}
+		client := config.Client(appengine.NewContext(r))
 
+		srv, err := calendar.New(client)
+		if err != nil {
+			log.Fatalf("Unable to retrieve calendar Client %v", err)
+		}
+		return srv
+	}
+}
+
+func CreateNewEvent(w http.ResponseWriter, r *http.Request) {
+	srv := GetServiceAccount(r)
+
+	msg := fmt.Sprintf("Added from the cloud by %s", srv.UserAgent)
+	AddSomeEventToCalendar(srv, msg)
 }
 
 func AddSomeEventToCalendar(cal *calendar.Service, summary string) {

@@ -9,7 +9,6 @@ import (
 	"google.golang.org/appengine/user"
 	"google.golang.org/appengine/datastore"
 	"context"
-	"google.golang.org/api/calendar/v3"
 )
 
 type NotificationEntity struct {
@@ -18,7 +17,7 @@ type NotificationEntity struct {
 	Date    time.Time
 }
 
-func NotifyListen(s *calendar.Service, w http.ResponseWriter, r *http.Request) {
+func NotifyListen(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -26,7 +25,7 @@ func NotifyListen(s *calendar.Service, w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Error parsing response: %S\n", err)
 	}
 
-	fmt.Printf("%S\n", string(body))
+	fmt.Printf("%s\n", string(body))
 
 	g := NotificationEntity{
 		Content: body,

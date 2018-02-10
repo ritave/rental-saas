@@ -10,10 +10,7 @@ import (
 	"google.golang.org/appengine/datastore"
 	gae_log "google.golang.org/appengine/log"
 	"calendar-synch/endpoints"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/calendar/v3"
 	"log"
-	"io/ioutil"
 )
 
 // [START notification_struct]
@@ -23,32 +20,12 @@ type Notification struct {
 	Date    time.Time
 }
 
-const serviceClientJsonLocation = "secrets/service_client.json"
-const readWriteCalendars = "https://www.googleapis.com/auth/calendar"
-
 func init() {
-	log.Println("Logging test 1")
-	var background = context.Background()
-
-	b, err := ioutil.ReadFile(serviceClientJsonLocation)
-	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
-	}
-
-	config, err := google.JWTConfigFromJSON(b, readWriteCalendars)
-	if err != nil {
-		log.Fatalf("Unable to parse service client secret file to config: %v", err)
-	}
-	client := config.Client(background)
-
-	service, err := calendar.New(client)
-	if err != nil {
-		log.Fatalf("New service: %s", err.Error())
-	}
-
 	http.HandleFunc("/", root)
-	http.Handle("/notify", endpoints.MyHandler{service,endpoints.NotifyListen})
-	http.Handle("/createEvent", endpoints.MyHandler{service, endpoints.CreateNewEvent})
+	http.HandleFunc("/notify", endpoints.NotifyListen)
+	http.HandleFunc("/createEvent", endpoints.CreateNewEvent)
+
+	log.Println("Running...")
 }
 
 // [START func_root]
