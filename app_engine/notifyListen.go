@@ -8,6 +8,7 @@ import (
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/user"
 	"google.golang.org/appengine/datastore"
+	gae_log "google.golang.org/appengine/log"
 )
 
 type NotificationEntity struct {
@@ -21,10 +22,12 @@ func NotifyListen(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Printf("Error parsing response: %S\n", err)
+		fmt.Printf("Error parsing response: %s\n", err)
 	}
 
 	fmt.Printf("%s\n", string(body))
+
+	gae_log.Infof(c, "Received notification %s", string(body))
 
 	g := NotificationEntity{
 		Content: body,
@@ -40,9 +43,9 @@ func NotifyListen(w http.ResponseWriter, r *http.Request) {
 	key := datastore.NewIncompleteKey(c, "NotificationEntity", logkKey(c))
 	_, err = datastore.Put(c, key, &g)
 	if err != nil {
+		gae_log.Debugf(c, "Saving to datastore failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/", http.StatusFound)
 }
 
