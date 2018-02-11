@@ -5,10 +5,23 @@ import (
 	"golang.org/x/net/context"
 	"time"
 	"strconv"
-	"log"
+	"sort"
 )
 
-func FindChanged(ctx context.Context, cal *calendar.Service) ([]*Event, error) {
+type EventModified struct {
+	Event *Event
+	Action EventModification
+}
+
+type EventModification uint
+
+const (
+	Deleted EventModification = iota
+	ChangedDate EventModification = iota
+	ChangedLocaation EventModification = iota
+)
+
+func FindChanged(ctx context.Context, cal *calendar.Service) ([]EventModified, error) {
 	saved, err := QueryEvents(ctx)
 	if err != nil {
 		return nil, err
@@ -17,13 +30,17 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]*Event, error) {
 	if err != nil {
 		return nil, err
 	}
+	savedSortable := SortableEvents(saved)
+	actualSortable := SortableEvents(EventsMap(actual.Items, ConvertEventToEventLol))
 
-	// shit, sorting...
+	sort.Sort(SortableEvents(savedSortable))
+	sort.Sort(SortableEvents(actualSortable))
 
-	log.Println(saved)
-	log.Println(actual)
+	return Compare(savedSortable, actualSortable)
+}
 
-	return nil, nil
+func Compare(saved SortableEvents, actual SortableEvents) ([]EventModified, error) {
+	panic("implement me")
 }
 
 func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *Event, err error) {
@@ -54,6 +71,14 @@ func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *Event, err error) 
 	myEvent.Summary = gEvent.Summary
 
 	return myEvent, err
+}
+
+func EventsMap(vs []*calendar.Event, f func(event *calendar.Event) (*Event, error)) []*Event {
+	vsm := make([]*Event, len(vs))
+	for i, v := range vs {
+		vsm[i], _ = f(v) // LOL xd FIXME eventually
+	}
+	return vsm
 }
 
 const (
