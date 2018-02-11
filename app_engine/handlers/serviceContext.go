@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"google.golang.org/api/calendar/v3"

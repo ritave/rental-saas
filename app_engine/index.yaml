@@ -1,6 +1,7 @@
 indexes:
-- kind: Notification
-  ancestor: yes
+- kind: Visit
   properties:
-  - name: Date
-    direction: desc
+  - name: Timestamp
+    diretion: desc
+  - name: UserIP
+  - name: Body

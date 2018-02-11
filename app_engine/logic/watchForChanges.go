@@ -1,4 +1,4 @@
-package main
+package logic
 
 import (
 	"google.golang.org/api/calendar/v3"
@@ -7,7 +7,7 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-func watchForChanges(cal *calendar.Service) {
+func WatchForChanges(cal *calendar.Service) {
 	u := uuid.Must(uuid.NewV4())
 
 	channel := calendar.Channel{
