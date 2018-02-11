@@ -2,6 +2,7 @@ indexes:
 - kind: Visit
   properties:
   - name: Timestamp
-    diretion: desc
+    direction: desc
   - name: UserIP
   - name: Body
+- kind: Event

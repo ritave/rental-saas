@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"encoding/json"
 	"calendar-synch/logic"
+	"google.golang.org/appengine"
 )
 
 type EventRequest struct {
@@ -16,6 +17,7 @@ type EventRequest struct {
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	srv := GetService(r)
+	ctx := appengine.NewContext(r)
 
 	eventRequest, err := ExtractEventFromBody(r)
 	if err != nil {
@@ -24,6 +26,9 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logic.AddEventToCalendar(srv, logic.Event(eventRequest))
+	logic.SaveEventInDatastore(ctx, logic.Event(eventRequest))
+	// TODO this should be called at best only once... Not at every CreateEvent call.
+	// TODO also there are some refreshing tokens flying around soo...
 	logic.WatchForChanges(srv)
 }
 

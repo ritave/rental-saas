@@ -6,18 +6,11 @@ import (
 	"log"
 )
 
-type Event struct {
-	Summary  string
-	User     string
-	Start    string
-	End      string
-	Location string
-}
 
-func AddEventToCalendar(cal *calendar.Service, eventRequest Event) {
+func AddEventToCalendar(cal *calendar.Service, ev Event) {
 	newEvent := &calendar.Event{
-		Summary:     eventRequest.Summary,
-		Location:    eventRequest.Location,
+		Summary:     ev.Summary,
+		Location:    ev.Location,
 		Description: "Cleaning service ordered on %s. Feel free to move this event in your calendar to change the date!",
 		Start: &calendar.EventDateTime{
 			DateTime: time.Now().Format(time.RFC3339),
@@ -26,16 +19,16 @@ func AddEventToCalendar(cal *calendar.Service, eventRequest Event) {
 			DateTime: time.Now().Add(time.Hour).Format(time.RFC3339),
 		},
 		Attendees: []*calendar.EventAttendee{
-			&calendar.EventAttendee{Email: eventRequest.User},
+			&calendar.EventAttendee{Email: ev.User},
 		},
 		GuestsCanModify: true,
 	}
 
-	ev, err := cal.Events.Insert("primary", newEvent).Do()
+	evResp, err := cal.Events.Insert("primary", newEvent).Do()
 	if err != nil {
 		log.Println("Adding event failed")
 		log.Printf("Error: %s", err.Error())
 	} else {
-		log.Printf("Link: %s", ev.HtmlLink)
+		log.Printf("Link: %s", evResp.HtmlLink)
 	}
 }
