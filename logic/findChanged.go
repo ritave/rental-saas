@@ -40,7 +40,7 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]EventModified, e
 }
 
 func Compare(saved SortableEvents, actual SortableEvents) ([]EventModified, error) {
-	panic("implement me")
+	return nil, nil
 }
 
 func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *Event, err error) {
