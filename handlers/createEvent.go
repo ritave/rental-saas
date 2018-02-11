@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 	"encoding/json"
-	"calendar-synch/app_engine/logic"
+	"calendar-synch/logic"
 )
 
 type EventRequest struct {

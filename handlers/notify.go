@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"google.golang.org/appengine"
 	gae_log "google.golang.org/appengine/log"
-	"calendar-synch/app_engine/logic"
+	"calendar-synch/logic"
 )
 
 func Notify(w http.ResponseWriter, r *http.Request) {

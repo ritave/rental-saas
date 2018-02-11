@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"google.golang.org/appengine"
 	"log"
-	"calendar-synch/app_engine/handlers"
+	"calendar-synch/handlers"
 )
 
 // [START notification_struct]

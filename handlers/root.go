@@ -5,7 +5,7 @@ import (
 	"google.golang.org/appengine"
 	gae_log "google.golang.org/appengine/log"
 	"html/template"
-	"calendar-synch/app_engine/logic"
+	"calendar-synch/logic"
 )
 
 func Root(w http.ResponseWriter, r *http.Request) {
