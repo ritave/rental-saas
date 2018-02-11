@@ -6,3 +6,11 @@ indexes:
   - name: UserIP
   - name: Body
 - kind: Event
+  properties:
+  - name: Summary
+  - name: User
+  - name: Start
+    direction: asc
+  - name: End
+    direction: asc
+  - name: Location
