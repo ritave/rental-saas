@@ -4,10 +4,11 @@ import (
 	"google.golang.org/api/calendar/v3"
 	"time"
 	"log"
+	"calendar-synch/objects"
 )
 
 
-func AddEventToCalendar(cal *calendar.Service, ev Event) {
+func AddEventToCalendar(cal *calendar.Service, ev objects.Event) {
 	newEvent := &calendar.Event{
 		Summary:     ev.Summary,
 		Location:    ev.Location,

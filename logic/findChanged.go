@@ -6,10 +6,11 @@ import (
 	"time"
 	"strconv"
 	"sort"
+	"calendar-synch/objects"
 )
 
 type EventModified struct {
-	Event *Event
+	Event *objects.Event
 	Action EventModification
 }
 
@@ -30,21 +31,21 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]EventModified, e
 	if err != nil {
 		return nil, err
 	}
-	savedSortable := SortableEvents(saved)
-	actualSortable := SortableEvents(EventsMap(actual.Items, ConvertEventToEventLol))
+	savedSortable := objects.SortableEvents(saved)
+	actualSortable := objects.SortableEvents(EventsMap(actual.Items, ConvertEventToEventLol))
 
-	sort.Sort(SortableEvents(savedSortable))
-	sort.Sort(SortableEvents(actualSortable))
+	sort.Sort(objects.SortableEvents(savedSortable))
+	sort.Sort(objects.SortableEvents(actualSortable))
 
 	return Compare(savedSortable, actualSortable)
 }
 
-func Compare(saved SortableEvents, actual SortableEvents) ([]EventModified, error) {
+func Compare(saved objects.SortableEvents, actual objects.SortableEvents) ([]EventModified, error) {
 	return nil, nil
 }
 
-func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *Event, err error) {
-	myEvent = &Event{}
+func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *objects.Event, err error) {
+	myEvent = &objects.Event{}
 
 	// user, what if user added someone as attendee or rejected being invited to it?
 	if len(gEvent.Attendees) != 1 {
@@ -73,8 +74,8 @@ func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *Event, err error) 
 	return myEvent, err
 }
 
-func EventsMap(vs []*calendar.Event, f func(event *calendar.Event) (*Event, error)) []*Event {
-	vsm := make([]*Event, len(vs))
+func EventsMap(vs []*calendar.Event, f func(event *calendar.Event) (*objects.Event, error)) []*objects.Event {
+	vsm := make([]*objects.Event, len(vs))
 	for i, v := range vs {
 		vsm[i], _ = f(v) // LOL xd FIXME eventually
 	}

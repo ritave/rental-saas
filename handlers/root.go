@@ -5,14 +5,14 @@ import (
 	"google.golang.org/appengine"
 	gae_log "google.golang.org/appengine/log"
 	"html/template"
-	"calendar-synch/logic"
+	"calendar-synch/objects"
 )
 
 func Root(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 	gae_log.Debugf(ctx, "Logging test 2")
 
-	visits, err := logic.QueryVisits(ctx, 100)
+	visits, err := objects.QueryVisits(ctx, 100)
 	if err != nil {
 		gae_log.Debugf(ctx, "Querying vists failed")
 	}

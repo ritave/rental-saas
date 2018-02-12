@@ -4,12 +4,13 @@ import (
 	"reflect"
 	"testing"
 	"calendar-synch/logic"
+	"calendar-synch/objects"
 )
 
 func TestCompare(t *testing.T) {
 	type args struct {
-		saved  logic.SortableEvents
-		actual logic.SortableEvents
+		saved  objects.SortableEvents
+		actual objects.SortableEvents
 	}
 	tests := []struct {
 		name    string
@@ -17,7 +18,7 @@ func TestCompare(t *testing.T) {
 		want    []logic.EventModified
 		wantErr bool
 	}{
-		{"empty", args{logic.SortableEvents{}, logic.SortableEvents{}}, nil, false},
+		{"empty", args{objects.SortableEvents{}, objects.SortableEvents{}}, nil, false},
 		{},
 
 	}
