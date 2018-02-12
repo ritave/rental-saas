@@ -12,24 +12,20 @@ type Event struct {
 	Location string
 }
 
-//Equal checks if two events are equal (used in checking if they've been changed).
+//IsTheSame checks if two events have the same fields (used in checking if they've been changed).
 //This works only if the struct doesn't have any slices.
-func (e *Event) Equal(to *Event) (bool) {
+func (e *Event) IsTheSame(to *Event) (bool) {
 	return *e == *to
 }
 
-type SortableEvents []*Event
+func (e *Event) Less(than *Event) (bool) {
+	si := helpers.StringToTime(e.Start)
+	ei := helpers.StringToTime(e.End)
+	sj := helpers.StringToTime(than.Start)
+	ej := helpers.StringToTime(than.End)
 
-func (s SortableEvents) Len() int {
-	return len(s)
-}
-
-// slowest sort in existence
-func (s SortableEvents) Less(i, j int) bool {
-	si := helpers.StringToTime(s[i].Start)
-	ei := helpers.StringToTime(s[i].End)
-	sj := helpers.StringToTime(s[j].Start)
-	ej := helpers.StringToTime(s[j].End)
+	// si,ei,sj,ej come from SortableEvents.Less()
+	// start_of_i'th, end_of_i'th, etc ...
 
 	// ---si----ei-->  this one is smaller
 	// ----sj---ei-->
@@ -41,6 +37,18 @@ func (s SortableEvents) Less(i, j int) bool {
 		return ei.Before(ej)
 	}
 	return si.Before(sj)
+}
+
+type SortableEvents []*Event
+
+func (s SortableEvents) Len() int {
+	return len(s)
+}
+
+// slowest sort in existence
+func (s SortableEvents) Less(i, j int) bool {
+	//
+	return s[i].Less(s[j])
 }
 
 func (s SortableEvents) Swap(i, j int) {
