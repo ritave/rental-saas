@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"calendar-synch/logic"
 	"google.golang.org/appengine"
+	"calendar-synch/objects"
 )
 
 type EventRequest struct {
@@ -25,8 +26,8 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Malformed json"))
 	}
 
-	logic.AddEventToCalendar(srv, logic.Event(eventRequest))
-	logic.SaveEventInDatastore(ctx, logic.Event(eventRequest))
+	logic.AddEventToCalendar(srv, objects.Event(eventRequest))
+	logic.SaveEventInDatastore(ctx, objects.Event(eventRequest))
 	// TODO this should be called at best only once... Not at every CreateEvent call.
 	// TODO also there are some refreshing tokens flying around soo...
 	logic.WatchForChanges(srv)

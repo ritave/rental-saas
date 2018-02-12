@@ -1,4 +1,4 @@
-package logic
+package objects
 
 import (
 	"time"

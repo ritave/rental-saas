@@ -6,6 +6,7 @@ import (
 	"google.golang.org/appengine"
 	"calendar-synch/logic"
 	gae_log "google.golang.org/appengine/log"
+	"calendar-synch/objects"
 )
 
 func Notify(w http.ResponseWriter, r *http.Request) {
@@ -13,7 +14,7 @@ func Notify(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 
 	// try to discover what Google is acutally passing to us
-	logic.RecordVisit(ctx, time.Now(), r.RemoteAddr, r.Body)
+	objects.RecordVisit(ctx, time.Now(), r.RemoteAddr, r.Body)
 	//
 
 	// Check what has changed in the calendar
