@@ -9,20 +9,8 @@ import (
 	"calendar-synch/objects"
 )
 
-type EventModified struct {
-	Event *objects.Event
-	Action EventModification
-}
 
-type EventModification uint
-
-const (
-	Deleted EventModification = iota
-	ChangedDate EventModification = iota
-	ChangedLocaation EventModification = iota
-)
-
-func FindChanged(ctx context.Context, cal *calendar.Service) ([]EventModified, error) {
+func FindChanged(ctx context.Context, cal *calendar.Service) ([]*objects.EventModified, error) {
 	saved, err := QueryEvents(ctx)
 	if err != nil {
 		return nil, err
@@ -37,10 +25,10 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]EventModified, e
 	sort.Sort(objects.SortableEvents(savedSortable))
 	sort.Sort(objects.SortableEvents(actualSortable))
 
-	return Compare(savedSortable, actualSortable)
+	return CompareSorted(savedSortable, actualSortable)
 }
 
-func Compare(saved objects.SortableEvents, actual objects.SortableEvents) ([]EventModified, error) {
+func CompareSorted(saved objects.SortableEvents, actual objects.SortableEvents) ([]*objects.EventModified, error) {
 	return nil, nil
 }
 
