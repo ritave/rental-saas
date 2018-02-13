@@ -86,9 +86,23 @@ func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents
 			// s is behind a => next s
 			i++
 		}
-		// this exhausts all the cases
 	}
 
+	// what should remain now is ONLY elements of S XOR ONLY elements of A
+
+	// exhaust elements of S
+	for ; i < lenS; i++ {
+		// => deleted
+		s := saved[i]
+		changes = append(changes, objects.NewModified(s).Flag(objects.Deleted))
+	}
+
+	// exhaust elements of A
+	for ; j < lenA; j++ {
+		// => added
+		a := actual[j]
+		changes = append(changes, objects.NewModified(a).Flag(objects.Added))
+	}
 
 	return changes, nil
 }
