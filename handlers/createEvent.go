@@ -6,6 +6,7 @@ import (
 	"calendar-synch/logic"
 	"google.golang.org/appengine"
 	"calendar-synch/objects"
+	"calendar-synch/helpers"
 )
 
 type EventRequest struct {
@@ -14,10 +15,12 @@ type EventRequest struct {
 	Start        string `json:"start"`
 	End          string `json:"end"`
 	Location     string `json:"location"`
-	CreationDate string  //hidden, not used
+	CreationDate string `json:"-"` //not used
 }
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
+	defer helpers.RecoverPanic()
+
 	srv := GetService(r)
 	ctx := appengine.NewContext(r)
 

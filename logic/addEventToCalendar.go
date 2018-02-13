@@ -25,16 +25,21 @@ func AddEventToCalendar(cal *calendar.Service, ev objects.Event) (*objects.Event
 		GuestsCanModify: true, // that's what allows for changing the date of the event... but also all the other fields
 	}
 
+	//creationDate := helpers.TimeToString(time.Now())
+
 	evResp, err := cal.Events.Insert("primary", newEvent).Do()
 	if err != nil {
 		log.Println("Adding event failed")
 		log.Printf("Error: %s", err.Error())
+		log.Printf("Event: %v", ev)
 	} else {
 		log.Printf("Link: %s", evResp.HtmlLink)
+
+		// Creation date will be my "primary-key"
+		eventPrimaryKey := evResp.Created
+		ev.CreationDate = eventPrimaryKey
+		return &ev, nil
 	}
 
-	// Creation date will be my "primary-key"
-	eventPrimaryKey := evResp.Created
-	ev.CreationDate = eventPrimaryKey
-	return &ev, nil
+	return nil, err
 }
