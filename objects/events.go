@@ -5,11 +5,12 @@ import (
 )
 
 type Event struct {
-	Summary  string
-	User     string
-	Start    string
-	End      string
-	Location string
+	Summary      string
+	User         string
+	Start        string
+	End          string
+	Location     string
+	CreationDate string
 }
 
 //IsTheSame checks if two events have the same fields (used in checking if they've been changed).
@@ -18,11 +19,26 @@ func (e *Event) IsTheSame(to *Event) (bool) {
 	return *e == *to
 }
 
+//TODO
+//Less compares creation date
 func (e *Event) Less(than *Event) (bool) {
-	si := helpers.StringToTime(e.Start)
-	ei := helpers.StringToTime(e.End)
-	sj := helpers.StringToTime(than.Start)
-	ej := helpers.StringToTime(than.End)
+	left := helpers.StringToTime(e.CreationDate)
+	right := helpers.StringToTime(than.CreationDate)
+
+	// just in fucking case
+	if left.Equal(right) {
+		return improbableButMaybeTheyHaveTheSameCreationDate(e, than)
+	}
+
+	return left.Before(right)
+}
+
+//and it's also a pity to throw away such a "beautiful" function xd
+func improbableButMaybeTheyHaveTheSameCreationDate(eventI, eventJ *Event) (bool) {
+	si := helpers.StringToTime(eventI.Start)
+	ei := helpers.StringToTime(eventI.End)
+	sj := helpers.StringToTime(eventJ.Start)
+	ej := helpers.StringToTime(eventJ.End)
 
 	// si,ei,sj,ej come from SortableEvents.Less()
 	// start_of_i'th, end_of_i'th, etc ...
@@ -56,5 +72,3 @@ func (s SortableEvents) Swap(i, j int) {
 }
 
 // TODO ancestors
-
-

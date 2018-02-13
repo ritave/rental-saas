@@ -9,11 +9,12 @@ import (
 )
 
 type EventRequest struct {
-	Summary  string `json:"summary"`
-	User     string `json:"user"`
-	Start    string `json:"start"`
-	End      string `json:"end"`
-	Location string `json:"location"`
+	Summary      string `json:"summary"`
+	User         string `json:"user"`
+	Start        string `json:"start"`
+	End          string `json:"end"`
+	Location     string `json:"location"`
+	CreationDate string  //hidden, not used
 }
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
@@ -26,10 +27,17 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Malformed json"))
 	}
 
-	logic.AddEventToCalendar(srv, objects.Event(eventRequest))
-	logic.SaveEventInDatastore(ctx, objects.Event(eventRequest))
+	// TODO move this logic level down
+	event, err := logic.AddEventToCalendar(srv, objects.Event(eventRequest))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	err = logic.SaveEventInDatastore(ctx, event)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 	// TODO this should be called at best only once... Not at every CreateEvent call.
-	// TODO also there are some refreshing tokens flying around soo...
+	// TODO also there are some refreshing tokens flying around soo... yeeeah...
 	logic.WatchForChanges(srv)
 }
 
@@ -42,4 +50,3 @@ func ExtractEventFromBody(r *http.Request) (EventRequest, error) {
 	}
 	return target, nil
 }
-

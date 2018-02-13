@@ -22,13 +22,16 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]*objects.EventMo
 	savedSortable := objects.SortableEvents(saved)
 	actualSortable := objects.SortableEvents(EventsMap(actual.Items, ConvertEventToEventLol))
 
-	sort.Sort(objects.SortableEvents(savedSortable))
-	sort.Sort(objects.SortableEvents(actualSortable))
-
-	return CompareSorted(savedSortable, actualSortable)
+	return CompareSortable(savedSortable, actualSortable)
 }
 
-func CompareSorted(saved objects.SortableEvents, actual objects.SortableEvents) ([]*objects.EventModified, error) {
+func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents) ([]*objects.EventModified, error) {
+	// sort by creation date
+	sort.Sort(objects.SortableEvents(saved))
+	sort.Sort(objects.SortableEvents(actual))
+
+
+
 	return nil, nil
 }
 
@@ -41,6 +44,9 @@ func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *objects.Event, err
 	} else {
 		myEvent.User = gEvent.Attendees[0].Email
 	}
+
+	// creation date
+	myEvent.CreationDate = gEvent.Created
 
 	// date
 	dtStart, err := time.Parse(time.RFC3339, gEvent.Start.DateTime)

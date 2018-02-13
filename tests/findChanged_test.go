@@ -17,21 +17,33 @@ var fourth = time.Now().Add(4 * time.Hour)
 var fifth = time.Now().Add(5 * time.Hour)
 var sixth = time.Now().Add(6 * time.Hour)
 
-var exhibit1 = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location1"}
-var exhibit1ModifiedTimeForward = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location1"}
-var exhibit1ModifiedTimeForwardAndPlace = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location1-modified"}
-var exhibit2 = &objects.Event{"summary", "user2@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location2"}
-var exhibit2ModifiedTimeBackward = &objects.Event{"summary", "user2@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location2"}
-var exhibit2ModifiedTimeBackwardAndPlace = &objects.Event{"summary", "user2@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location2-modified"}
-var exhibit3 = &objects.Event{"summary", "user3@mail.com", helpers.TimeToString(second), helpers.TimeToString(third), "location3"}
-var exhibit3ModifiedPlace = &objects.Event{"summary", "user3@mail.com", helpers.TimeToString(second), helpers.TimeToString(third), "location3-modified"}
-var exhibit4 = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(third), helpers.TimeToString(fourth), "location4"}
-var exhibit4SecondEvent = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location4-some-other"}
-var exhibit4ThirdEvent = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location4"}
-var exhibit5 = &objects.Event{"summary", "user5@mail.com", helpers.TimeToString(fourth), helpers.TimeToString(fifth), "location5"}
-var exhibit6 = &objects.Event{"summary", "user6@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location6"}
+func TestCompareSortable(t *testing.T) {
 
-func TestCompareSorted(t *testing.T) {
+	var timeBack []time.Time
+	var tBS []string
+	const slots = 6
+	timeBack = make([]time.Time, slots)
+	tBS = make([]string, slots)
+	startInPast := time.Now().Add(-slots * time.Hour)
+	for i:=0; i<slots; i++ {
+		timeBack[i] = startInPast.Add(time.Hour)
+		tBS[i] = helpers.TimeToString(timeBack[i])
+	}
+
+	var exhibit1 = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location1", tBS[0]}
+	var exhibit1ModifiedTimeForward = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location1", tBS[0]}
+	var exhibit1ModifiedTimeForwardAndPlace = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location1-modified", tBS[0]}
+	var exhibit2 = &objects.Event{"summary", "user2@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location2", tBS[1]}
+	var exhibit2ModifiedTimeBackward = &objects.Event{"summary", "user2@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location2", tBS[1]}
+	var exhibit2ModifiedTimeBackwardAndPlace = &objects.Event{"summary", "user2@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location2-modified", tBS[1]}
+	var exhibit3 = &objects.Event{"summary", "user3@mail.com", helpers.TimeToString(second), helpers.TimeToString(third), "location3", tBS[2]}
+	var exhibit3ModifiedPlace = &objects.Event{"summary", "user3@mail.com", helpers.TimeToString(second), helpers.TimeToString(third), "location3-modified", tBS[2]}
+	var exhibit4 = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(third), helpers.TimeToString(fourth), "location4", tBS[5]}
+	var exhibit4SecondEvent = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location4-some-other", tBS[3]}
+	var exhibit4ThirdEvent = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location4", tBS[5]}
+	var exhibit5 = &objects.Event{"summary", "user5@mail.com", helpers.TimeToString(fourth), helpers.TimeToString(fifth), "location5", tBS[4]}
+	var exhibit6 = &objects.Event{"summary", "user6@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location6", tBS[5]}
+
 	type args struct {
 		saved  objects.SortableEvents
 		actual objects.SortableEvents
@@ -112,13 +124,13 @@ func TestCompareSorted(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := logic.CompareSorted(tt.args.saved, tt.args.actual)
+			got, err := logic.CompareSortable(tt.args.saved, tt.args.actual)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("CompareSorted() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CompareSortable() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CompareSorted() = %v, want %v", got, tt.want)
+				t.Errorf("CompareSortable() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -6,9 +6,9 @@ import (
 	"calendar-synch/objects"
 )
 
-func SaveEventInDatastore(ctx context.Context, ev objects.Event) error {
+func SaveEventInDatastore(ctx context.Context, ev *objects.Event) error {
 	k := datastore.NewIncompleteKey(ctx,"Event", nil)
 
-	_, err := datastore.Put(ctx, k, &ev)
+	_, err := datastore.Put(ctx, k, ev)
 	return err
 }
