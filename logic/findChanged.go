@@ -42,9 +42,9 @@ func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents
 
 		/*
 		  ---time--->
-		S: [ ]  [ ][ ]
-		A:   [ ][ ][.]
-		    d a     m
+		S: [ ]   [ ][ ]
+		A:    [ ][ ][.]
+		    d  a     m
 		Where: (d)eleted, (a)dded, (m)odified
 
 		 */
