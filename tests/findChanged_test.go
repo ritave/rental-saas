@@ -29,7 +29,7 @@ func TestCompareSortable(t *testing.T) {
 	tBS = make([]string, slots)
 	startInPast := time.Now().Add(-slots * time.Hour)
 	for i:=0; i<slots; i++ {
-		timeBack[i] = startInPast.Add(time.Hour)
+		timeBack[i] = startInPast.Add(time.Duration(i) * time.Hour)
 		tBS[i] = tts(timeBack[i])
 	}
 
@@ -144,7 +144,27 @@ func TestCompareSortable(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CompareSortable() = %v, want %v", got, tt.want)
+				t.Errorf("CompareSortable() =\n")
+				if len(got) == 0 {
+					t.Errorf("[]\n")
+				} else {
+					//t.Errorf("[\n")
+					for _, el := range got {
+						t.Errorf("E: %v, M: %v\n", el.Event, el.Modifications)
+					}
+					//t.Errorf("]\n")
+				}
+
+				t.Errorf("want\n")
+				if len(tt.want) == 0 {
+					t.Errorf("[]\n")
+				} else {
+					//t.Errorf("[\n")
+					for _, el := range tt.want {
+						t.Errorf("E: %v, M: %v\n", el.Event, el.Modifications)
+					}
+					//t.Errorf("]\n")
+				}
 			}
 		})
 	}
