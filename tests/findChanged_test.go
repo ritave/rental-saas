@@ -11,15 +11,17 @@ import (
 )
 
 var zeroth = time.Now()
-var first = time.Now().Add(time.Hour)
-var second = time.Now().Add(2 * time.Hour)
-var third = time.Now().Add(3 * time.Hour)
-var fourth = time.Now().Add(4 * time.Hour)
-var fifth = time.Now().Add(5 * time.Hour)
-var sixth = time.Now().Add(6 * time.Hour)
+var first = zeroth.Add(time.Hour)
+var second = first.Add(time.Hour)
+var third = second.Add(time.Hour)
+var fourth = third.Add(time.Hour)
+var fifth = fourth.Add(time.Hour)
+var sixth = fifth.Add(time.Hour)
 
 func TestCompareSortable(t *testing.T) {
 
+	tts := helpers.TimeToString
+	
 	var timeBack []time.Time
 	var tBS []string
 	const slots = 8
@@ -28,33 +30,33 @@ func TestCompareSortable(t *testing.T) {
 	startInPast := time.Now().Add(-slots * time.Hour)
 	for i:=0; i<slots; i++ {
 		timeBack[i] = startInPast.Add(time.Hour)
-		tBS[i] = helpers.TimeToString(timeBack[i])
+		tBS[i] = tts(timeBack[i])
 	}
 
-	var exhibit1 = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location1", tBS[0]}
-	var exhibit1ModifiedTimeForward = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location1", tBS[0]}
-	var exhibit1ModifiedTimeForwardAndPlace = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location1-modified", tBS[0]}
+	var exhibit1 = &objects.Event{"summary", "user1@mail.com", tts(zeroth), tts(first), "location1", tBS[0]}
+	var exhibit1ModifiedTimeForward = &objects.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1", tBS[0]}
+	var exhibit1ModifiedTimeForwardAndPlace = &objects.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1-modified", tBS[0]}
 	log.Printf("exhibit 1 %p %v\n", exhibit1, *exhibit1)
 
-	var exhibit2 = &objects.Event{"summary", "user2@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location2", tBS[1]}
-	var exhibit2ModifiedTimeBackward = &objects.Event{"summary", "user2@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location2", tBS[1]}
-	var exhibit2ModifiedTimeBackwardAndPlace = &objects.Event{"summary", "user2@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location2-modified", tBS[1]}
+	var exhibit2 = &objects.Event{"summary", "user2@mail.com", tts(first), tts(second), "location2", tBS[1]}
+	var exhibit2ModifiedTimeBackward = &objects.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2", tBS[1]}
+	var exhibit2ModifiedTimeBackwardAndPlace = &objects.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2-modified", tBS[1]}
 	log.Printf("exhibit 2 %p %v\n", exhibit2, *exhibit2)
 
-	var exhibit3 = &objects.Event{"summary", "user3@mail.com", helpers.TimeToString(second), helpers.TimeToString(third), "location3", tBS[2]}
-	var exhibit3ModifiedPlace = &objects.Event{"summary", "user3@mail.com", helpers.TimeToString(second), helpers.TimeToString(third), "location3-modified", tBS[2]}
+	var exhibit3 = &objects.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3", tBS[2]}
+	var exhibit3ModifiedPlace = &objects.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3-modified", tBS[2]}
 	log.Printf("exhibit 3 %p %v\n", exhibit3, *exhibit3)
 
-	var exhibit4 = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(third), helpers.TimeToString(fourth), "location4", tBS[3]}
-	var exhibit4SecondEvent = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location4-some-other", tBS[6]}
-	var exhibit4ThirdEvent = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location4", tBS[7]}
+	var exhibit4 = &objects.Event{"summary", "user4@mail.com", tts(third), tts(fourth), "location4", tBS[3]}
+	var exhibit4SecondEvent = &objects.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4-some-other", tBS[6]}
+	var exhibit4ThirdEvent = &objects.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4", tBS[7]}
 	log.Printf("exhibit 4_1 %p %v\n", exhibit4, *exhibit4)
 	log.Printf("exhibit 4_2 %p %v\n", exhibit4SecondEvent, *exhibit4SecondEvent)
 	log.Printf("exhibit 4_3 %p %v\n", exhibit4ThirdEvent, *exhibit4ThirdEvent)
 
-	var exhibit5 = &objects.Event{"summary", "user5@mail.com", helpers.TimeToString(fourth), helpers.TimeToString(fifth), "location5", tBS[4]}
+	var exhibit5 = &objects.Event{"summary", "user5@mail.com", tts(fourth), tts(fifth), "location5", tBS[4]}
 
-	var exhibit6 = &objects.Event{"summary", "user6@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location6", tBS[5]}
+	var exhibit6 = &objects.Event{"summary", "user6@mail.com", tts(fifth), tts(sixth), "location6", tBS[5]}
 
 	type args struct {
 		saved  objects.SortableEvents

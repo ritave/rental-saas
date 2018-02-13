@@ -11,5 +11,5 @@ func StringToTime(in string) (time.Time) {
 }
 
 func TimeToString(in time.Time) (string) {
-	return time.Now().Format(time.RFC3339)
+	return in.Format(time.RFC3339)
 }
