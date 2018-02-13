@@ -27,12 +27,70 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]*objects.EventMo
 
 func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents) ([]*objects.EventModified, error) {
 	// sort by creation date
-	sort.Sort(objects.SortableEvents(saved))
-	sort.Sort(objects.SortableEvents(actual))
+	sort.Sort(objects.SortableEvents(saved)) // S, i indices
+	sort.Sort(objects.SortableEvents(actual)) // A, j indices
+
+	lenS := len(saved)
+	lenA := len(actual)
+
+	changes := make([]*objects.EventModified, 0)
+
+	var i, j int
+	for i < lenS && j < lenA {
+		s := saved[i]
+		a := actual[j]
+
+		/*
+		  ---time--->
+		S: [ ]  [ ][ ]
+		A:   [ ][ ][.]
+		    d a     m
+		Where: (d)eleted, (a)dded, (m)odified
+
+		 */
+
+		if s.Equal(a) {
+			// present in saved and actual => maybe actual has been modified?
+			if !s.IsTheSame(a) {
+				// they are not the same, find out what has changed
+
+				// create and append the object now, we will flag it later (maybe even multiple times)
+				d := objects.NewModified(a)
+				changes = append(changes, d)
+
+				if s.Location != a.Location {
+					d.Flag(objects.ModifiedLocation)
+				}
+
+				if s.Start != a.Start || s.End != a.End {
+					d.Flag(objects.ModifiedTime)
+				}
+
+				// to be added more later...
+			}
+
+			// they were the same event => move both indices forward
+			i++
+			j++
+
+		} else if a.Less(s) { // this should happen more often than the last clause
+			// "a" is missing in saved => "a" has been added
+			changes = append(changes, objects.NewModified(a).Flag(objects.Added))
+
+			// a is behind s => next a
+			j++
+		} else {
+			// "s" is missing in actual => "s" has been deleted
+			changes = append(changes, objects.NewModified(s).Flag(objects.Deleted))
+
+			// s is behind a => next s
+			i++
+		}
+		// this exhausts all the cases
+	}
 
 
-
-	return nil, nil
+	return changes, nil
 }
 
 func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *objects.Event, err error) {

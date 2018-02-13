@@ -19,7 +19,6 @@ func (e *Event) IsTheSame(to *Event) (bool) {
 	return *e == *to
 }
 
-//TODO
 //Less compares creation date
 func (e *Event) Less(than *Event) (bool) {
 	left := helpers.StringToTime(e.CreationDate)
@@ -31,6 +30,12 @@ func (e *Event) Less(than *Event) (bool) {
 	}
 
 	return left.Before(right)
+}
+
+func (e *Event) Equal(to *Event) (bool) {
+	left := helpers.StringToTime(e.CreationDate)
+	right := helpers.StringToTime(to.CreationDate)
+	return left.Equal(right)
 }
 
 //and it's also a pity to throw away such a "beautiful" function xd
