@@ -38,6 +38,7 @@ func (e *Event) Equal(to *Event) (bool) {
 	return left.Equal(right)
 }
 
+// FIXME actually this is very much probable as the creation date is precise up to 1 second
 //and it's also a pity to throw away such a "beautiful" function xd
 func improbableButMaybeTheyHaveTheSameCreationDate(eventI, eventJ *Event) (bool) {
 	si := helpers.StringToTime(eventI.Start)
