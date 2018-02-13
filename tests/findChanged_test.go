@@ -11,11 +11,11 @@ import (
 
 var zeroth = time.Now()
 var first = time.Now().Add(time.Hour)
-var second = time.Now().Add(2*time.Hour)
-var third = time.Now().Add(3*time.Hour)
-var fourth = time.Now().Add(4*time.Hour)
-var fifth = time.Now().Add(5*time.Hour)
-var sixth = time.Now().Add(6*time.Hour)
+var second = time.Now().Add(2 * time.Hour)
+var third = time.Now().Add(3 * time.Hour)
+var fourth = time.Now().Add(4 * time.Hour)
+var fifth = time.Now().Add(5 * time.Hour)
+var sixth = time.Now().Add(6 * time.Hour)
 
 var exhibit1 = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(zeroth), helpers.TimeToString(first), "location1"}
 var exhibit1ModifiedTimeForward = &objects.Event{"summary", "user1@mail.com", helpers.TimeToString(first), helpers.TimeToString(second), "location1"}
@@ -26,9 +26,10 @@ var exhibit2ModifiedTimeBackwardAndPlace = &objects.Event{"summary", "user2@mail
 var exhibit3 = &objects.Event{"summary", "user3@mail.com", helpers.TimeToString(second), helpers.TimeToString(third), "location3"}
 var exhibit3ModifiedPlace = &objects.Event{"summary", "user3@mail.com", helpers.TimeToString(second), helpers.TimeToString(third), "location3-modified"}
 var exhibit4 = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(third), helpers.TimeToString(fourth), "location4"}
+var exhibit4SecondEvent = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location4-some-other"}
+var exhibit4ThirdEvent = &objects.Event{"summary", "user4@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location4"}
 var exhibit5 = &objects.Event{"summary", "user5@mail.com", helpers.TimeToString(fourth), helpers.TimeToString(fifth), "location5"}
 var exhibit6 = &objects.Event{"summary", "user6@mail.com", helpers.TimeToString(fifth), helpers.TimeToString(sixth), "location6"}
-
 
 func TestCompareSorted(t *testing.T) {
 	type args struct {
@@ -87,10 +88,26 @@ func TestCompareSorted(t *testing.T) {
 			objects.SortableEvents{exhibit1, exhibit2, exhibit3, exhibit4, exhibit6},
 			objects.SortableEvents{exhibit1, exhibit2ModifiedTimeBackward, exhibit4, exhibit5, exhibit6},
 		}, []*objects.EventModified{
-			objects.NewModified(exhibit2).Flag(objects.ModifiedTime),
+			objects.NewModified(exhibit2ModifiedTimeBackward).Flag(objects.ModifiedTime),
 			objects.NewModified(exhibit3).Flag(objects.Deleted),
 			objects.NewModified(exhibit5).Flag(objects.Added),
-			}, false},
+		}, false},
+
+		{"1 and 2 swapped places", args{
+			objects.SortableEvents{exhibit1, exhibit2, exhibit3, exhibit4, exhibit5, exhibit6},
+			objects.SortableEvents{exhibit2ModifiedTimeBackward, exhibit1ModifiedTimeForward, exhibit3, exhibit4, exhibit5, exhibit6},
+		}, []*objects.EventModified{
+			objects.NewModified(exhibit2ModifiedTimeBackward).Flag(objects.ModifiedTime),
+			objects.NewModified(exhibit1ModifiedTimeForward).Flag(objects.ModifiedTime),
+		}, false},
+
+		{"4 added two more events", args{
+			objects.SortableEvents{exhibit1, exhibit2, exhibit3, exhibit4, exhibit5, exhibit6},
+			objects.SortableEvents{exhibit1, exhibit2, exhibit3, exhibit4, exhibit5, exhibit6, exhibit4SecondEvent, exhibit4ThirdEvent},
+		}, []*objects.EventModified{
+			objects.NewModified(exhibit4SecondEvent).Flag(objects.Added),
+			objects.NewModified(exhibit4ThirdEvent).Flag(objects.Added),
+		}, false},
 	}
 
 	for _, tt := range tests {
