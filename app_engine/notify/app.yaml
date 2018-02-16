@@ -1,0 +1,8 @@
+runtime: go
+api_version: go1
+service: notify
+env: flex # w000tzers
+
+handlers:
+- url: /notify/*
+  script: _go_app # so there has to exist an app here then
