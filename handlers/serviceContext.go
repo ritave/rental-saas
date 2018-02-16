@@ -7,9 +7,10 @@ import (
 	"net/http"
 	"google.golang.org/appengine"
 	"log"
+	"context"
 )
 
-const secretsLocation = "../secrets"
+const secretsLocation = "secrets"
 
 func GetService(r *http.Request) *calendar.Service {
 	if !appengine.IsDevAppServer() {
@@ -40,4 +41,23 @@ func GetService(r *http.Request) *calendar.Service {
 		}
 		return srv
 	}
+}
+
+func GetServiceWithoutRequest(ctx context.Context) *calendar.Service {
+	b, err := ioutil.ReadFile(secretsLocation + "/service_client_default.json")
+	if err != nil {
+		log.Fatalf("Unable to read client secret file: %v", err)
+	}
+
+	config, err := google.JWTConfigFromJSON(b, calendar.CalendarScope)
+	if err != nil {
+		log.Fatalf("Unable to parse service client secret file to config: %v", err)
+	}
+	client := config.Client(ctx)
+
+	srv, err := calendar.New(client)
+	if err != nil {
+		log.Fatalf("Unable to retrieve calendar Client %v", err)
+	}
+	return srv
 }
