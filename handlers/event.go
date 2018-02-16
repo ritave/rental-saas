@@ -18,7 +18,7 @@ type EventRequest struct {
 	CreationDate string `json:"-"` //not used
 }
 
-func CreateEvent(w http.ResponseWriter, r *http.Request) {
+func EventCreate(w http.ResponseWriter, r *http.Request) {
 	defer helpers.RecoverPanic()
 
 	srv := GetService(r)
@@ -39,7 +39,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	// TODO this should be called at best only once... Not at every CreateEvent call.
+	// TODO this should be called at best only once... Not at every EventCreate call.
 	// TODO also there are some refreshing tokens flying around soo... yeeeah...
 	logic.WatchForChanges(srv)
 }

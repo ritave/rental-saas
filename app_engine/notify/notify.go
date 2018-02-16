@@ -1,13 +1,14 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+	"log"
+)
 
 func main() {
-	bindEndpoints()
-}
-
-func bindEndpoints() {
 	http.HandleFunc("/notify/send", HandlerSend)
+	log.Print("Listening on port 8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func HandlerSend(w http.ResponseWriter, r *http.Request) {

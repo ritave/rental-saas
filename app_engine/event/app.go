@@ -17,7 +17,7 @@ func main() {
 func bindEndpoints() {
 	http.HandleFunc("/", handlers.Root)
 	http.HandleFunc("/notify", handlers.Notify)
-	http.HandleFunc("/createEvent", handlers.CreateEvent)
+	http.HandleFunc("/event/create", handlers.EventCreate)
 	log.Println("Bound endpoints...")
 }
 
