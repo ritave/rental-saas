@@ -3,4 +3,4 @@
 # $1 let it be URI
 # $2 let it be a filename
 
-curl -vX POST $1 -d @$2 --header "Content-Type: application/json"
+curl $1 -d @$2 --header "Content-Type: application/json"

@@ -21,14 +21,14 @@ type EventRequest struct {
 func EventCreate(w http.ResponseWriter, r *http.Request) {
 	defer helpers.RecoverPanic()
 
-	srv := GetService(r)
-	ctx := appengine.NewContext(r)
-
 	eventRequest, err := ExtractEventFromBody(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Malformed json"))
 	}
+
+	srv := GetService(r)
+	ctx := appengine.NewContext(r)
 
 	// TODO move this logic level down
 	event, err := logic.AddEventToCalendar(srv, objects.Event(eventRequest))

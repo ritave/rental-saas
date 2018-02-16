@@ -3,5 +3,12 @@ api_version: go1
 service: event
 
 handlers:
-- url: /event/*
+# root
+- url: /
   script: _go_app
+# serve everything from the Go App
+- url: /.*
+  script: _go_app
+## That's an option I could use for easy html page
+#- url: /index\.html
+#  static: static/index.html

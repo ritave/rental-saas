@@ -9,6 +9,8 @@ import (
 	"log"
 )
 
+const secretsLocation = "../secrets"
+
 func GetService(r *http.Request) *calendar.Service {
 	if !appengine.IsDevAppServer() {
 		client, err := google.DefaultClient(appengine.NewContext(r), calendar.CalendarScope)
@@ -21,7 +23,7 @@ func GetService(r *http.Request) *calendar.Service {
 		}
 		return srv
 	} else {
-		b, err := ioutil.ReadFile("secrets/service_client_default.json")
+		b, err := ioutil.ReadFile(secretsLocation + "/service_client_default.json")
 		if err != nil {
 			log.Fatalf("Unable to read client secret file: %v", err)
 		}

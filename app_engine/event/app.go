@@ -1,13 +1,12 @@
-package event
+package main
 
 import (
 	"net/http"
 	"google.golang.org/appengine"
 	"log"
 	"calendar-synch/handlers"
+	"html/template"
 )
-
-// [START notification_struct]
 
 func main() {
 	bindEndpoints()
@@ -15,12 +14,36 @@ func main() {
 }
 
 func bindEndpoints() {
-	http.HandleFunc("/", handlers.Root)
-	http.HandleFunc("/notify", handlers.Notify)
+	http.HandleFunc("/event/ping", Ping)
 	http.HandleFunc("/event/create", handlers.EventCreate)
 	log.Println("Bound endpoints...")
 }
 
 func init() {
 	log.Println("Initialized stuff...")
+}
+
+var tempTemplate = template.Must(template.New("temp").Parse(`
+<html>
+  <head>
+    <title>Hey, hello, welcome</title>
+  </head>
+  <body>
+    <pre>This should be on "/event/"</pre>
+	<p>From {{.From}}</p>
+	<p>To {{.To}}</p>
+  </body>
+</html>
+`))
+type RequestData struct {
+	From      string   `json:"from"`
+	To        string   `json:"to"`
+}
+func Ping(w http.ResponseWriter, r *http.Request) {
+	requestData := &RequestData{From: r.RemoteAddr, To: r.Host}
+
+	if err := tempTemplate.Execute(w, requestData); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
 }
