@@ -39,9 +39,6 @@ func EventCreate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	// TODO this should be called at best only once... Not at every EventCreate call.
-	// TODO also there are some refreshing tokens flying around soo... yeeeah...
-	logic.WatchForChanges(srv)
 }
 
 func ExtractEventFromBody(r *http.Request) (EventRequest, error) {

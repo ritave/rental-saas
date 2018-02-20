@@ -5,15 +5,19 @@ import (
 	"log"
 	"calendar-synch/handlers"
 	"context"
+	"calendar-synch/logic"
+	"google.golang.org/api/calendar/v3"
 )
 
+const NotifyGet = "/notify/get"
+
 func main() {
-	http.HandleFunc("/notify/send", HandlerSend)
+	http.HandleFunc(NotifyGet, HandlerGet)
 	log.Print("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func HandlerSend(w http.ResponseWriter, r *http.Request) {
+func HandlerGet(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Ok, I got this."))
 }
 
@@ -22,28 +26,8 @@ func init() {
 
 	background := context.Background()
 
-	srv := handlers.GetServiceWithoutRequest(background)
-	events, err := srv.Events.List("primary").Do()
-	if err != nil {
-		log.Printf("Listing events: %s", err.Error())
-	} else {
-		log.Println("Upcoming events:")
-		if len(events.Items) > 0 {
-			for _, i := range events.Items {
-				var when string
-				// If the DateTime is an empty string the Event is an all-day Event.
-				// So only Date is available.
-				if i.Start.DateTime != "" {
-					when = i.Start.DateTime
-				} else {
-					when = i.Start.Date
-				}
-				log.Printf("%s (%s)\n", i.Summary, when)
-			}
-		} else {
-			log.Printf("No upcoming events found.\n")
-		}
-	}
+	cal := handlers.GetServiceWithoutRequest(background)
+	registerReceiver(cal)
 }
 
 func testPing() {
@@ -53,4 +37,14 @@ func testPing() {
 	} else {
 		log.Printf("Response status: %d", resp.StatusCode)
 	}
+}
+
+func registerReceiver(cal *calendar.Service) {
+	// TODO this should be called at best only once...
+	// TODO also there are some refreshing tokens flying around soo... yeeeah...
+
+	// TODO error handling
+
+	// TODO refresh after every some constant time interval?
+	logic.WatchForChanges(cal, "https://calendar-cron.appspot.com" + NotifyGet)
 }

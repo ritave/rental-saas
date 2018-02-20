@@ -20,6 +20,7 @@ func bindEndpoints() {
 }
 
 func init() {
+	// yes, I know it's a no-op
 	log.Println("Initialized stuff...")
 }
 

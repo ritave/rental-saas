@@ -7,12 +7,12 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-func WatchForChanges(cal *calendar.Service) {
+func WatchForChanges(cal *calendar.Service, receiver string) {
 	u := uuid.Must(uuid.NewV4())
 
 	channel := calendar.Channel{
 		Id: u.String(),
-		Address: "https://calendar-cron.appspot.com/notify",
+		Address: receiver,
 		Type: "web_hook",
 		Expiration: math.MaxInt64, // lol
 	}
