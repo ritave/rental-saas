@@ -7,9 +7,13 @@ import (
 	"context"
 	"calendar-synch/logic"
 	"google.golang.org/api/calendar/v3"
+	"os"
 )
 
 const NotifyGet = "/notify/get"
+
+const EnvAppPing = "APP_PING"
+const EnvAppChanged = "APP_CHANGED"
 
 func main() {
 	http.HandleFunc(NotifyGet, HandlerGet)
@@ -18,7 +22,9 @@ func main() {
 }
 
 func HandlerGet(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Ok, I got this."))
+	w.Write([]byte("Thanks Google, I got this from here."))
+
+	notifyMainApp()
 }
 
 func init() {
@@ -31,7 +37,13 @@ func init() {
 }
 
 func testPing() {
-	resp, err := http.DefaultClient.Get("https://calendar-cron.appspot.com/event/ping")
+	pingAddr, exists := os.LookupEnv(EnvAppPing)
+	if !exists {
+		pingAddr = "https://calendar-cron.appspot.com/event/ping"
+		log.Printf("Resolving to prior default: %s", pingAddr)
+	}
+
+	resp, err := http.DefaultClient.Get(pingAddr)
 	if err != nil {
 		log.Printf("Request on init: %s", err.Error())
 	} else {
@@ -46,5 +58,30 @@ func registerReceiver(cal *calendar.Service) {
 	// TODO error handling
 
 	// TODO refresh after every some constant time interval?
-	logic.WatchForChanges(cal, "https://calendar-cron.appspot.com" + NotifyGet)
+	log.Println("Registering receiver")
+	selfAddr, exists := os.LookupEnv(EnvAppChanged)
+	if !exists {
+		selfAddr = "https://calendar-cron.appspot.com/"
+		log.Printf("Registering: resolving to prior default: %s", selfAddr)
+	}
+	err := logic.WatchForChanges(cal, selfAddr + NotifyGet)
+	if err != nil {
+		log.Printf("Error sending watch request: %s", err.Error())
+	}
+}
+
+func notifyMainApp() {
+	pingAddr, exists := os.LookupEnv(EnvAppChanged)
+	if !exists {
+		pingAddr = "https://calendar-cron.appspot.com/event/changed"
+		log.Printf("Notify: resolving to prior default: %s", pingAddr)
+	}
+
+	resp, err := http.DefaultClient.Get(pingAddr)
+	if err != nil {
+		log.Printf("Notifying: %s", err.Error())
+	} else {
+		log.Printf("Notifying: %d", resp.StatusCode)
+	}
+
 }

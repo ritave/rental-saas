@@ -1,5 +1,3 @@
 dispatch:
   - url: "*/notify/*"
     service: notify
-  - url: "*/event/*"
-    service: event

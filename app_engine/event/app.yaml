@@ -1,6 +1,6 @@
 runtime: go
 api_version: go1
-service: event
+service: default
 
 handlers:
 # root
