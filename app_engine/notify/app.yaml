@@ -10,6 +10,7 @@ resources:
   disk_size_gb: 10
 
 env_variables:
-  APP: "https://calendar-cron.appspot.com/"
-  APP_PING: "https://calendar-cron.appspot.com/event/ping"
-  APP_CHANGED: "https://calendar-cron.appspot.com/event/ping"
+  CALENDAR_APP: "https://calendar-cron.appspot.com/"
+  CALENDAR_APP_PING: "https://calendar-cron.appspot.com/event/ping"
+  CALENDAR_APP_CHANGED: "https://calendar-cron.appspot.com/event/ping"
+  NOTIFY_EXPIRE_AFTER: "3600"
