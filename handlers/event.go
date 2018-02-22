@@ -6,6 +6,8 @@ import (
 	"calendar-synch/logic"
 	"google.golang.org/appengine"
 	"calendar-synch/objects"
+	"io/ioutil"
+	"log"
 )
 
 type EventRequest struct {
@@ -21,6 +23,11 @@ func EventCreate(w http.ResponseWriter, r *http.Request) {
 
 	if appengine.IsDevAppServer() {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	}
+
+	if r.Method == http.MethodOptions {
+		return
 	}
 
 	eventRequest, err := ExtractEventFromBody(r)
@@ -52,6 +59,20 @@ func EventCreate(w http.ResponseWriter, r *http.Request) {
 func ExtractEventFromBody(r *http.Request) (EventRequest, error) {
 	var target EventRequest
 	defer r.Body.Close()
+
+	if appengine.IsDevAppServer() {
+		bytez, _ := ioutil.ReadAll(r.Body)
+
+		log.Println("JSON received")
+		log.Println(string(bytez))
+
+		err := json.Unmarshal(bytez, &target)
+		if err != nil {
+			return EventRequest{}, err
+		}
+		return target, nil
+	}
+
 	err := json.NewDecoder(r.Body).Decode(&target)
 	if err != nil {
 		return EventRequest{}, err
