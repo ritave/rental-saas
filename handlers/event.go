@@ -33,12 +33,12 @@ func EventCreate(w http.ResponseWriter, r *http.Request) {
 	eventRequest, err := ExtractEventFromBody(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Malformed json"))
+		w.Write([]byte("\"Malformed json\""))
 		return
 	}
 
 	if appengine.IsDevAppServer() {
-		w.Write([]byte("Congratz"))
+		w.Write([]byte("\"Congratz\"")) // JSONified
 		return
 	}
 

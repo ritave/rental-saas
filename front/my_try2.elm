@@ -151,11 +151,11 @@ viewError model =
 errorToString : Http.Error -> String
 errorToString error =
     case error of 
-        Http.BadUrl something -> "Bad Url: " ++ something
+        Http.BadUrl something -> "Bad url: " ++ something
         Http.Timeout -> "Timeout"
-        Http.NetworkError -> "Network Error"
-        Http.BadStatus _ -> "Bad Status"
-        Http.BadPayload _ _-> "Dunno"
+        Http.NetworkError -> "Network error"
+        Http.BadStatus _ -> "Bad status"
+        Http.BadPayload something _-> "Bad payload: " ++ something
 
 extractErrorFromResult : Result Http.Error String -> String
 extractErrorFromResult result =
