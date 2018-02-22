@@ -35,6 +35,12 @@ apiEventList =
 
 type alias Event =
     Dict String String
+--    { summary : String
+--    , user : String
+--    , location : String
+--    , start : String
+--    , end : String
+--    }
 
 type alias Model =
     { summary : String
@@ -118,9 +124,9 @@ update msg model =
             case response of
                 Ok trueResponse ->
                     let
-                        _ = Debug.log trueResponse -- WILL IT BLEND?
+                        _ = log "EventCreate" trueResponse -- WILL IT BLEND?
                     in
-                    (model, eventListGet)
+                    ({model | error = ""}, eventListGet)
                 Err error ->
                     let
                         errorMsg = errorToString error
@@ -129,6 +135,9 @@ update msg model =
         EventListResponse response ->
             case response of
                 Ok events ->
+                    let
+                        _ = log "Events" events
+                    in
                     ({model | events = events}, Cmd.none)
                 Err error ->
                     let
@@ -151,11 +160,22 @@ view model =
 --    , input [ type_ "date", onClick EndDate ] []
     , button [ onClick SubmitForm ] [ text "Send" ]
     , br [] []
-    , viewError model
+    , errorView model
+    , br [] []
+
     ]
 
+eventsView : Model -> Html msg
+eventsView model =
+    div [] []
 
--- TODO
+singleEventView : Event -> Html msg
+singleEventView event =
+    pre []
+    [
+    ]
+
+-- TODO?
 -- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
@@ -184,9 +204,11 @@ eventListGet =
 
 -- LOGGING
 
+log = Debug.log
+
 -- ERRORS
-viewError : Model -> Html msg
-viewError model =
+errorView : Model -> Html msg
+errorView model =
   let
     (color, message) =
       if model.error == "" then
@@ -205,9 +227,3 @@ errorToString error =
         Http.BadStatus _ -> "Bad status"
         Http.BadPayload something _-> "Bad payload: " ++ something
 
-extractErrorFromResult : Result Http.Error String -> String
-extractErrorFromResult result =
-    case result of
-        Ok _ -> ""
-        Err error ->
-            errorToString error

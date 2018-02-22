@@ -97,8 +97,10 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 	srv := GetService(r)
 
 	events, err := srv.Events.List("primary").ShowDeleted(true).
-		MaxResults(100).OrderBy("startTime").Do()
+		MaxResults(100).OrderBy("updated").Do()
 	if err != nil {
+		log.Println("Error fetching events")
+		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -110,6 +112,7 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 	}
 	bytez, err := json.Marshal(&result)
 	if err != nil {
+		log.Println("Error marshalling response")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
