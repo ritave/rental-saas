@@ -6,7 +6,6 @@ import (
 	"calendar-synch/logic"
 	"google.golang.org/appengine"
 	"calendar-synch/objects"
-	"calendar-synch/helpers"
 )
 
 type EventRequest struct {
@@ -19,12 +18,21 @@ type EventRequest struct {
 }
 
 func EventCreate(w http.ResponseWriter, r *http.Request) {
-	defer helpers.RecoverPanic()
+
+	if appengine.IsDevAppServer() {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
+	}
 
 	eventRequest, err := ExtractEventFromBody(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Malformed json"))
+		return
+	}
+
+	if appengine.IsDevAppServer() {
+		w.Write([]byte("Congratz"))
+		return
 	}
 
 	srv := GetService(r)
