@@ -18,6 +18,8 @@ main =
     , subscriptions = subscriptions
     }
 
+-- DEFINITIONS
+
 apiBase : String
 apiBase =
     "http://localhost:8080/"
@@ -32,9 +34,6 @@ apiEventList =
     apiBase ++ "event/list"
 
 -- TYPES
-
---type alias Event =
---    Dict String String
 
 type alias Event =
     { summary : String
@@ -187,17 +186,34 @@ view model =
     , br [] []
     , errorView model
     , br [] []
-
+    , eventsView model
     ]
 
 eventsView : Model -> Html msg
 eventsView model =
-    div [] []
+    div []
+    (
+        List.map
+            (\e ->
+                div [] [singleEventView e, br [] []]
+            )
+            model.events
+    )
 
 singleEventView : Event -> Html msg
 singleEventView event =
-    pre []
-    [
+    div []
+    [ text ("User: " ++ event.user)
+    , br [] []
+    , text ("Start: " ++ event.start)
+    , br [] []
+    , text ("End: " ++ event.end)
+    , br [] []
+    , text ("Location: " ++ event.location)
+    , br [] []
+    , text ("Summary: " ++ event.summary)
+    , br [] []
+    , text ("Created: " ++ event.creationDate)
     ]
 
 -- TODO?
