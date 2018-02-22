@@ -31,16 +31,59 @@ apiEventList : String
 apiEventList =
     apiBase ++ "event/list"
 
--- MODEL
+-- TYPES
+
+--type alias Event =
+--    Dict String String
 
 type alias Event =
-    Dict String String
---    { summary : String
---    , user : String
---    , location : String
---    , start : String
---    , end : String
---    }
+    { summary : String
+    , user : String
+    , start : String
+    , end : String
+    , location : String
+    , creationDate : String
+    }
+
+decodeEvent : Decode.Decoder Event
+decodeEvent =
+    Decode.map6 Event
+        (Decode.field "summary" Decode.string)
+        (Decode.field "user" Decode.string)
+        (Decode.field "start" Decode.string)
+        (Decode.field "end" Decode.string)
+        (Decode.field "location" Decode.string)
+        (Decode.field "creationDate" Decode.string)
+
+encodeEvent : Event -> Encode.Value
+encodeEvent record =
+    Encode.object
+        [ ("summary",  Encode.string <| record.summary)
+        , ("user",  Encode.string <| record.user)
+        , ("start",  Encode.string <| record.start)
+        , ("end",  Encode.string <| record.end)
+        , ("location",  Encode.string <| record.location)
+        , ("creationDate",  Encode.string <| record.creationDate)
+        ]
+
+eventCreateResponseDecoder : Decode.Decoder String
+eventCreateResponseDecoder =
+    Decode.string
+
+eventListResponseDecoder : Decode.Decoder (List Event)
+eventListResponseDecoder =
+    Decode.list (decodeEvent)
+
+eventListDecoder : String -> List Event
+eventListDecoder rawString =
+    let
+        response = Decode.decodeString eventListResponseDecoder rawString
+    in
+    case response of
+        Ok result -> result
+        Err _ -> []
+
+-- MODEL
 
 type alias Model =
     { summary : String
@@ -55,7 +98,6 @@ type alias Model =
 model : Model
 model = startUpValue
 
-
 formEncoder : Model -> Encode.Value
 formEncoder model =
     Encode.object
@@ -65,23 +107,6 @@ formEncoder model =
         , ("start", Encode.string "wat")
         , ("end", Encode.string "wat")
         ]
-
-eventCreateResponseDecoder : Decode.Decoder String
-eventCreateResponseDecoder =
-    Decode.string
-
-eventListResponseDecoder : Decode.Decoder (List Event)
-eventListResponseDecoder =
-    Decode.list (Decode.dict Decode.string)
-
-eventListDecoder : String -> List Event
-eventListDecoder rawString =
-    let
-        response = Decode.decodeString eventListResponseDecoder rawString
-    in
-    case response of
-        Ok result -> result
-        Err _ -> []
 
 -- INIT
 

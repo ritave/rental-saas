@@ -119,3 +119,7 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(bytez)
 }
+
+/*
+{"summary":"a", "user":"a", "start":"a", "end":"a", "location":"a", "creationDate":"a"}
+ */

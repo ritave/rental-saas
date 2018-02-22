@@ -5,12 +5,12 @@ import (
 )
 
 type Event struct {
-	Summary      string
-	User         string
-	Start        string
-	End          string
-	Location     string
-	CreationDate string
+	Summary      string `json:"summary"`
+	User         string `json:"user"`
+	Start        string `json:"start"`
+	End          string `json:"end"`
+	Location     string `json:"location"`
+	CreationDate string `json:"creationDate"`
 }
 
 //IsTheSame checks if two events have the same fields (used in checking if they've been changed).
