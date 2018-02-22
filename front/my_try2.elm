@@ -6,6 +6,8 @@ import Http
 import Json.Encode as Encode
 import Json.Decode as Decode
 
+import Dict exposing (..)
+
 import Debug
 
 main =
@@ -16,12 +18,23 @@ main =
     , subscriptions = subscriptions
     }
 
+apiBase : String
+apiBase =
+    "http://localhost:8080/"
+
 apiEventCreate : String
 apiEventCreate =
 --    "https://calendar-cron.appspot.com/event/create"
-    "http://localhost:8080/event/create"
+    apiBase ++ "event/create"
+
+apiEventList : String
+apiEventList =
+    apiBase ++ "event/list"
 
 -- MODEL
+
+type alias Event =
+    Dict String String
 
 type alias Model =
     { summary : String
@@ -30,6 +43,7 @@ type alias Model =
 --    , start : Date
 --    , end : Date
     , error : String
+    , events : List Event
     }
 
 model : Model
@@ -46,14 +60,27 @@ formEncoder model =
         , ("end", Encode.string "wat")
         ]
 
-postEventResponseDecoder : Decode.Decoder String
-postEventResponseDecoder =
+eventCreateResponseDecoder : Decode.Decoder String
+eventCreateResponseDecoder =
     Decode.string
+
+eventListResponseDecoder : Decode.Decoder (List Event)
+eventListResponseDecoder =
+    Decode.list (Decode.dict Decode.string)
+
+eventListDecoder : String -> List Event
+eventListDecoder rawString =
+    let
+        response = Decode.decodeString eventListResponseDecoder rawString
+    in
+    case response of
+        Ok result -> result
+        Err _ -> []
 
 -- INIT
 
 startUpValue : Model
-startUpValue = Model "Summary" "radekantichrist@gmail.com" "Location" ""
+startUpValue = Model "Summary" "radekantichrist@gmail.com" "Location" "" []
 
 init : (Model, Cmd Msg)
 init =
@@ -68,7 +95,8 @@ type Msg =
 --    | StartDate Date
 --    | EndDate Date
     | SubmitForm
-    | PostEventResponse (Result Http.Error String)
+    | EventCreateResponse (Result Http.Error String)
+    | EventListResponse (Result Http.Error (List Event))
     | Error String
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -85,12 +113,28 @@ update msg model =
     --    StartDate startDate ->
     --        {model | start = startDate}
         SubmitForm ->
-            (model, postEventSend model)
-        PostEventResponse result ->
-            let
-                maybeError = extractErrorFromResult result
-            in
-            ({model | error = maybeError}, Cmd.none)
+            (model, eventCreatePost model)
+        EventCreateResponse response ->
+            case response of
+                Ok trueResponse ->
+                    let
+                        _ = Debug.log trueResponse -- WILL IT BLEND?
+                    in
+                    (model, eventListGet)
+                Err error ->
+                    let
+                        errorMsg = errorToString error
+                    in
+                    ({model | error = errorMsg}, Cmd.none)
+        EventListResponse response ->
+            case response of
+                Ok events ->
+                    ({model | events = events}, Cmd.none)
+                Err error ->
+                    let
+                        errorMsg = errorToString error
+                    in
+                    ({model | error = errorMsg}, Cmd.none)
         Error error ->
             ({ model | error = error}, Cmd.none)
 
@@ -120,19 +164,23 @@ subscriptions model =
 
 -- HTTP
 
-postEventCreation : Model -> Http.Request String
-postEventCreation model =
+eventCreateRequestBuilder : Model -> Http.Request String
+eventCreateRequestBuilder model =
     let
         body =
             model
                 |> formEncoder
                 |> Http.jsonBody
     in
-        Http.post apiEventCreate body postEventResponseDecoder
+        Http.post apiEventCreate body eventCreateResponseDecoder
 
-postEventSend : Model -> Cmd Msg
-postEventSend model =
-    Http.send PostEventResponse (postEventCreation model)
+eventCreatePost : Model -> Cmd Msg
+eventCreatePost model =
+    Http.send EventCreateResponse (eventCreateRequestBuilder model)
+
+eventListGet : Cmd Msg
+eventListGet =
+    Http.send EventListResponse (Http.get apiEventList eventListResponseDecoder)
 
 -- LOGGING
 
