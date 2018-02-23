@@ -23,9 +23,10 @@ type EventRequest struct {
 
 // TODO distinction of POST, GET, OPTIONS
 
-func EventCreate(w http.ResponseWriter, r *http.Request) {
+var flag = true
 
-	if appengine.IsDevAppServer() {
+func EventCreate(w http.ResponseWriter, r *http.Request) {
+	if flag {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	}
@@ -62,6 +63,8 @@ func EventCreate(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	w.Write([]byte("\"Created event\""))
 }
 
 func ExtractEventFromBody(r *http.Request) (EventRequest, error) {
@@ -89,7 +92,7 @@ func ExtractEventFromBody(r *http.Request) (EventRequest, error) {
 }
 
 func EventList(w http.ResponseWriter, r *http.Request) {
-	if appengine.IsDevAppServer() {
+	if flag {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	}
@@ -117,9 +120,18 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if flag {
+		log.Println("We will be sending this back:")
+		log.Println(string(bytez))
+	}
+
 	w.Write(bytez)
 }
 
 /*
 {"summary":"a", "user":"a", "start":"a", "end":"a", "location":"a", "creationDate":"a"}
  */
+
+func EventChanged(w http.ResponseWriter, r *http.Request) {
+	log.Println("Captain, we are being hailed.")
+}

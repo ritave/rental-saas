@@ -17,6 +17,7 @@ func bindEndpoints() {
 	http.HandleFunc("/event/ping", Ping)
 	http.HandleFunc("/event/create", handlers.EventCreate)
 	http.HandleFunc("/event/list", handlers.EventList)
+	http.HandleFunc("/event/changed", handlers.EventChanged)
 	log.Println("Bound endpoints...")
 }
 

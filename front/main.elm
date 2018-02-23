@@ -264,5 +264,5 @@ errorToString error =
         Http.Timeout -> "Timeout"
         Http.NetworkError -> "Network error"
         Http.BadStatus _ -> "Bad status"
-        Http.BadPayload something _-> "Bad payload: " ++ something
+        Http.BadPayload something response -> "Bad payload: " ++ something ++ response.body
 
