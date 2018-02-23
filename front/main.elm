@@ -10,6 +10,8 @@ import Dict exposing (..)
 
 import Debug
 
+-- TOOD split everything into modules
+
 main =
   Html.program
     { init = init
@@ -22,11 +24,11 @@ main =
 
 apiBase : String
 apiBase =
-    "http://localhost:8080/"
+    "https://calendar-cron.appspot.com/"
+--    "http://localhost:8080/" -- TODO env variables/config -- generally webpack should be my friend
 
 apiEventCreate : String
 apiEventCreate =
---    "https://calendar-cron.appspot.com/event/create"
     apiBase ++ "event/create"
 
 apiEventList : String
@@ -191,7 +193,7 @@ view model =
 
 eventsView : Model -> Html msg
 eventsView model =
-    div []
+    ul [ class "events" ]
     (
         List.map
             (\e ->
@@ -202,18 +204,14 @@ eventsView model =
 
 singleEventView : Event -> Html msg
 singleEventView event =
-    div []
-    [ text ("User: " ++ event.user)
-    , br [] []
-    , text ("Start: " ++ event.start)
-    , br [] []
-    , text ("End: " ++ event.end)
-    , br [] []
-    , text ("Location: " ++ event.location)
-    , br [] []
-    , text ("Summary: " ++ event.summary)
-    , br [] []
-    , text ("Created: " ++ event.creationDate)
+    li [ class "event" ] [ul [class "event-element" ] 
+        [ li [] [ text ("User: " ++ event.user) ]
+        , li [] [ text ("Start: " ++ event.start) ]
+        , li [] [ text ("End: " ++ event.end) ]
+        , li [] [ text ("Location: " ++ event.location) ]
+        , li [] [ text ("Summary: " ++ event.summary) ]
+        , li [] [ text ("Created: " ++ event.creationDate) ]
+        ]
     ]
 
 -- TODO?

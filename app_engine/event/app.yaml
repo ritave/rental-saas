@@ -5,10 +5,8 @@ service: default
 handlers:
 # root
 - url: /
-  script: _go_app
+  static_files: index.html
+  upload: index.html
 # serve everything from the Go App
 - url: /.*
   script: _go_app
-## That's an option I could use for easy html page
-#- url: /index\.html
-#  static: static/index.html
