@@ -2,12 +2,12 @@ package logic
 
 import (
 	"google.golang.org/api/calendar/v3"
-	"time"
 	"log"
 	"calendar-synch/objects"
 	"calendar-synch/helpers"
 	"errors"
 	"regexp"
+	"time"
 )
 
 
@@ -17,10 +17,10 @@ func AddEventToCalendar(cal *calendar.Service, ev objects.Event) (*objects.Event
 		Location:    ev.Location,
 		Description: "Cleaning service ordered on %s. Feel free to move this event in your calendar to change the date!",
 		Start: &calendar.EventDateTime{
-			DateTime: time.Now().Format(time.RFC3339), // FIXME temporary
+			DateTime: ev.Start,
 		},
 		End: &calendar.EventDateTime{
-			DateTime: time.Now().Add(time.Hour).Format(time.RFC3339), // FIXME temporary
+			DateTime: ev.End,
 		},
 		Attendees: []*calendar.EventAttendee{
 			{Email: ev.User},
