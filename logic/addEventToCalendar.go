@@ -5,6 +5,9 @@ import (
 	"time"
 	"log"
 	"calendar-synch/objects"
+	"calendar-synch/helpers"
+	"errors"
+	"regexp"
 )
 
 
@@ -42,4 +45,46 @@ func AddEventToCalendar(cal *calendar.Service, ev objects.Event) (*objects.Event
 	}
 
 	return nil, err
+}
+
+var emailParser = regexp.MustCompile(`(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)`)
+
+func EvenMoreChecksForTheEvent(ev objects.Event) (error) {
+
+	// time checks
+	var stringToTime = func(in string) (time.Time, error) {
+		return time.Parse(helpers.DefaultTimeType, in)
+	}
+
+	startT, err := stringToTime(ev.Start)
+	if err != nil {
+		return errors.New("invalid error format")
+	}
+
+	endT, err := stringToTime(ev.End)
+	if err != nil {
+		return errors.New("invalid error format")
+	}
+
+	if startT.Before(time.Now()) {
+		return errors.New("event start cannot be set in the past")
+	}
+
+	if endT.Before(startT) {
+		return errors.New("event end cannot be before the start")
+	}
+
+	if endT.Before(time.Now()) {
+		return errors.New("event end cannot be set in the past")
+	}
+
+	if ev.Location == "" {
+		return errors.New("location cannot be empty")
+	}
+
+	if !emailParser.Match([]byte(ev.User)) {
+		return errors.New("invalid email address")
+	}
+
+	return nil
 }

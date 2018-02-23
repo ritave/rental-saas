@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"calendar-synch/helpers"
 )
 
 const NotifyGet = "/notify/get"
@@ -69,10 +70,28 @@ func registerReceiver(cal *calendar.Service) {
 		log.Fatalf("ATOI: %s", err.Error())
 	}
 
-	err = logic.WatchForChanges(cal, selfAddr + NotifyGet, time.Duration(expireAfter))
+	err = logic.WatchForChanges(cal, selfAddr + NotifyGet, time.Duration(expireAfter)*time.Second)
 	if err != nil {
 		log.Printf("Error sending watch request: %s", err.Error())
+
+		go func() {
+			log.Printf("Retrying in one minute")
+			timer := time.NewTimer(time.Duration(time.Minute))
+			refreshTime := <- timer.C
+			log.Printf("Refreshing watch channel on %s", refreshTime.Format(helpers.DefaultTimeType))
+			registerReceiver(cal)
+		}()
+		return
 	}
+
+	// if everything went smoothly, carry on with usual refresh-after-an-hour-or-so
+	go func() {
+		log.Printf("Scheduled for retrying in %d second", expireAfter)
+		timer := time.NewTimer(time.Duration(expireAfter)*time.Second)
+		refreshTime := <- timer.C
+		log.Printf("Refreshing watch channel on %s", refreshTime.Format(helpers.DefaultTimeType))
+		registerReceiver(cal)
+	}()
 }
 
 func notifyMainApp() (error) {

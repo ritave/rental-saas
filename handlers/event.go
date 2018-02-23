@@ -23,6 +23,8 @@ type EventRequest struct {
 
 // TODO distinction of POST, GET, OPTIONS
 
+// TODO split this into different files for each handler
+
 var flag = true
 
 func EventCreate(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +46,13 @@ func EventCreate(w http.ResponseWriter, r *http.Request) {
 
 	if appengine.IsDevAppServer() {
 		w.Write([]byte("\"Congratz\"")) // JSONified
+		return
+	}
+
+	err = logic.EvenMoreChecksForTheEvent(objects.Event(eventRequest))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("\"" + err.Error() + "\""))
 		return
 	}
 
