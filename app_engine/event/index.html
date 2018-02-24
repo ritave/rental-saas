@@ -2723,7 +2723,39 @@ var _elm_lang$core$Char$isHexDigit = function ($char) {
 		_elm_lang$core$Native_Utils.chr('F'),
 		$char));
 };
-//import Native.Utils //
+//import Result //
+
+var _elm_lang$core$Native_Date = function() {
+
+function fromString(str)
+{
+	var date = new Date(str);
+	return isNaN(date.getTime())
+		? _elm_lang$core$Result$Err('Unable to parse \'' + str + '\' as a date. Dates must be in the ISO 8601 format.')
+		: _elm_lang$core$Result$Ok(date);
+}
+
+var dayTable = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var monthTable =
+	['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+	 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+
+return {
+	fromString: fromString,
+	year: function(d) { return d.getFullYear(); },
+	month: function(d) { return { ctor: monthTable[d.getMonth()] }; },
+	day: function(d) { return d.getDate(); },
+	hour: function(d) { return d.getHours(); },
+	minute: function(d) { return d.getMinutes(); },
+	second: function(d) { return d.getSeconds(); },
+	millisecond: function(d) { return d.getMilliseconds(); },
+	toTime: function(d) { return d.getTime(); },
+	fromTime: function(t) { return new Date(t); },
+	dayOfWeek: function(d) { return { ctor: dayTable[d.getDay()] }; }
+};
+
+}();//import Native.Utils //
 
 var _elm_lang$core$Native_Scheduler = function() {
 
@@ -5467,6 +5499,38 @@ var _elm_lang$core$Time$subMap = F2(
 			});
 	});
 _elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
+var _elm_lang$core$Date$millisecond = _elm_lang$core$Native_Date.millisecond;
+var _elm_lang$core$Date$second = _elm_lang$core$Native_Date.second;
+var _elm_lang$core$Date$minute = _elm_lang$core$Native_Date.minute;
+var _elm_lang$core$Date$hour = _elm_lang$core$Native_Date.hour;
+var _elm_lang$core$Date$dayOfWeek = _elm_lang$core$Native_Date.dayOfWeek;
+var _elm_lang$core$Date$day = _elm_lang$core$Native_Date.day;
+var _elm_lang$core$Date$month = _elm_lang$core$Native_Date.month;
+var _elm_lang$core$Date$year = _elm_lang$core$Native_Date.year;
+var _elm_lang$core$Date$fromTime = _elm_lang$core$Native_Date.fromTime;
+var _elm_lang$core$Date$toTime = _elm_lang$core$Native_Date.toTime;
+var _elm_lang$core$Date$fromString = _elm_lang$core$Native_Date.fromString;
+var _elm_lang$core$Date$now = A2(_elm_lang$core$Task$map, _elm_lang$core$Date$fromTime, _elm_lang$core$Time$now);
+var _elm_lang$core$Date$Date = {ctor: 'Date'};
+var _elm_lang$core$Date$Sun = {ctor: 'Sun'};
+var _elm_lang$core$Date$Sat = {ctor: 'Sat'};
+var _elm_lang$core$Date$Fri = {ctor: 'Fri'};
+var _elm_lang$core$Date$Thu = {ctor: 'Thu'};
+var _elm_lang$core$Date$Wed = {ctor: 'Wed'};
+var _elm_lang$core$Date$Tue = {ctor: 'Tue'};
+var _elm_lang$core$Date$Mon = {ctor: 'Mon'};
+var _elm_lang$core$Date$Dec = {ctor: 'Dec'};
+var _elm_lang$core$Date$Nov = {ctor: 'Nov'};
+var _elm_lang$core$Date$Oct = {ctor: 'Oct'};
+var _elm_lang$core$Date$Sep = {ctor: 'Sep'};
+var _elm_lang$core$Date$Aug = {ctor: 'Aug'};
+var _elm_lang$core$Date$Jul = {ctor: 'Jul'};
+var _elm_lang$core$Date$Jun = {ctor: 'Jun'};
+var _elm_lang$core$Date$May = {ctor: 'May'};
+var _elm_lang$core$Date$Apr = {ctor: 'Apr'};
+var _elm_lang$core$Date$Mar = {ctor: 'Mar'};
+var _elm_lang$core$Date$Feb = {ctor: 'Feb'};
+var _elm_lang$core$Date$Jan = {ctor: 'Jan'};
 var _elm_lang$core$Debug$crash = _elm_lang$core$Native_Debug.crash;
 var _elm_lang$core$Debug$log = _elm_lang$core$Native_Debug.log;
 //import Maybe, Native.Array, Native.List, Native.Utils, Result //
@@ -9010,7 +9074,10 @@ var _user$project$Main$errorToString = function (error) {
 		case 'BadStatus':
 			return 'Bad status';
 		default:
-			return A2(_elm_lang$core$Basics_ops['++'], 'Bad payload: ', _p0._0);
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'Bad payload: ',
+				A2(_elm_lang$core$Basics_ops['++'], _p0._0, _p0._1.body));
 	}
 };
 var _user$project$Main$errorView = function (model) {
@@ -9189,14 +9256,14 @@ var _user$project$Main$formEncoder = function (model) {
 						_0: {
 							ctor: '_Tuple2',
 							_0: 'start',
-							_1: _elm_lang$core$Json_Encode$string('wat')
+							_1: _elm_lang$core$Json_Encode$string(model.start)
 						},
 						_1: {
 							ctor: '::',
 							_0: {
 								ctor: '_Tuple2',
 								_0: 'end',
-								_1: _elm_lang$core$Json_Encode$string('wat')
+								_1: _elm_lang$core$Json_Encode$string(model.end)
 							},
 							_1: {ctor: '[]'}
 						}
@@ -9289,19 +9356,32 @@ var _user$project$Main$eventListDecoder = function (rawString) {
 		return {ctor: '[]'};
 	}
 };
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {summary: a, user: b, location: c, error: d, events: e};
-	});
-var _user$project$Main$startUpValue = A5(
-	_user$project$Main$Model,
-	'Summary',
-	'radekantichrist@gmail.com',
-	'Location',
-	'',
+var _user$project$Main$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return {summary: a, user: b, location: c, start: d, end: e, startDate: f, endDate: g, startTime: h, endTime: i, error: j, events: k};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _user$project$Main$startUpValue = _user$project$Main$Model('')('')('')('')('')('')('')('')('')('')(
 	{ctor: '[]'});
 var _user$project$Main$model = _user$project$Main$startUpValue;
-var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$startUpValue, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$Main$Error = function (a) {
 	return {ctor: 'Error', _0: a};
 };
@@ -9312,6 +9392,7 @@ var _user$project$Main$eventListGet = A2(
 	_elm_lang$http$Http$send,
 	_user$project$Main$EventListResponse,
 	A2(_elm_lang$http$Http$get, _user$project$Main$apiEventList, _user$project$Main$eventListResponseDecoder));
+var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$startUpValue, _1: _user$project$Main$eventListGet};
 var _user$project$Main$EventCreateResponse = function (a) {
 	return {ctor: 'EventCreateResponse', _0: a};
 };
@@ -9320,6 +9401,79 @@ var _user$project$Main$eventCreatePost = function (model) {
 		_elm_lang$http$Http$send,
 		_user$project$Main$EventCreateResponse,
 		_user$project$Main$eventCreateRequestBuilder(model));
+};
+var _user$project$Main$validateForm = function (model) {
+	if (_elm_lang$core$Native_Utils.eq(model.user, '')) {
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{error: 'No user specified'}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	} else {
+		if (_elm_lang$core$Native_Utils.eq(model.startDate, '')) {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{error: 'No start date'}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			if (_elm_lang$core$Native_Utils.eq(model.endDate, '')) {
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{error: 'No end date'}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			} else {
+				if (_elm_lang$core$Native_Utils.eq(model.startTime, '')) {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{error: 'No start time'}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					if (_elm_lang$core$Native_Utils.eq(model.endTime, '')) {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{error: 'No end time'}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					} else {
+						var end = A2(
+							_elm_lang$core$Basics_ops['++'],
+							model.endDate,
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'T',
+								A2(_elm_lang$core$Basics_ops['++'], model.endTime, ':00Z01:00')));
+						var start = A2(
+							_elm_lang$core$Basics_ops['++'],
+							model.startDate,
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'T',
+								A2(_elm_lang$core$Basics_ops['++'], model.startTime, ':00Z01:00')));
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{start: start, end: end}),
+							_1: _user$project$Main$eventCreatePost(model)
+						};
+					}
+				}
+			}
+		}
+	}
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
@@ -9349,12 +9503,40 @@ var _user$project$Main$update = F2(
 						{location: _p3._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'SubmitForm':
+			case 'EndDate':
 				return {
 					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Main$eventCreatePost(model)
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{endDate: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'StartDate':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{startDate: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EndTime':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{endTime: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'StartTime':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{startTime: _p3._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SubmitForm':
+				return _user$project$Main$validateForm(model);
 			case 'EventCreateResponse':
 				var _p4 = _p3._0;
 				if (_p4.ctor === 'Ok') {
@@ -9409,6 +9591,18 @@ var _user$project$Main$update = F2(
 		}
 	});
 var _user$project$Main$SubmitForm = {ctor: 'SubmitForm'};
+var _user$project$Main$EndTime = function (a) {
+	return {ctor: 'EndTime', _0: a};
+};
+var _user$project$Main$StartTime = function (a) {
+	return {ctor: 'StartTime', _0: a};
+};
+var _user$project$Main$EndDate = function (a) {
+	return {ctor: 'EndDate', _0: a};
+};
+var _user$project$Main$StartDate = function (a) {
+	return {ctor: 'StartDate', _0: a};
+};
 var _user$project$Main$Location = function (a) {
 	return {ctor: 'Location', _0: a};
 };
@@ -9418,10 +9612,14 @@ var _user$project$Main$User = function (a) {
 var _user$project$Main$Summary = function (a) {
 	return {ctor: 'Summary', _0: a};
 };
-var _user$project$Main$view = function (model) {
+var _user$project$Main$inputView = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('form'),
+			_1: {ctor: '[]'}
+		},
 		{
 			ctor: '::',
 			_0: A2(
@@ -9479,26 +9677,41 @@ var _user$project$Main$view = function (model) {
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$button,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$SubmitForm),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Send'),
-								_1: {ctor: '[]'}
-							}),
+							_elm_lang$html$Html$br,
+							{ctor: '[]'},
+							{ctor: '[]'}),
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$br,
-								{ctor: '[]'},
+								_elm_lang$html$Html$input,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$type_('date'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$StartDate),
+										_1: {ctor: '[]'}
+									}
+								},
 								{ctor: '[]'}),
 							_1: {
 								ctor: '::',
-								_0: _user$project$Main$errorView(model),
+								_0: A2(
+									_elm_lang$html$Html$input,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$type_('time'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$StartTime),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$placeholder('09:00'),
+												_1: {ctor: '[]'}
+											}
+										}
+									},
+									{ctor: '[]'}),
 								_1: {
 									ctor: '::',
 									_0: A2(
@@ -9507,11 +9720,99 @@ var _user$project$Main$view = function (model) {
 										{ctor: '[]'}),
 									_1: {
 										ctor: '::',
-										_0: _user$project$Main$eventsView(model),
-										_1: {ctor: '[]'}
+										_0: A2(
+											_elm_lang$html$Html$input,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$type_('date'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$EndDate),
+													_1: {ctor: '[]'}
+												}
+											},
+											{ctor: '[]'}),
+										_1: {
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$input,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$type_('time'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$EndTime),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$placeholder('10:00'),
+															_1: {ctor: '[]'}
+														}
+													}
+												},
+												{ctor: '[]'}),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$br,
+													{ctor: '[]'},
+													{ctor: '[]'}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$button,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$SubmitForm),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html$text('Send'),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
 									}
 								}
 							}
+						}
+					}
+				}
+			}
+		});
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('main'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$Main$inputView(model),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$br,
+					{ctor: '[]'},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$errorView(model),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$br,
+							{ctor: '[]'},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Main$eventsView(model),
+							_1: {ctor: '[]'}
 						}
 					}
 				}

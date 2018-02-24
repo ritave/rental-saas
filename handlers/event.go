@@ -26,10 +26,12 @@ type EventCreateRequest struct {
 
 // TODO split this into different files for each handler
 
-var flag = appengine.IsDevAppServer()
+// TODO -> env var
+var allowAccessFromLocalhost = true
+var dev = appengine.IsDevAppServer()
 
 func EventCreate(w http.ResponseWriter, r *http.Request) {
-	if flag {
+	if allowAccessFromLocalhost {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	}
@@ -45,15 +47,15 @@ func EventCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if appengine.IsDevAppServer() {
-		w.Write([]byte("\"Congratz\"")) // JSONified
-		return
-	}
-
 	err = logic.EvenMoreChecksForTheEvent(objects.Event(eventRequest))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("\"" + err.Error() + "\""))
+		return
+	}
+
+	if dev {
+		w.Write([]byte("\"Congratz\"")) // JSONified
 		return
 	}
 
@@ -102,7 +104,7 @@ func ExtractEventFromBody(r *http.Request) (EventCreateRequest, error) {
 }
 
 func EventList(w http.ResponseWriter, r *http.Request) {
-	if flag {
+	if allowAccessFromLocalhost {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	}
@@ -130,7 +132,7 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if flag {
+	if allowAccessFromLocalhost {
 		log.Println("We will be sending this back:")
 		log.Println(string(bytez))
 	}
