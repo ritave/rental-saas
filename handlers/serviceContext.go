@@ -12,7 +12,7 @@ import (
 
 const secretsLocation = "secrets"
 
-func GetService(r *http.Request) *calendar.Service {
+func GetCalendar(r *http.Request) *calendar.Service {
 	if !appengine.IsDevAppServer() {
 		client, err := google.DefaultClient(appengine.NewContext(r), calendar.CalendarScope)
 		if err != nil {

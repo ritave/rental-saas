@@ -8,9 +8,10 @@ import (
 	"calendar-synch/objects"
 	"io/ioutil"
 	"log"
+	"bytes"
 )
 
-type EventRequest struct {
+type EventCreateRequest struct {
 	Summary      string `json:"summary"`
 	User         string `json:"user"`
 	Start        string `json:"start"`
@@ -56,13 +57,13 @@ func EventCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	srv := GetService(r)
+	cal := GetCalendar(r)
 	ctx := appengine.NewContext(r)
 
 	// TODO move this logic level down
 
 	// TODO rollbacks
-	event, err := logic.AddEventToCalendar(srv, objects.Event(eventRequest))
+	event, err := logic.AddEventToCalendar(cal, objects.Event(eventRequest))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -76,8 +77,8 @@ func EventCreate(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("\"Created event\""))
 }
 
-func ExtractEventFromBody(r *http.Request) (EventRequest, error) {
-	var target EventRequest
+func ExtractEventFromBody(r *http.Request) (EventCreateRequest, error) {
+	var target EventCreateRequest
 	defer r.Body.Close()
 
 	if appengine.IsDevAppServer() {
@@ -88,14 +89,14 @@ func ExtractEventFromBody(r *http.Request) (EventRequest, error) {
 
 		err := json.Unmarshal(bytez, &target)
 		if err != nil {
-			return EventRequest{}, err
+			return EventCreateRequest{}, err
 		}
 		return target, nil
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&target)
 	if err != nil {
-		return EventRequest{}, err
+		return EventCreateRequest{}, err
 	}
 	return target, nil
 }
@@ -106,7 +107,7 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	}
 
-	srv := GetService(r)
+	srv := GetCalendar(r)
 
 	events, err := srv.Events.List("primary").ShowDeleted(true).
 		MaxResults(100).OrderBy("updated").Do()
@@ -141,6 +142,50 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 {"summary":"a", "user":"a", "start":"a", "end":"a", "location":"a", "creationDate":"a"}
  */
 
+type EventChangedResponse []EventModification
+type EventModification struct {
+	Modification []string `json:"modifications"`
+	objects.Event
+}
+
 func EventChanged(w http.ResponseWriter, r *http.Request) {
 	log.Println("Captain, we are being hailed.")
+
+	srv := GetCalendar(r)
+	ctx := appengine.NewContext(r)
+
+	diff, err := logic.FindChanged(ctx, srv)
+	if err != nil {
+		return
+	}
+
+	response := make([]EventModification, len(diff))
+
+	for ind, eventChanged := range diff {
+		response[ind] = EventModification{
+			Modification: eventChanged.ToListOfWords(),
+			Event: *eventChanged.Event,
+		}
+	}
+
+	bytez, err := json.Marshal(&response)
+	if err != nil {
+		log.Println("Error parsing response in EventChanged:", err.Error())
+		return
+	}
+
+
+	whereTo := "https://calendar-cron.appspot.com/dummy/send"
+	if appengine.IsDevAppServer() {
+		whereTo = "http://localhost:8081" // TODO will it be really that?
+	}
+
+	resp, err := http.DefaultClient.Post(whereTo, "application/json", bytes.NewReader(bytez))
+	if err != nil {
+		log.Printf("Error sending changes to %s: %s", whereTo, err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	} else {
+		log.Println("Unlikely success sending that son of a bitch")
+		log.Println(*resp)
+	}
 }

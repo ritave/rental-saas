@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Receiver Demo</title>
+  </head>
+  <body>
+    <ul>
+    {{range . }}
+        <li>
+          <p>
+            <b>{{.User}}</b><br>
+            <em>{{.Start}}</em> to <em>{{.End}}</em>
+          <blockquote>{{.Summary}}</blockquote>
+          <blockquote>{{.Location}}</blockquote>
+          Received: <b>{{.Received}}</b>
+          </p>
+        </li>
+    {{end}}
+    </ul>
+  </body>
+</html>

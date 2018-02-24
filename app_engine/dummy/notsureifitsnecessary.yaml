@@ -1,0 +1,13 @@
+indexes:
+- kind: EventModification
+  properties:
+  - name: Summary
+  - name: User
+  - name: Start
+    direction: asc
+  - name: End
+    direction: asc
+  - name: Location
+  - name: CreationDate
+  - name: Received
+# missing list of thingies

@@ -27,6 +27,27 @@ func (em *EventModified) Flag(mod EventModification) (*EventModified) {
 	return em
 }
 
+func (em *EventModified) ToListOfWords() ([]string) {
+	words := make([]string, 0)
+	for k := range em.Modifications {
+		var word string
+
+		switch k {
+		case Deleted:
+			word = "deleted"
+		case Added:
+			word = "added"
+		case ModifiedTime:
+			word = "modified time"
+		case ModifiedLocation:
+			word = "modified location"
+		}
+
+		words = append(words, word)
+	}
+	return words
+}
+
 // unnecessary, but leaving this just in case
 
 //type SortableModifiedEvents []*EventModified

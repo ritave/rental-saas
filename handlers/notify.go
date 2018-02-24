@@ -10,7 +10,7 @@ import (
 )
 
 func Notify(w http.ResponseWriter, r *http.Request) {
-	srv := GetService(r)
+	srv := GetCalendar(r)
 	ctx := appengine.NewContext(r)
 
 	// try to discover what Google is acutally passing to us
