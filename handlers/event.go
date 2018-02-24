@@ -28,11 +28,19 @@ type EventCreateRequest struct {
 
 // TODO -> env var
 var allowAccessFromLocalhost = true
+const (
+	CORSlocalhost = "http://localhost:8000"
+	CORSapp = "https://calendar-cron.appspot.com"
+)
 var dev = appengine.IsDevAppServer()
 
 func EventCreate(w http.ResponseWriter, r *http.Request) {
 	if allowAccessFromLocalhost {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
+		if appengine.IsDevAppServer() {
+			w.Header().Set("Access-Control-Allow-Origin", CORSlocalhost)
+		} else {
+			w.Header().Set("Access-Control-Allow-Origin", CORSapp)
+		}
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	}
 
@@ -105,7 +113,11 @@ func ExtractEventFromBody(r *http.Request) (EventCreateRequest, error) {
 
 func EventList(w http.ResponseWriter, r *http.Request) {
 	if allowAccessFromLocalhost {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
+		if appengine.IsDevAppServer() {
+			w.Header().Set("Access-Control-Allow-Origin", CORSlocalhost)
+		} else {
+			w.Header().Set("Access-Control-Allow-Origin", CORSapp)
+		}
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	}
 
@@ -132,7 +144,7 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if allowAccessFromLocalhost {
+	if appengine.IsDevAppServer() {
 		log.Println("We will be sending this back:")
 		log.Println(string(bytez))
 	}
