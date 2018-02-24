@@ -26,7 +26,7 @@ type EventCreateRequest struct {
 
 // TODO split this into different files for each handler
 
-var flag = true
+var flag = appengine.IsDevAppServer()
 
 func EventCreate(w http.ResponseWriter, r *http.Request) {
 	if flag {
