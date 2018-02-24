@@ -58,12 +58,14 @@ func EvenMoreChecksForTheEvent(ev objects.Event) (error) {
 
 	startT, err := stringToTime(ev.Start)
 	if err != nil {
-		return errors.New("invalid error format")
+		log.Printf("Start date: %s", err.Error())
+		return errors.New("invalid datetime format (accepted is RFC3339: 2006-01-02T15:04:05Z or 2006-01-02T15:04:05+07:00); supplied was: "+ev.Start)
 	}
 
 	endT, err := stringToTime(ev.End)
 	if err != nil {
-		return errors.New("invalid error format")
+		log.Printf("End date: %s", err.Error())
+		return errors.New("invalid datetime format (accepted is RFC3339: 2006-01-02T15:04:05Z or 2006-01-02T15:04:05+07:00); supplied was: "+ev.End)
 	}
 
 	if startT.Before(time.Now()) {

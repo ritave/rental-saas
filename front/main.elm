@@ -116,6 +116,9 @@ formEncoder model =
         , ("end", Encode.string model.end)
         ]
 
+--timeZone = "+01:00"
+timeZone = "Z"
+
 validateForm : Model -> (Model, Cmd Msg)
 validateForm model =
     if model.user == "" then ({model | error = "No user specified"}, Cmd.none) else 
@@ -125,10 +128,11 @@ validateForm model =
     if model.endTime == "" then ({model | error = "No end time"}, Cmd.none) else
     let
 --        "2006-01-02T15:04:05Z07:00"
-        start = model.startDate ++ "T" ++ model.startTime ++ ":00Z01:00"
-        end = model.endDate ++ "T" ++ model.endTime ++ ":00Z01:00"
+        start = model.startDate ++ "T" ++ model.startTime ++ ":00" ++ timeZone
+        end = model.endDate ++ "T" ++ model.endTime ++ ":00" ++ timeZone
+        updatedModel = {model | start = start, end = end}
     in
-     ({model | start = start, end = end}, eventCreatePost model)
+     ({model | start = start, end = end}, eventCreatePost updatedModel)
 
 
 -- INIT

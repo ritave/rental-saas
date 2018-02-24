@@ -9228,6 +9228,7 @@ var _user$project$Main$eventsView = function (model) {
 			},
 			model.events));
 };
+var _user$project$Main$timeZone = 'Z';
 var _user$project$Main$formEncoder = function (model) {
 	return _elm_lang$core$Json_Encode$object(
 		{
@@ -9454,20 +9455,29 @@ var _user$project$Main$validateForm = function (model) {
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								'T',
-								A2(_elm_lang$core$Basics_ops['++'], model.endTime, ':00Z01:00')));
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									model.endTime,
+									A2(_elm_lang$core$Basics_ops['++'], ':00', _user$project$Main$timeZone))));
 						var start = A2(
 							_elm_lang$core$Basics_ops['++'],
 							model.startDate,
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								'T',
-								A2(_elm_lang$core$Basics_ops['++'], model.startTime, ':00Z01:00')));
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									model.startTime,
+									A2(_elm_lang$core$Basics_ops['++'], ':00', _user$project$Main$timeZone))));
+						var updatedModel = _elm_lang$core$Native_Utils.update(
+							model,
+							{start: start, end: end});
 						return {
 							ctor: '_Tuple2',
 							_0: _elm_lang$core$Native_Utils.update(
 								model,
 								{start: start, end: end}),
-							_1: _user$project$Main$eventCreatePost(model)
+							_1: _user$project$Main$eventCreatePost(updatedModel)
 						};
 					}
 				}
