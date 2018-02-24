@@ -7,6 +7,7 @@ import Json.Encode as Encode
 import Json.Decode as Decode
 
 import Dict exposing (..)
+import Date exposing (..)
 
 import Debug
 
@@ -90,8 +91,14 @@ type alias Model =
     { summary : String
     , user : String
     , location : String
---    , start : Date
---    , end : Date
+    , start : String
+    , end : String
+
+    , startDate : String
+    , endDate : String
+    , startTime : String
+    , endTime : String
+
     , error : String
     , events : List Event
     }
@@ -105,18 +112,34 @@ formEncoder model =
         [ ("summary", Encode.string model.summary)
         , ("user", Encode.string model.user)
         , ("location", Encode.string model.location)
-        , ("start", Encode.string "wat")
-        , ("end", Encode.string "wat")
+        , ("start", Encode.string model.start)
+        , ("end", Encode.string model.end)
         ]
+
+validateForm : Model -> (Model, Cmd Msg)
+validateForm model =
+    if model.user == "" then ({model | error = "No user specified"}, Cmd.none) else 
+    if model.startDate == "" then ({model | error = "No start date"}, Cmd.none) else
+    if model.endDate == "" then ({model | error = "No end date"}, Cmd.none) else
+    if model.startTime == "" then ({model | error = "No start time"}, Cmd.none) else
+    if model.endTime == "" then ({model | error = "No end time"}, Cmd.none) else
+    let
+--        "2006-01-02T15:04:05Z07:00"
+        start = model.startDate ++ "T" ++ model.startTime ++ ":00Z01:00"
+        end = model.endDate ++ "T" ++ model.endTime ++ ":00Z01:00"
+    in
+     ({model | start = start, end = end}, eventCreatePost model)
+
 
 -- INIT
 
 startUpValue : Model
-startUpValue = Model "Summary" "radekantichrist@gmail.com" "Location" "" []
+--startUpValue = Model "Summary" "radekantichrist@gmail.com" "Location" ("") ("") "2018-02-25" "2018-02-25" "09:00" "10:00" "" []
+startUpValue = Model "" "" "" ("") ("") "" "" "" "" "" []
 
 init : (Model, Cmd Msg)
 init =
-    (startUpValue, Cmd.none)
+    (startUpValue, eventListGet)
 
 -- UPDATE
 
@@ -124,8 +147,10 @@ type Msg =
     Summary String
     | User String
     | Location String
---    | StartDate Date
---    | EndDate Date
+    | StartDate String
+    | EndDate String
+    | StartTime String
+    | EndTime String
     | SubmitForm
     | EventCreateResponse (Result Http.Error String)
     | EventListResponse (Result Http.Error (List Event))
@@ -140,12 +165,16 @@ update msg model =
             ({model | user = user}, Cmd.none)
         Location location ->
             ({model | location = location}, Cmd.none)
-    --    EndDate endDate ->
-    --        {model | end = endDate}
-    --    StartDate startDate ->
-    --        {model | start = startDate}
+        EndDate endDate ->
+            ({model | endDate = endDate}, Cmd.none)
+        StartDate startDate ->
+            ({model | startDate = startDate}, Cmd.none)
+        EndTime endTime ->
+            ({model | endTime = endTime}, Cmd.none)
+        StartTime startTime ->
+            ({model | startTime = startTime}, Cmd.none)
         SubmitForm ->
-            (model, eventCreatePost model)
+            validateForm model
         EventCreateResponse response ->
             case response of
                 Ok trueResponse ->
@@ -178,17 +207,28 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ input [ type_ "text", placeholder "Email", onInput User ] []
-    , input [ type_ "text", placeholder "Summary", onInput Summary ] []
-    , input [ type_ "text", placeholder "Location", onInput Location ] []
---    , input [ type_ "date", onClick StartDate ] []
---    , input [ type_ "date", onClick EndDate ] []
-    , button [ onClick SubmitForm ] [ text "Send" ]
+  div [ class "main" ]
+    [ inputView model
     , br [] []
     , errorView model
     , br [] []
     , eventsView model
+    ]
+
+inputView : Model -> Html Msg
+inputView model =
+    div [ class "form" ]
+    [ input [ type_ "text", placeholder "Email", onInput User ] []
+    , input [ type_ "text", placeholder "Summary", onInput Summary ] []
+    , input [ type_ "text", placeholder "Location", onInput Location ] []
+    , br [] []
+    , input [ type_ "date", onInput StartDate ] []
+    , input [ type_ "time", onInput StartTime, placeholder "09:00" ] []
+    , br [] []
+    , input [ type_ "date", onInput EndDate ] []
+    , input [ type_ "time", onInput EndTime, placeholder "10:00" ] []
+    , br [] []
+    , button [ onClick SubmitForm ] [ text "Send" ]
     ]
 
 eventsView : Model -> Html msg
