@@ -43,7 +43,7 @@ func GetCalendar(r *http.Request) *calendar.Service {
 	}
 }
 
-func GetServiceWithoutRequest(ctx context.Context) *calendar.Service {
+func GetCalendarWithoutRequest(ctx context.Context) *calendar.Service {
 	b, err := ioutil.ReadFile(secretsLocation + "/service_client_default.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)

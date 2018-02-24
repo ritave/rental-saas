@@ -1,6 +1,4 @@
 dispatch:
-  - url: "*/*"
-    service: default
   - url: "*/notify/*"
     service: notify
   - url: "*/dummy*"

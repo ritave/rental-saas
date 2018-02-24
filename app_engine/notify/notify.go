@@ -14,6 +14,7 @@ import (
 )
 
 const NotifyGet = "/notify/get"
+const NotifyPing = "/notify/ping"
 
 const (
 	EnvAppPing = "CALENDAR_APP_PING"
@@ -26,6 +27,7 @@ const (
 
 func main() {
 	http.HandleFunc(NotifyGet, HandlerGet)
+	http.HandleFunc(NotifyPing, HandlerPing)
 	log.Print("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -39,11 +41,20 @@ func HandlerGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func HandlerPing(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Pong"))
+}
+
 func init() {
 	testPing()
 
 	background := context.Background()
-	cal := handlers.GetServiceWithoutRequest(background)
+	cal := handlers.GetCalendarWithoutRequest(background)
+
+	if cal == nil {
+		log.Fatalf("Calendar As A Service was a nil")
+	}
+
 	registerReceiver(cal)
 }
 
