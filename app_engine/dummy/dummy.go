@@ -70,11 +70,16 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := appengine.NewContext(r)
 
+	log.Infof(ctx, "Finally somthing happening")
+
 	eventsChanged, err := extractEventsFromBody(r)
 	if err != nil {
+		log.Infof(ctx, "JSON parsing failed")
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
+
+	log.Infof(ctx, "Will try to store data: %v", eventsChanged)
 
 	for _, eventChanged := range eventsChanged {
 		toStore := WhatWeReallyWantToStoreIs{

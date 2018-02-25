@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 	"calendar-synch/helpers"
+	"encoding/json"
 )
 
 const NotifyGet = "/notify/get"
@@ -24,6 +25,7 @@ const (
 	NotifyExpireAfter = "NOTIFY_EXPIRE_AFTER"
 )
 
+var lastReceipt logic.ImportantChannelFields
 
 func main() {
 	http.HandleFunc(NotifyGet, HandlerGet)
@@ -35,14 +37,31 @@ func main() {
 func HandlerGet(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Thanks Google, I got this from here."))
 
+	log.Printf("This is like the most important handler in the world right now")
+
 	err := notifyMainApp()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+
+	log.Printf("Successful notifying")
 }
 
+var emptyICF = logic.ImportantChannelFields{}
 func HandlerPing(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Pong"))
+	if lastReceipt == emptyICF {
+		w.Write([]byte("{\"Error\":\"there is no receiver registered\"}"))
+	} else {
+		bytez, _ := json.Marshal(&struct{
+			Error string
+			logic.ImportantChannelFields
+		}{
+			Error: "congratz",
+			ImportantChannelFields: lastReceipt,
+		})
+		w.Write(bytez)
+	}
 }
 
 func init() {
@@ -81,7 +100,7 @@ func registerReceiver(cal *calendar.Service) {
 		log.Fatalf("ATOI: %s", err.Error())
 	}
 
-	err = logic.WatchForChanges(cal, selfAddr + NotifyGet, time.Duration(expireAfter)*time.Second)
+	err, channelReceipt := logic.WatchForChanges(cal, selfAddr + NotifyGet, time.Duration(expireAfter)*time.Second)
 	if err != nil {
 		log.Printf("Error sending watch request: %s", err.Error())
 
@@ -94,6 +113,10 @@ func registerReceiver(cal *calendar.Service) {
 		}()
 		return
 	}
+
+	// global thingy for pingy
+	lastReceipt = channelReceipt
+	// wat
 
 	// if everything went smoothly, carry on with usual refresh-after-an-hour-or-so
 	go func() {

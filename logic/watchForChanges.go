@@ -12,17 +12,22 @@ type ImportantChannelFields struct {
 	Uuid string
 }
 
-func WatchForChanges(cal *calendar.Service, receiver string, expireAfter time.Duration) (error) {
-	watchChannel, err := newChannel(cal, receiver, expireAfter)
+func WatchForChanges(cal *calendar.Service, receiver string, expireAfter time.Duration) (error, ImportantChannelFields) {
+	receipt := ImportantChannelFields{}
 
-	receipt := ImportantChannelFields{
-		ResourceId: watchChannel.ResourceId,
-		Uuid: watchChannel.Id,
+	watchChannel, err := newChannel(cal, receiver, expireAfter)
+	if err != nil {
+		log.Printf("New channel: %s", err.Error())
+	} else {
+		receipt = ImportantChannelFields{
+			ResourceId: watchChannel.ResourceId,
+			Uuid: watchChannel.Id,
+		}
+
+		log.Printf("ResourceId: %s | Id: %s | Receiver: %s", receipt.ResourceId, receipt.Uuid, receiver)
 	}
 
-	log.Printf("ResourceId: %s | Id: %s ", receipt.ResourceId, receipt.Uuid)
-
-	return err
+	return err, receipt
 }
 
 func stopChannel(cal *calendar.Service, resourceID, uuid string) (error) {
@@ -42,6 +47,7 @@ func newChannel(cal *calendar.Service, receiver string, expireAfter time.Duratio
 		Address: receiver,
 		Type: "web_hook",
 		Expiration: time.Now().Add(expireAfter).UnixNano(),
+
 	}
 	return cal.Events.Watch("primary", &channel).Do()
 }
