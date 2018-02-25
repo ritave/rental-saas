@@ -25,7 +25,7 @@ main =
 
 apiBase : String
 apiBase =
-    "https://calendar-cron.appspot.com/"
+    "https://calendarcron.appspot.com/"
 --    "http://localhost:8080/" -- TODO env variables/config -- generally webpack should be my friend
 
 apiEventCreate : String

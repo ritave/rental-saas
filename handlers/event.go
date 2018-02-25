@@ -30,7 +30,7 @@ type EventCreateRequest struct {
 var allowAccessFromLocalhost = true
 const (
 	CORSlocalhost = "http://localhost:8000"
-	CORSapp = "https://calendar-cron.appspot.com"
+	CORSapp = "https://calendarcron.appspot.com"
 )
 var dev = appengine.IsDevAppServer()
 
@@ -189,7 +189,7 @@ func EventChanged(w http.ResponseWriter, r *http.Request) {
 	}
 
 
-	whereTo := "https://calendar-cron.appspot.com/dummy/send"
+	whereTo := "https://calendarcron.appspot.com/dummy/send"
 	if appengine.IsDevAppServer() {
 		whereTo = "http://localhost:8081" // TODO will it be really that?
 	}

@@ -59,7 +59,7 @@ func init() {
 }
 
 func testPing() {
-	pingAddr := getStringFromEnv(EnvAppPing, "https://calendar-cron.appspot.com/event/ping")
+	pingAddr := getStringFromEnv(EnvAppPing, "https://calendarcron.appspot.com/event/ping")
 
 	resp, err := http.DefaultClient.Get(pingAddr)
 	if err != nil {
@@ -71,7 +71,7 @@ func testPing() {
 
 func registerReceiver(cal *calendar.Service) {
 	log.Println("Registering receiver")
-	selfAddr := getStringFromEnv(EnvApp, "https://calendar-cron.appspot.com/")
+	selfAddr := getStringFromEnv(EnvApp, "https://calendarcron.appspot.com/")
 
 	// TODO refresh after every some constant time interval?
 	// TODO also there are some refreshing tokens flying around soo... yeeeah...
@@ -106,7 +106,7 @@ func registerReceiver(cal *calendar.Service) {
 }
 
 func notifyMainApp() (error) {
-	notifyAddr := getStringFromEnv(EnvAppChanged, "https://calendar-cron.appspot.com/event/changed")
+	notifyAddr := getStringFromEnv(EnvAppChanged, "https://calendarcron.appspot.com/event/changed")
 
 	resp, err := http.DefaultClient.Get(notifyAddr)
 	if err != nil {
