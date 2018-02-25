@@ -12,5 +12,5 @@ resources:
 env_variables:
   CALENDAR_APP: "https://calendarcron.appspot.com/"
   CALENDAR_APP_PING: "https://calendarcron.appspot.com/event/ping"
-  CALENDAR_APP_CHANGED: "https://calendarcron.appspot.com/event/ping"
+  CALENDAR_APP_CHANGED: "https://calendarcron.appspot.com/event/changed"
   NOTIFY_EXPIRE_AFTER: "3600"

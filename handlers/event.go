@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"bytes"
+	gaeLog "google.golang.org/appengine/log"
 )
 
 type EventCreateRequest struct {
@@ -170,6 +171,8 @@ func EventChanged(w http.ResponseWriter, r *http.Request) {
 
 	diff, err := logic.FindChanged(ctx, srv)
 	if err != nil {
+		gaeLog.Debugf(ctx, "Finding changes: %s", err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -185,6 +188,7 @@ func EventChanged(w http.ResponseWriter, r *http.Request) {
 	bytez, err := json.Marshal(&response)
 	if err != nil {
 		log.Println("Error parsing response in EventChanged:", err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -197,6 +201,7 @@ func EventChanged(w http.ResponseWriter, r *http.Request) {
 	resp, err := http.DefaultClient.Post(whereTo, "application/json", bytes.NewReader(bytez))
 	if err != nil {
 		log.Printf("Error sending changes to %s: %s", whereTo, err.Error())
+		gaeLog.Debugf(ctx, "Error sending changes to %s: %s", whereTo, err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	} else {
 		log.Println("Unlikely success sending that son of a bitch")

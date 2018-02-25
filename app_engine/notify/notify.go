@@ -41,11 +41,11 @@ func HandlerGet(w http.ResponseWriter, r *http.Request) {
 
 	err := notifyMainApp()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Notifying: %s", err.Error())
 		return
+	} else {
+		log.Printf("Successful notifying")
 	}
-
-	log.Printf("Successful notifying")
 }
 
 var emptyICF = logic.ImportantChannelFields{}
