@@ -37,12 +37,9 @@ func main() {
 func HandlerGet(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Thanks Google, I got this from here."))
 
-	log.Printf("This is like the most important handler in the world right now")
-
 	err := notifyMainApp()
 	if err != nil {
-		log.Printf("Notifying: %s", err.Error())
-		return
+		log.Printf("Notifying error: %s", err.Error())
 	} else {
 		log.Printf("Successful notifying")
 	}
@@ -131,13 +128,7 @@ func registerReceiver(cal *calendar.Service) {
 func notifyMainApp() (error) {
 	notifyAddr := getStringFromEnv(EnvAppChanged, "https://calendarcron.appspot.com/event/changed")
 
-	resp, err := http.DefaultClient.Get(notifyAddr)
-	if err != nil {
-		log.Printf("Notifying: %s", err.Error())
-	} else {
-		log.Printf("Notifying: %d", resp.StatusCode)
-	}
-
+	_, err := http.DefaultClient.Get(notifyAddr)
 	return err
 }
 

@@ -10,6 +10,7 @@ import (
 	"log"
 	"bytes"
 	gaeLog "google.golang.org/appengine/log"
+	"google.golang.org/appengine/urlfetch"
 )
 
 type EventCreateRequest struct {
@@ -198,7 +199,10 @@ func EventChanged(w http.ResponseWriter, r *http.Request) {
 		whereTo = "http://localhost:8081" // TODO will it be really that?
 	}
 
-	resp, err := http.DefaultClient.Post(whereTo, "application/json", bytes.NewReader(bytez))
+	// X-Appengine-Inbound-Appid ?
+
+	client := urlfetch.Client(ctx)
+	resp, err := client.Post(whereTo, "application/json", bytes.NewReader(bytez))
 	if err != nil {
 		log.Printf("Error sending changes to %s: %s", whereTo, err.Error())
 		gaeLog.Debugf(ctx, "Error sending changes to %s: %s", whereTo, err.Error())
