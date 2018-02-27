@@ -18,6 +18,9 @@ func bindEndpoints() {
 	http.HandleFunc("/event/create", handlers.EventCreate)
 	http.HandleFunc("/event/list", handlers.EventList)
 	http.HandleFunc("/event/changed", handlers.EventChanged)
+
+	http.HandleFunc("/calendar/view", handlers.CalendarView)
+
 	log.Println("Bound endpoints...")
 }
 

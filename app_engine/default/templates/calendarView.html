@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Receiver Demo</title>
+    <title>Current events for App</title>
     <style>
       table {
         font-family: arial, sans-serif;
@@ -30,8 +30,7 @@
           <th>End</th>
           <th>Summary</th>
           <th>Location</th>
-          <th>Received</th>
-          <th>Flags</th>
+          <th>Created</th>
         </tr>
         {{range . }}
         <tr>
@@ -40,8 +39,7 @@
           <td>{{.End}}</td>
           <td>{{.Summary}}</td>
           <td>{{.Location}}</td>
-          <td>{{.Received}}</td>
-          <td>{{range .Flags}} {{ . }}; {{end}}</td>
+          <td>{{.CreationDate}}</td>
         </tr>
         {{end}}
                 
