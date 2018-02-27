@@ -12,14 +12,14 @@ import (
 	"google.golang.org/appengine/log"
 	"encoding/json"
 	stdLog "log"
-	"calendar-synch/src/handlers"
 	"calendar-synch/helpers"
+	"calendar-synch/src/handlers/event"
 )
 
 var lastKey *datastore.Key
 
 type WhatWeReallyWantToStoreIs struct {
-	handlers.EventModification
+	event.Modification
 	Received string
 }
 
@@ -84,7 +84,7 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 	for _, eventChanged := range eventsChanged {
 		toStore := WhatWeReallyWantToStoreIs{
 			Received: helpers.TimeToString(time.Now()),
-			EventModification: eventChanged,
+			Modification: eventChanged,
 		}
 
 		key := datastore.NewIncompleteKey(ctx, keyKind, nil)
@@ -98,8 +98,8 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func extractEventsFromBody(r *http.Request) (handlers.EventChangedResponse, error) {
-	var target = make(handlers.EventChangedResponse, 0)
+func extractEventsFromBody(r *http.Request) (event.ChangedResponse, error) {
+	var target = make(event.ChangedResponse, 0)
 	defer r.Body.Close()
 
 	err := json.NewDecoder(r.Body).Decode(&target)
