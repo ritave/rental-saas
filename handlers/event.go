@@ -160,7 +160,7 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 
 type EventChangedResponse []EventModification
 type EventModification struct {
-	Modification []string `json:"modifications"`
+	Flags []string `json:"flags"`
 	objects.Event
 }
 
@@ -181,7 +181,7 @@ func EventChanged(w http.ResponseWriter, r *http.Request) {
 
 	for ind, eventChanged := range diff {
 		response[ind] = EventModification{
-			Modification: eventChanged.ToListOfWords(),
+			Flags: eventChanged.ToListOfWords(),
 			Event: *eventChanged.Event,
 		}
 	}

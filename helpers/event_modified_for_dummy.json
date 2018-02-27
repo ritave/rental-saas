@@ -1,0 +1,36 @@
+[
+  {
+    "summary": "Robota",
+    "user": "radekantichrist@gmail.com",
+    "start": "2018-02-27T10:00:00Z",
+    "end": "2018-02-27T11:00:00Z",
+    "location": "Las pod Magdalenką",
+    "creationDate": "2018-02-25T22:53:38.000Z",
+    "flags": [
+      "deleted"
+    ]
+  },
+  {
+    "summary": "Cokolwiek",
+    "user": "radekantichrist@gmail.com",
+    "start": "2018-02-26T20:00:00Z",
+    "end": "2018-02-26T21:00:00Z",
+    "location": "--nie-sprawdzam-inputu",
+    "creationDate": "2018-02-26T18:41:58.000Z",
+    "flags": [
+      "added"
+    ]
+  },
+  {
+    "summary": "Cokolwiek 2",
+    "user": "radekantichrist@gmail.com",
+    "start": "2018-02-26T21:00:00Z",
+    "end": "2018-02-26T22:00:00Z",
+    "location": "; DROP TABLE users; --",
+    "creationDate": "2018-02-26T18:51:33.000Z",
+    "flags": [
+      "modified time",
+      "modified location"
+    ]
+  }
+]
