@@ -6,10 +6,12 @@ import (
 	"calendar-synch/objects"
 )
 
+const EventKeyKind = "Event"
+
 //QueryEvents returns all the events in datastorage.
 func QueryEvents(ctx context.Context) ([]*objects.Event, error) {
 	// Print out previous events.
-	q := datastore.NewQuery("Event")
+	q := datastore.NewQuery(EventKeyKind)
 
 	events := make([]*objects.Event, 0)
 	_, err := q.GetAll(ctx, &events)

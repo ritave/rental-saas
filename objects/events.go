@@ -11,6 +11,7 @@ type Event struct {
 	End          string `json:"end"`
 	Location     string `json:"location"`
 	CreationDate string `json:"creationDate"`
+	UUID         string `json:"-"`
 }
 
 //IsTheSame checks if two events have the same fields (used in checking if they've been changed).
@@ -53,6 +54,9 @@ func improbableButMaybeTheyHaveTheSameCreationDate(eventI, eventJ *Event) (bool)
 	// ----sj---ei-->
 
 	// ---si--ei---->  this one is smaller
+	// ---sj---ei--->
+
+	// ----si-ei---->  added few weeks later: TODO what about this one?
 	// ---sj---ei--->
 
 	if si.Equal(sj) {

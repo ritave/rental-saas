@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"sort"
 	"calendar-synch/objects"
+	"google.golang.org/appengine"
+	"log"
 )
 
 
@@ -21,6 +23,11 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]*objects.EventMo
 	}
 	savedSortable := objects.SortableEvents(saved)
 	actualSortable := objects.SortableEvents(EventsMap(actual.Items, ConvertEventToEventLol))
+
+	if appengine.IsDevAppServer() {
+		log.Printf("\nSaved: %v\n", savedSortable)
+		log.Printf("\nActual: %v\n", actualSortable)
+	}
 
 	return CompareSortable(savedSortable, actualSortable)
 }
@@ -50,23 +57,37 @@ func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents
 		 */
 
 		if s.Equal(a) {
-			// present in saved and actual => maybe actual has been modified?
+			// present in saved and actual => MAYBE actual has been modified?
 			if !s.IsTheSame(a) {
 				// they are not the same, find out what has changed
 
 				// create and append the object now, we will flag it later (maybe even multiple times)
 				d := objects.NewModified(a)
-				changes = append(changes, d)
+
+				// CARRY OVER THE UUID SO WE CAN REFERENCE IT LATER WHEN SYNCHRONISING
+				d.Event.UUID = s.UUID
+
+
+				modifications := 0
 
 				if s.Location != a.Location {
 					d.Flag(objects.ModifiedLocation)
+					modifications ++
 				}
 
 				if s.Start != a.Start || s.End != a.End {
 					d.Flag(objects.ModifiedTime)
+					modifications ++
 				}
 
+				// TODO
 				// to be added more later...
+
+				// so the keyword here is "MAYBE"
+				if modifications > 0 {
+					changes = append(changes, d)
+				}
+				// otherwise event was not modified at all
 			}
 
 			// they were the same event => move both indices forward

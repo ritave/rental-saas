@@ -20,6 +20,7 @@ type EventCreateRequest struct {
 	End          string `json:"end"`
 	Location     string `json:"location"`
 	CreationDate string `json:"-"` //not used
+	UUID         string `json:"-"`
 }
 
 // TODO mux + contexts + jsonification of interface{}
@@ -30,10 +31,12 @@ type EventCreateRequest struct {
 
 // TODO -> env var
 var allowAccessFromLocalhost = true
+
 const (
 	CORSlocalhost = "http://localhost:8000"
-	CORSapp = "https://calendarcron.appspot.com"
+	CORSapp       = "https://calendarcron.appspot.com"
 )
+
 var dev = appengine.IsDevAppServer()
 
 func EventCreate(w http.ResponseWriter, r *http.Request) {
@@ -177,6 +180,9 @@ func EventChanged(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// no errors returned, fingers crossed it works!
+	logic.SynchroniseDatastore(ctx, diff)
+
 	response := make([]EventModification, len(diff))
 
 	for ind, eventChanged := range diff {
@@ -193,10 +199,11 @@ func EventChanged(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	whereTo := "https://calendarcron.appspot.com/dummy/send"
 	if appengine.IsDevAppServer() {
-		whereTo = "http://localhost:8081" // TODO will it be really that?
+		log.Println("Replying with this response BACK to the source")
+		w.Write(bytez)
+		return
 	}
 
 	// X-Appengine-Inbound-Appid ?
