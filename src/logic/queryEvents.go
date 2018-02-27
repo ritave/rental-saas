@@ -3,7 +3,7 @@ package logic
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
-	"calendar-synch/objects"
+	"calendar-synch/src/objects"
 )
 
 const EventKeyKind = "Event"

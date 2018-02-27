@@ -3,8 +3,8 @@ package tests
 import (
 	"reflect"
 	"testing"
-	"calendar-synch/logic"
-	"calendar-synch/objects"
+	"calendar-synch/src/logic"
+	"calendar-synch/src/objects"
 	"time"
 	"calendar-synch/helpers"
 )

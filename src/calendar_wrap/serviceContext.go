@@ -1,4 +1,4 @@
-package handlers
+package calendar_wrap
 
 import (
 	"google.golang.org/api/calendar/v3"
@@ -12,7 +12,7 @@ import (
 
 const secretsLocation = "secrets"
 
-func GetCalendar(r *http.Request) *calendar.Service {
+func NewStandard(r *http.Request) *calendar.Service {
 	//if !appengine.IsDevAppServer() {
 	//	client, err := google.DefaultClient(appengine.NewContext(r), calendar.CalendarScope)
 	//	if err != nil {
@@ -43,7 +43,7 @@ func GetCalendar(r *http.Request) *calendar.Service {
 	//}
 }
 
-func GetCalendarWithoutRequest(ctx context.Context) *calendar.Service {
+func NewFlex(ctx context.Context) *calendar.Service {
 	b, err := ioutil.ReadFile(secretsLocation + "/service_client.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)

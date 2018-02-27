@@ -1,7 +1,7 @@
 package logic
 
 import (
-	"calendar-synch/objects"
+	"calendar-synch/src/objects"
 	"context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"

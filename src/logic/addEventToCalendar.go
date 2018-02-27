@@ -3,7 +3,7 @@ package logic
 import (
 	"google.golang.org/api/calendar/v3"
 	"log"
-	"calendar-synch/objects"
+	"calendar-synch/src/objects"
 	"calendar-synch/helpers"
 	"errors"
 	"regexp"

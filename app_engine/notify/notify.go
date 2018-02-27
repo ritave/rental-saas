@@ -3,15 +3,15 @@ package main
 import (
 	"net/http"
 	"log"
-	"calendar-synch/handlers"
 	"context"
-	"calendar-synch/logic"
+	"calendar-synch/src/logic"
 	"google.golang.org/api/calendar/v3"
 	"os"
 	"strconv"
 	"time"
 	"calendar-synch/helpers"
 	"encoding/json"
+	"calendar-synch/src/calendar_wrap"
 )
 
 const NotifyGet = "/notify/get"
@@ -65,7 +65,7 @@ func init() {
 	testPing()
 
 	background := context.Background()
-	cal := handlers.GetCalendarWithoutRequest(background)
+	cal := calendar_wrap.NewFlex(background)
 
 	if cal == nil {
 		log.Fatalf("Calendar As A Service was a nil")

@@ -6,7 +6,7 @@ import (
 	"time"
 	"strconv"
 	"sort"
-	"calendar-synch/objects"
+	"calendar-synch/src/objects"
 	"google.golang.org/appengine"
 	"log"
 )
@@ -22,7 +22,7 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]*objects.EventMo
 		return nil, err
 	}
 	savedSortable := objects.SortableEvents(saved)
-	actualSortable := objects.SortableEvents(EventsMap(actual.Items, ConvertEventToEventLol))
+	actualSortable := objects.SortableEvents(EventsMap(actual.Items, ConvertGoogleEventToMyEvent))
 
 	if appengine.IsDevAppServer() {
 		log.Printf("\nSaved: %v\n", savedSortable)
@@ -128,7 +128,7 @@ func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents
 	return changes, nil
 }
 
-func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *objects.Event, err error) {
+func ConvertGoogleEventToMyEvent(gEvent *calendar.Event) (myEvent *objects.Event, err error) {
 	myEvent = &objects.Event{}
 
 	// user, what if user added someone as attendee or rejected being invited to it?
@@ -164,7 +164,7 @@ func ConvertEventToEventLol(gEvent *calendar.Event) (myEvent *objects.Event, err
 func EventsMap(vs []*calendar.Event, f func(event *calendar.Event) (*objects.Event, error)) []*objects.Event {
 	vsm := make([]*objects.Event, len(vs))
 	for i, v := range vs {
-		vsm[i], _ = f(v) // LOL xd FIXME eventually
+		vsm[i], _ = f(v) // LOL xd FIXME PLOX
 	}
 	return vsm
 }

@@ -12,7 +12,7 @@ import (
 	"google.golang.org/appengine/log"
 	"encoding/json"
 	stdLog "log"
-	"calendar-synch/handlers"
+	"calendar-synch/src/handlers"
 	"calendar-synch/helpers"
 )
 

@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"google.golang.org/appengine"
 	"log"
-	"calendar-synch/handlers"
 	"html/template"
+	"calendar-synch/src/handlers/calendar"
+	"calendar-synch/src/handlers/event"
 )
 
 func main() {
@@ -14,12 +15,12 @@ func main() {
 }
 
 func bindEndpoints() {
-	http.HandleFunc("/event/ping", Ping)
-	http.HandleFunc("/event/create", handlers.EventCreate)
-	http.HandleFunc("/event/list", handlers.EventList)
-	http.HandleFunc("/event/changed", handlers.EventChanged)
+	http.HandleFunc("/event/ping", Ping) // TODO delete/move/update/idk
+	http.HandleFunc("/event/create", event.Create)
+	http.HandleFunc("/event/list", event.List)
+	http.HandleFunc("/event/changed", event.Changed)
 
-	http.HandleFunc("/calendar/view", handlers.CalendarView)
+	http.HandleFunc("/calendar/view", calendar.View)
 
 	log.Println("Bound endpoints...")
 }
