@@ -48,7 +48,7 @@ func handleMainPage(w http.ResponseWriter, r *http.Request) {
 
 	ctx := appengine.NewContext(r)
 	tic := time.Now()
-	q := datastore.NewQuery(keyKind).Limit(100)
+	q := datastore.NewQuery(keyKind).Order("-Received")
 	var eventsModified []*WhatWeReallyWantToStoreIs
 	if _, err := q.GetAll(ctx, &eventsModified); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

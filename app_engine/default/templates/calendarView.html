@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Receiver Demo</title>
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="data">
+
+      <table>
+        <tr>
+          <th>User</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Summary</th>
+          <th>Location</th>
+          <th>Received</th>
+          <th>Flags</th>
+        </tr>
+        {{range . }}
+        <tr>
+          <td>{{.User}}</td>
+          <td>{{.Start}}</td>
+          <td>{{.End}}</td>
+          <td>{{.Summary}}</td>
+          <td>{{.Location}}</td>
+          <td>{{.Received}}</td>
+          <td>{{range .Flags}} {{ . }}; {{end}}</td>
+        </tr>
+        {{end}}
+                
+      </table>
+
+    </div>
+  </body>
+</html>
