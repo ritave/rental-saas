@@ -8,7 +8,16 @@ import (
 	"errors"
 )
 
-func SynchroniseDatastore(ctx context.Context, diff []*objects.EventModified) {
+type SynchEffect struct {
+	Errors int
+	Deleted int
+	Added int
+	Modified int
+}
+
+func SynchroniseDatastore(ctx context.Context, diff []*objects.EventModified) (SynchEffect) {
+	var result SynchEffect
+	
 	for _, event := range diff {
 		for mod := range event.Modifications {
 			if mod == objects.Deleted {
@@ -16,17 +25,25 @@ func SynchroniseDatastore(ctx context.Context, diff []*objects.EventModified) {
 
 				err := deleteEvent(ctx, event.Event)
 				if err != nil {
-					log.Criticalf(ctx,"SYNCHRONISE | Event deleting FAILED: %s", err.Error())
+					log.Debugf(ctx,"SYNCHRONISE | Event deleting FAILED: %s", err.Error())
+					result.Errors ++
+					break
 				}
 				// we do not have to do anything more, carry on with the outermost for loop
+				result.Deleted ++
 				break
 			} else if mod == objects.Added {
 				// event added, add to datastore
 
 				err := SaveEventInDatastore(ctx, event.Event)
 				if err != nil {
-					log.Criticalf(ctx, "SYNCHRONISE | Event adding FAILED: %s", err.Error())
+					log.Debugf(ctx, "SYNCHRONISE | Event adding FAILED: %s", err.Error())
+					result.Errors ++
+					break
 				}
+
+				result.Added ++
+
 				// TODO added and modified possible?
 			} else if mod == objects.ModifiedTime || mod == objects.ModifiedLocation {
 				// modified -> delete and add again
@@ -34,16 +51,24 @@ func SynchroniseDatastore(ctx context.Context, diff []*objects.EventModified) {
 				// deleting uses only the UUID and I think I'm copying it from old_modified to new_modified in findChanged()
 				err := deleteEvent(ctx, event.Event)
 				if err != nil {
-					log.Criticalf(ctx,"SYNCHRONISE | Event deleting FAILED: %s", err.Error())
+					log.Debugf(ctx,"SYNCHRONISE | Event deleting FAILED: %s", err.Error())
+					result.Errors ++
+					break
 				}
 				err = SaveEventInDatastore(ctx, event.Event)
 				if err != nil {
-					log.Criticalf(ctx, "SYNCHRONISE | Event adding FAILED: %s", err.Error())
+					log.Debugf(ctx, "SYNCHRONISE | Event adding FAILED: %s", err.Error())
+					result.Errors ++
+					break
 				}
+
+				result.Modified ++
 			}
 
 		}
 	}
+
+	return result
 }
 
 func deleteEvent(ctx context.Context, event *objects.Event) (error) {
