@@ -12,7 +12,7 @@ import (
 	"google.golang.org/appengine/log"
 	"encoding/json"
 	stdLog "log"
-	"calendar-synch/helpers"
+	"calendar-synch/src/utils"
 	"calendar-synch/src/handlers/event"
 )
 
@@ -83,7 +83,7 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 
 	for _, eventChanged := range eventsChanged {
 		toStore := WhatWeReallyWantToStoreIs{
-			Received: helpers.TimeToString(time.Now()),
+			Received: utils.TimeToString(time.Now()),
 			Modification: eventChanged,
 		}
 

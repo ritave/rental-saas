@@ -1,4 +1,4 @@
-package helpers
+package utils
 
 import "time"
 
@@ -12,4 +12,8 @@ func StringToTime(in string) (time.Time) {
 
 func TimeToString(in time.Time) (string) {
 	return in.Format(time.RFC3339)
+}
+
+func Int64ToTime(in int64) (time.Time) {
+	return time.Unix(in, 0)
 }

@@ -9,7 +9,7 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"calendar-synch/helpers"
+	"calendar-synch/src/utils"
 	"encoding/json"
 	"calendar-synch/src/calendar_wrap"
 )
@@ -105,7 +105,7 @@ func registerReceiver(cal *calendar.Service) {
 			log.Printf("Retrying in one minute")
 			timer := time.NewTimer(time.Duration(time.Minute))
 			refreshTime := <- timer.C
-			log.Printf("Refreshing watch channel on %s", refreshTime.Format(helpers.DefaultTimeType))
+			log.Printf("Refreshing watch channel on %s", refreshTime.Format(utils.DefaultTimeType))
 			registerReceiver(cal)
 		}()
 		return
@@ -120,7 +120,7 @@ func registerReceiver(cal *calendar.Service) {
 		log.Printf("Scheduled for retrying in %d second", expireAfter)
 		timer := time.NewTimer(time.Duration(expireAfter)*time.Second)
 		refreshTime := <- timer.C
-		log.Printf("Refreshing watch channel on %s", refreshTime.Format(helpers.DefaultTimeType))
+		log.Printf("Refreshing watch channel on %s", refreshTime.Format(utils.DefaultTimeType))
 		registerReceiver(cal)
 	}()
 }

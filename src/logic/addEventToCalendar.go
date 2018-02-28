@@ -4,7 +4,7 @@ import (
 	"google.golang.org/api/calendar/v3"
 	"log"
 	"calendar-synch/src/objects"
-	"calendar-synch/helpers"
+	"calendar-synch/src/utils"
 	"errors"
 	"regexp"
 	"time"
@@ -28,7 +28,7 @@ func AddEventToCalendar(cal *calendar.Service, ev objects.Event) (*objects.Event
 		GuestsCanModify: true, // that's what allows for changing the date of the event... but also all the other fields
 	}
 
-	//creationDate := helpers.TimeToString(time.Now())
+	//creationDate := utils.TimeToString(time.Now())
 
 	evResp, err := cal.Events.Insert("primary", newEvent).Do()
 	if err != nil {
@@ -53,7 +53,7 @@ func EvenMoreChecksForTheEvent(ev objects.Event) (error) {
 
 	// time checks
 	var stringToTime = func(in string) (time.Time, error) {
-		return time.Parse(helpers.DefaultTimeType, in)
+		return time.Parse(utils.DefaultTimeType, in)
 	}
 
 	startT, err := stringToTime(ev.Start)

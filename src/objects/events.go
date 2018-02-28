@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"calendar-synch/helpers"
+	"calendar-synch/src/utils"
 )
 
 type Event struct {
@@ -22,8 +22,8 @@ func (e *Event) IsTheSame(to *Event) (bool) {
 
 //Less compares creation date
 func (e *Event) Less(than *Event) (bool) {
-	left := helpers.StringToTime(e.CreationDate)
-	right := helpers.StringToTime(than.CreationDate)
+	left := utils.StringToTime(e.CreationDate)
+	right := utils.StringToTime(than.CreationDate)
 
 	// just in fucking case
 	if left.Equal(right) {
@@ -34,18 +34,18 @@ func (e *Event) Less(than *Event) (bool) {
 }
 
 func (e *Event) Equal(to *Event) (bool) {
-	left := helpers.StringToTime(e.CreationDate)
-	right := helpers.StringToTime(to.CreationDate)
+	left := utils.StringToTime(e.CreationDate)
+	right := utils.StringToTime(to.CreationDate)
 	return left.Equal(right)
 }
 
 // FIXME actually this is very much probable as the creation date is precise up to 1 second
 //and it's also a pity to throw away such a "beautiful" function xd
 func improbableButMaybeTheyHaveTheSameCreationDate(eventI, eventJ *Event) (bool) {
-	si := helpers.StringToTime(eventI.Start)
-	ei := helpers.StringToTime(eventI.End)
-	sj := helpers.StringToTime(eventJ.Start)
-	ej := helpers.StringToTime(eventJ.End)
+	si := utils.StringToTime(eventI.Start)
+	ei := utils.StringToTime(eventI.End)
+	sj := utils.StringToTime(eventJ.Start)
+	ej := utils.StringToTime(eventJ.End)
 
 	// si,ei,sj,ej come from SortableEvents.Less()
 	// start_of_i'th, end_of_i'th, etc ...

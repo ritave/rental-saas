@@ -6,7 +6,7 @@ import (
 	"calendar-synch/src/logic"
 	"calendar-synch/src/objects"
 	"time"
-	"calendar-synch/helpers"
+	"calendar-synch/src/utils"
 )
 
 var zeroth = time.Now()
