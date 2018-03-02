@@ -12,10 +12,12 @@ import (
 	"calendar-synch/src/utils"
 	"encoding/json"
 	"calendar-synch/src/calendar_wrap"
+	"calendar-synch/src/handlers/notify"
 )
 
 const NotifyGet = "/notify/get"
 const NotifyPing = "/notify/ping"
+const NotifyChannelDelete = "/notify/channel/delete"
 
 const (
 	EnvAppPing = "CALENDAR_APP_PING"
@@ -30,6 +32,8 @@ var lastReceipt logic.ImportantChannelFields
 func main() {
 	http.HandleFunc(NotifyGet, HandlerGet)
 	http.HandleFunc(NotifyPing, HandlerPing)
+	http.HandleFunc(NotifyChannelDelete, notify.DeleteChannel)
+
 	log.Print("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

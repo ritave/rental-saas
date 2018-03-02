@@ -25,7 +25,7 @@ func WatchForChanges(cal *calendar.Service, receiver string, expireAfter time.Du
 		receipt = ImportantChannelFields{
 			ResourceId: watchChannel.ResourceId,
 			Uuid:       watchChannel.Id,
-			Expiration: utils.TimeToString(utils.Int64ToTime(watchChannel.Expiration)),
+			Expiration: utils.TimeToString(utils.MillisecondsToTime(watchChannel.Expiration)),
 			Receiver: watchChannel.Address,
 		}
 
@@ -35,7 +35,7 @@ func WatchForChanges(cal *calendar.Service, receiver string, expireAfter time.Du
 	return err, receipt
 }
 
-func stopChannel(cal *calendar.Service, resourceID, uuid string) (error) {
+func StopChannel(cal *calendar.Service, resourceID, uuid string) (error) {
 	return cal.Channels.Stop(
 		&calendar.Channel{
 			ResourceId: resourceID,
@@ -51,7 +51,7 @@ func newChannel(cal *calendar.Service, receiver string, expireAfter time.Duratio
 		Id:         u.String(),
 		Address:    receiver,
 		Type:       "web_hook",
-		Expiration: time.Now().Add(expireAfter).UnixNano(),
+		Expiration: utils.TimeToMilliseconds(time.Now().Add(expireAfter)),
 	}
 	return cal.Events.Watch("primary", &channel).Do()
 }
