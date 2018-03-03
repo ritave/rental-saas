@@ -1,17 +1,14 @@
 package objects
 
-import (
-	"calendar-synch/src/utils"
-)
-
 type Event struct {
-	Summary      string `json:"summary"`
-	User         string `json:"user"`
-	Start        string `json:"start"`
-	End          string `json:"end"`
-	Location     string `json:"location"`
-	// number of SECONDS
-	CreationDate int64 `json:"creationDate"`
+	Summary  string `json:"summary"`
+	User     string `json:"user"`
+	Start    string `json:"start"`
+	End      string `json:"end"`
+	Location string `json:"location"`
+	// number of MILLISECONDS (agreeing on Google's terms)
+	Timestamp    int64  `json:"timestamp"`
+	CreationDate string
 	UUID         string `json:"-"`
 }
 
@@ -24,41 +21,19 @@ func (e *Event) IsTheSame(to *Event) (bool) {
 //Less compares creation date
 func (e *Event) Less(than *Event) (bool) {
 	// just in fucking case
-	if e.CreationDate == than.CreationDate {
+	if e.Timestamp == than.Timestamp {
 		return improbableButMaybeTheyHaveTheSameCreationDate(e, than)
 	}
 
-	return e.CreationDate < than.CreationDate
+	return e.Timestamp < than.Timestamp
 }
 
 func (e *Event) Equal(to *Event) (bool) {
-	return e.CreationDate == to.CreationDate
+	return e.Timestamp == to.Timestamp
 }
 
-// FIXME actually this is very much probable as the creation date is precise up to 1 second
-//and it's also a pity to throw away such a "beautiful" function xd
 func improbableButMaybeTheyHaveTheSameCreationDate(eventI, eventJ *Event) (bool) {
-	si := utils.StringToTime(eventI.Start)
-	ei := utils.StringToTime(eventI.End)
-	sj := utils.StringToTime(eventJ.Start)
-	ej := utils.StringToTime(eventJ.End)
-
-	// si,ei,sj,ej come from SortableEvents.Less()
-	// start_of_i'th, end_of_i'th, etc ...
-
-	// ---si----ei-->  this one is smaller
-	// ----sj---ei-->
-
-	// ---si--ei---->  this one is smaller
-	// ---sj---ei--->
-
-	// ----si-ei---->  added few weeks later: TODO what about this one?
-	// ---sj---ei--->
-
-	if si.Equal(sj) {
-		return ei.Before(ej)
-	}
-	return si.Before(sj)
+	return eventI.UUID < eventJ.UUID
 }
 
 type SortableEvents []*Event
@@ -76,5 +51,3 @@ func (s SortableEvents) Less(i, j int) bool {
 func (s SortableEvents) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
-
-// TODO ancestors

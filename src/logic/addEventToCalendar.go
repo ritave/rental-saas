@@ -47,8 +47,8 @@ func AddEventToCalendar(cal *calendar.Service, ev objects.Event) (*objects.Event
 			log.Println("IMPOSSIBRU")
 			eventCreationTime = time.Now()
 		}
-		eventOrderingKey := eventCreationTime.UTC().Unix()
-		ev.CreationDate = eventOrderingKey
+		eventOrderingKey := utils.TimeToMilliseconds(eventCreationTime)
+		ev.Timestamp = eventOrderingKey
 		return &ev, nil
 	}
 

@@ -81,6 +81,10 @@ func init() {
 	})
 
 	registerReceiver(cal)
+	err := notifyMainApp()
+	if err != nil {
+		log.Printf("Notifying at init failed %s", err.Error())
+	}
 }
 
 func testPing() {

@@ -5,7 +5,6 @@ import (
 	"google.golang.org/appengine/datastore"
 	"calendar-synch/src/objects"
 	"time"
-	"calendar-synch/src/utils"
 	"log"
 )
 
@@ -22,9 +21,9 @@ func QueryEvents(ctx context.Context) ([]*objects.Event, error) {
 }
 
 func QueryEventsFiltered(ctx context.Context) ([]*objects.Event, error) {
-	now := utils.TimeToString(time.Now().UTC())
-	log.Printf("I want events that happenend before: %s", now)
-	q := datastore.NewQuery(EventKeyKind).Filter("CreationDate <", now)
+	now := time.Now().UTC().Unix()
+	log.Printf("I want events that happenend before: %d", now)
+	q := datastore.NewQuery(EventKeyKind).Filter("Timestamp <", now)
 
 	events := make([]*objects.Event, 0)
 	_, err := q.GetAll(ctx, &events)

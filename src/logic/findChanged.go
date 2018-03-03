@@ -140,8 +140,9 @@ func ConvertGoogleEventToMyEvent(gEvent *calendar.Event) (myEvent *objects.Event
 	}
 
 	// creation date
-	creationDate := utils.StringToTime(gEvent.Created)
-	myEvent.CreationDate = creationDate.UTC().Unix()
+	creation := utils.StringToTime(gEvent.Created)
+	myEvent.Timestamp = utils.TimeToMilliseconds(creation)
+	myEvent.CreationDate = gEvent.Created
 
 	// date
 	dtStart, err := time.Parse(time.RFC3339, gEvent.Start.DateTime)

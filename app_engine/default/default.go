@@ -25,11 +25,6 @@ func bindEndpoints() {
 	log.Println("Bound endpoints...")
 }
 
-func init() {
-	// yes, I know it's a no-op
-	log.Println("Initialized stuff...")
-}
-
 var tempTemplate = template.Must(template.New("temp").Parse(`
 <html>
   <head>
