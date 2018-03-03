@@ -6,6 +6,7 @@ import (
 	"calendar-synch/src/objects"
 	"time"
 	"log"
+	"calendar-synch/src/utils"
 )
 
 const EventKeyKind = "Event"
@@ -21,7 +22,7 @@ func QueryEvents(ctx context.Context) ([]*objects.Event, error) {
 }
 
 func QueryEventsFiltered(ctx context.Context) ([]*objects.Event, error) {
-	now := time.Now().UTC().Unix()
+	now := utils.TimeToMilliseconds(time.Now())
 	log.Printf("I want events that happenend before: %d", now)
 	q := datastore.NewQuery(EventKeyKind).Filter("Timestamp <", now)
 

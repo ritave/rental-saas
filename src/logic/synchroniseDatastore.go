@@ -78,4 +78,5 @@ func deleteEvent(ctx context.Context, event *objects.Event) (error) {
 
 	eventKey := datastore.NewKey(ctx, EventKeyKind, event.UUID, 0, nil)
 	return datastore.Delete(ctx, eventKey)
+
 }
