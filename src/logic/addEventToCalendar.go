@@ -8,6 +8,7 @@ import (
 	"errors"
 	"regexp"
 	"time"
+	"fmt"
 )
 
 
@@ -15,7 +16,7 @@ func AddEventToCalendar(cal *calendar.Service, ev objects.Event) (*objects.Event
 	newEvent := &calendar.Event{
 		Summary:     ev.Summary,
 		Location:    ev.Location,
-		Description: "Cleaning service ordered on %s. Feel free to move this event in your calendar to change the date!",
+		Description: fmt.Sprintf("Cleaning service ordered on %s. Feel free to move this event in your calendar to change the date!", time.Now().Format(time.RFC822)),
 		Start: &calendar.EventDateTime{
 			DateTime: ev.Start,
 		},
@@ -39,8 +40,15 @@ func AddEventToCalendar(cal *calendar.Service, ev objects.Event) (*objects.Event
 		log.Printf("Link: %s", evResp.HtmlLink)
 
 		// Creation date will be my "primary-key"
-		eventPrimaryKey := evResp.Created
-		ev.CreationDate = eventPrimaryKey
+		eventCreationTime, err := utils.VerifyStringToTime(evResp.Created)
+		if err != nil {
+			// TODO how to make it stand out?
+			log.Println("Google passed to us string that is not of valid format")
+			log.Println("IMPOSSIBRU")
+			eventCreationTime = time.Now()
+		}
+		eventOrderingKey := eventCreationTime.UTC().Unix()
+		ev.CreationDate = eventOrderingKey
 		return &ev, nil
 	}
 

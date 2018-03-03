@@ -10,7 +10,8 @@ type Event struct {
 	Start        string `json:"start"`
 	End          string `json:"end"`
 	Location     string `json:"location"`
-	CreationDate string `json:"creationDate"`
+	// number of SECONDS
+	CreationDate int64 `json:"creationDate"`
 	UUID         string `json:"-"`
 }
 
@@ -22,21 +23,16 @@ func (e *Event) IsTheSame(to *Event) (bool) {
 
 //Less compares creation date
 func (e *Event) Less(than *Event) (bool) {
-	left := utils.StringToTime(e.CreationDate)
-	right := utils.StringToTime(than.CreationDate)
-
 	// just in fucking case
-	if left.Equal(right) {
+	if e.CreationDate == than.CreationDate {
 		return improbableButMaybeTheyHaveTheSameCreationDate(e, than)
 	}
 
-	return left.Before(right)
+	return e.CreationDate < than.CreationDate
 }
 
 func (e *Event) Equal(to *Event) (bool) {
-	left := utils.StringToTime(e.CreationDate)
-	right := utils.StringToTime(to.CreationDate)
-	return left.Equal(right)
+	return e.CreationDate == to.CreationDate
 }
 
 // FIXME actually this is very much probable as the creation date is precise up to 1 second

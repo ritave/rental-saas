@@ -9,6 +9,7 @@ import (
 	"calendar-synch/src/objects"
 	"google.golang.org/appengine"
 	"log"
+	"calendar-synch/src/utils"
 )
 
 
@@ -139,7 +140,8 @@ func ConvertGoogleEventToMyEvent(gEvent *calendar.Event) (myEvent *objects.Event
 	}
 
 	// creation date
-	myEvent.CreationDate = gEvent.Created
+	creationDate := utils.StringToTime(gEvent.Created)
+	myEvent.CreationDate = creationDate.UTC().Unix()
 
 	// date
 	dtStart, err := time.Parse(time.RFC3339, gEvent.Start.DateTime)

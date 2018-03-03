@@ -28,6 +28,7 @@ const (
 )
 
 var lastReceipt logic.ImportantChannelFields
+var ticker *utils.Ticker
 
 func main() {
 	http.HandleFunc(NotifyGet, HandlerGet)
@@ -41,12 +42,7 @@ func main() {
 func HandlerGet(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Thanks Google, I got this from here."))
 
-	err := notifyMainApp()
-	if err != nil {
-		log.Printf("Notifying error: %s", err.Error())
-	} else {
-		log.Printf("Successful notifying")
-	}
+	ticker.Restart()
 }
 
 var emptyICF = logic.ImportantChannelFields{}
@@ -74,6 +70,15 @@ func init() {
 	if cal == nil {
 		log.Fatalf("Calendar As A Service was a nil")
 	}
+
+	ticker = utils.New(3*time.Second, func(){
+		err := notifyMainApp()
+		if err != nil {
+			log.Printf("Notifying error: %s", err.Error())
+		} else {
+			log.Printf("Successful notifying")
+		}
+	})
 
 	registerReceiver(cal)
 }

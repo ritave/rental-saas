@@ -17,7 +17,7 @@ type CreateRequest struct {
 	Start        string `json:"start"`
 	End          string `json:"end"`
 	Location     string `json:"location"`
-	CreationDate string `json:"-"` //not used
+	CreationDate int64 `json:"-"` //not used
 	UUID         string `json:"-"`
 }
 

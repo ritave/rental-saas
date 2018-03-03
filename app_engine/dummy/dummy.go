@@ -14,6 +14,7 @@ import (
 	stdLog "log"
 	"calendar-synch/src/utils"
 	"calendar-synch/src/handlers/event"
+	"calendar-synch/src/logic"
 )
 
 var lastKey *datastore.Key
@@ -28,9 +29,30 @@ const keyKind = "EventModification"
 func main() {
 	http.HandleFunc("/dummy", handleMainPage)
 	http.HandleFunc("/dummy/send", handleSend)
+	http.HandleFunc("/dummy/test", handleSomethingNew)
 	stdLog.Println("Starting application")
 	appengine.Main()
 }
+
+
+func handleSomethingNew(w http.ResponseWriter, r *http.Request) {
+	var justPrintBytez = func(a interface{}) ([]byte) {
+		btz, _ := json.Marshal(a)
+		return btz
+	}
+
+	ctx := appengine.NewContext(r)
+	events, err := logic.QueryEventsFiltered(ctx)
+	if err != nil {
+		w.Write(justPrintBytez(err.Error()))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	stdLog.Println("Events:", events)
+	w.Write(justPrintBytez(&events))
+}
+
 
 // eventModificationKey returns the key used for all entries.
 func eventModificationKey(ctx context.Context) *datastore.Key {
@@ -70,7 +92,7 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := appengine.NewContext(r)
 
-	log.Infof(ctx, "Finally somthing happening")
+	log.Infof(ctx, "Finally something happening")
 
 	eventsChanged, err := extractEventsFromBody(r)
 	if err != nil {
