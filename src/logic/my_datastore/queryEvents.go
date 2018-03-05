@@ -1,4 +1,4 @@
-package logic
+package my_datastore
 
 import (
 	"golang.org/x/net/context"

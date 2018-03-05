@@ -11,6 +11,7 @@ import (
 	"log"
 	"google.golang.org/appengine"
 	gaeLog "google.golang.org/appengine/log"
+	"calendar-synch/src/logic/my_datastore"
 )
 
 type ChangedResponse []Modification
@@ -33,7 +34,7 @@ func Changed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// no errors returned, fingers crossed it works!
-	effect := logic.SynchroniseDatastore(ctx, diff)
+	effect := my_datastore.SynchroniseDatastore(ctx, diff)
 	gaeLog.Debugf(ctx, "Synchronisation had following effect: %v", effect)
 	//log.Printf("Synchronisation had following effect: %v", effect)
 

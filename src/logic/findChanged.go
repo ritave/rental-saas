@@ -10,11 +10,12 @@ import (
 	"google.golang.org/appengine"
 	"log"
 	"calendar-synch/src/utils"
+	"calendar-synch/src/logic/my_datastore"
 )
 
 
 func FindChanged(ctx context.Context, cal *calendar.Service) ([]*objects.EventModified, error) {
-	saved, err := QueryEvents(ctx)
+	saved, err := my_datastore.QueryEvents(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ import (
 	stdLog "log"
 	"calendar-synch/src/utils"
 	"calendar-synch/src/handlers/event"
-	"calendar-synch/src/logic"
+	"calendar-synch/src/logic/my_datastore"
 )
 
 var lastKey *datastore.Key
@@ -42,7 +42,7 @@ func handleSomethingNew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := appengine.NewContext(r)
-	events, err := logic.QueryEventsFiltered(ctx)
+	events, err := my_datastore.QueryEventsFiltered(ctx)
 	if err != nil {
 		w.Write(justPrintBytez(err.Error()))
 		w.WriteHeader(http.StatusInternalServerError)

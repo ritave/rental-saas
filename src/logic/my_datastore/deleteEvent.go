@@ -5,8 +5,6 @@ import (
 	"google.golang.org/appengine/datastore"
 )
 
-const EventKeyKind = "Event"
-
 func DeleteEvent(ctx context.Context, uuid string) error {
 	k := datastore.NewKey(ctx, EventKeyKind, uuid, 0, nil)
 

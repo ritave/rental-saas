@@ -1,7 +1,6 @@
 package event
 
 import (
-	"calendar-synch/src/logic"
 	"calendar-synch/src/objects"
 	"calendar-synch/src/calendar_wrap"
 	"io/ioutil"
@@ -9,6 +8,8 @@ import (
 	"google.golang.org/appengine"
 	"net/http"
 	"log"
+	"calendar-synch/src/logic/my_calendar"
+	"calendar-synch/src/logic/my_datastore"
 )
 
 type CreateRequest struct {
@@ -59,7 +60,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = logic.EvenMoreChecksForTheEvent(objects.Event(eventRequest))
+	err = objects.EvenMoreChecksForTheEvent(objects.Event(eventRequest))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("\"" + err.Error() + "\""))
@@ -72,12 +73,12 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	// TODO move this logic level down
 
 	// TODO rollbacks
-	event, err := logic.AddEventToCalendar(cal, objects.Event(eventRequest))
+	event, err := my_calendar.AddEvent(cal, objects.Event(eventRequest))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	err = logic.SaveEventInDatastore(ctx, event)
+	err = my_datastore.SaveEventInDatastore(ctx, event)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
