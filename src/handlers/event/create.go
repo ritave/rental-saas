@@ -66,11 +66,6 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if dev {
-		w.Write([]byte("\"Congratz\"")) // JSONified
-		return
-	}
-
 	cal := calendar_wrap.NewStandard(r)
 	ctx := appengine.NewContext(r)
 

@@ -49,6 +49,8 @@ func AddEventToCalendar(cal *calendar.Service, ev objects.Event) (*objects.Event
 		}
 		eventOrderingKey := utils.TimeToMilliseconds(eventCreationTime)
 		ev.Timestamp = eventOrderingKey
+		ev.UUID = evResp.Id
+
 		return &ev, nil
 	}
 

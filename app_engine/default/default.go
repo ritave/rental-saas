@@ -17,9 +17,10 @@ func main() {
 func bindEndpoints() {
 	http.HandleFunc("/event/ping", Ping) // TODO delete/move/update/idk
 	http.HandleFunc("/event/create", event.Create)
-	http.HandleFunc("/event/list", event.List)
+	http.HandleFunc("/event/delete", event.Delete)
 	http.HandleFunc("/event/changed", event.Changed)
 
+	http.HandleFunc("/event/list", event.List) // TODO move to calendar/view or /list or /get idc
 	http.HandleFunc("/calendar/view", calendar.View)
 
 	log.Println("Bound endpoints...")
