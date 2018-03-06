@@ -133,6 +133,7 @@ func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents
 func ConvertGoogleEventToMyEvent(gEvent *calendar.Event) (myEvent *objects.Event, err error) {
 	myEvent = &objects.Event{}
 
+	// TODO
 	// user, what if user added someone as attendee or rejected being invited to it?
 	if len(gEvent.Attendees) != 1 {
 		return myEvent, ConvertingErrorConstructor(UserScrewedUpTheEvent)
@@ -161,6 +162,15 @@ func ConvertGoogleEventToMyEvent(gEvent *calendar.Event) (myEvent *objects.Event
 
 	// summary
 	myEvent.Summary = gEvent.Summary
+
+	// uuid
+	myEvent.UUID = gEvent.Id
+
+	// timestamp
+	myEvent.Timestamp = utils.TimeToMilliseconds(utils.StringToTime(gEvent.Created))
+
+	// creationDate
+	myEvent.CreationDate = gEvent.Created
 
 	return myEvent, err
 }

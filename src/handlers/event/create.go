@@ -18,8 +18,8 @@ type CreateRequest struct {
 	Start        string `json:"start"`
 	End          string `json:"end"`
 	Location     string `json:"location"`
-	Timestamp    int64  `json:"-"` //not used
 	CreationDate string `json:"-"`
+	Timestamp    int64  `json:"-"` //not used
 	UUID         string `json:"-"`
 }
 
@@ -33,7 +33,7 @@ type CreateRequest struct {
 var allowAccessFromLocalhost = true
 
 const (
-	CORSlocalhost = "http://localhost:8000"
+	CORSlocalhost = "http://localhost:8080"
 	CORSapp       = "https://calendarcron.appspot.com"
 )
 

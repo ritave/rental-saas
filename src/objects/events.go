@@ -6,10 +6,10 @@ type Event struct {
 	Start    string `json:"start"`
 	End      string `json:"end"`
 	Location string `json:"location"`
+	CreationDate string `json:"creationDate"`
 	// number of MILLISECONDS (agreeing on Google's terms)
 	Timestamp    int64  `json:"timestamp"`
-	CreationDate string
-	UUID         string `json:"-"`
+	UUID         string `json:"uuid"`
 }
 
 //IsTheSame checks if two events have the same fields (used in checking if they've been changed).

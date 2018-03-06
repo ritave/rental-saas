@@ -31,6 +31,7 @@
           <th>Summary</th>
           <th>Location</th>
           <th>Created</th>
+          <th></th>
         </tr>
         {{range . }}
         <tr>
@@ -40,6 +41,7 @@
           <td>{{.Summary}}</td>
           <td>{{.Location}}</td>
           <td>{{.CreationDate}}</td>
+          <td><form action="/event/delete"><button name="UUID" type="submit" value="{{.UUID}}">Delete</button></form></td>
         </tr>
         {{end}}
                 
