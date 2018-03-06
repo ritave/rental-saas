@@ -35,7 +35,7 @@ func Changed(w http.ResponseWriter, r *http.Request) {
 
 	// no errors returned, fingers crossed it works!
 	effect := my_datastore.SynchroniseDatastore(ctx, diff)
-	gaeLog.Debugf(ctx, "Synchronisation had following effect: %v", effect)
+	gaeLog.Debugf(ctx, "Synchronisation had following effect: %#v", effect)
 	//log.Printf("Synchronisation had following effect: %v", effect)
 
 	response := make([]Modification, len(diff))

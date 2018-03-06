@@ -11,6 +11,7 @@ import (
 	"log"
 	"calendar-synch/src/utils"
 	"calendar-synch/src/logic/my_datastore"
+	gaeLog "google.golang.org/appengine/log"
 )
 
 
@@ -29,6 +30,9 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]*objects.EventMo
 	if appengine.IsDevAppServer() {
 		log.Printf("\nSaved: %v\n", savedSortable)
 		log.Printf("\nActual: %v\n", actualSortable)
+	} else {
+		gaeLog.Debugf(ctx, "\nSaved: %v\n", savedSortable)
+		gaeLog.Debugf(ctx, "\nActual: %v\n", actualSortable)
 	}
 
 	return CompareSortable(savedSortable, actualSortable)

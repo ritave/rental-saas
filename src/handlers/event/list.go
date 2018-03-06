@@ -22,8 +22,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 
 	srv := calendar_wrap.NewStandard(r)
 
-	events, err := srv.Events.List("primary").ShowDeleted(true).
-		MaxResults(100).OrderBy("updated").Do()
+	events, err := srv.Events.List("primary").ShowDeleted(false).OrderBy("updated").Do()
 	if err != nil {
 		log.Println("Error fetching events")
 		log.Println(err.Error())
