@@ -5,3 +5,4 @@
     will truly allow him to delete the event
     1. declined the event -> just send it again
 - Reorganise handlers and logic
+- MyEvent == GoogleEvent, don't bother with translating it
