@@ -4,3 +4,4 @@
     1. clicked "delete" in his calendar -> bring it back with link inside the description that
     will truly allow him to delete the event
     1. declined the event -> just send it again
+- Reorganise handlers and logic
