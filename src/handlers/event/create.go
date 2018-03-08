@@ -33,7 +33,7 @@ type CreateRequest struct {
 var allowAccessFromLocalhost = true
 
 const (
-	CORSlocalhost = "http://localhost:8080"
+	CORSlocalhost = "http://localhost:5000"
 	CORSapp       = "https://calendarcron.appspot.com"
 )
 

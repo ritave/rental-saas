@@ -226,19 +226,15 @@ view model =
 inputView : Model -> Html Msg
 inputView model =
     colSm12
-        [ formGroupInputWithLabel "text" "Email" "Email" "Email" (onInput User)
+        [ formGroupInputWithLabel "email" "Email" "Email" "e@mail.com" (onInput User)
         , formGroupInputWithLabel "text" "Summary" "Summary" "Summary" (onInput Summary)
         , formGroupInputWithLabel "text" "Location" "Location" "Location" (onInput Location)
-        , div [ class "form-inline" ]
-            [ colSm6ColSm6
-                (formGroupInputWithLabel "date" "Start" "" "" (onInput StartDate))
-                (input [ type_ "time", onInput StartTime, placeholder "09:00" ] [])
-            ]
-        , div [ class "form-inline" ]
-            [ colSm6ColSm6
-                (formGroupInputWithLabel "date" "End  " "" "" (onInput EndDate))
-                (input [ type_ "time", onInput EndTime, placeholder "10:00" ] [])
-            ]
+        , colSm6ColSm6
+            (formGroupInputWithLabel "date" "Start date" "" "" (onInput StartDate))
+            (formGroupInputWithLabel "time" "Start time" "" "09:00" (onInput StartTime))
+        , colSm6ColSm6
+            (formGroupInputWithLabel "date" "End date" "" "" (onInput EndDate))
+            (formGroupInputWithLabel "time" "End time" "" "10:00" (onInput EndTime))
         , button [ class "btn btn-default", onClick SubmitForm ] [ text "Send" ]
         ]
 
@@ -249,18 +245,9 @@ formGroupInputWithLabel tp lbl nm plch onInp =
     , input [ type_ tp, class "form-control", id nm, placeholder plch, name nm, onInp ] []
     ]
 
-formGroupInputWithLabel2to10 : String -> String -> String -> String -> Attribute msg -> Html msg
-formGroupInputWithLabel2to10 tp lbl nm plch onInp =
-    div [ class "form-group" ]
-    [ label [ class "col-sm-2", for nm ] [ text lbl ]
-    , div [ class "col-sm-10" ]
-        [ input [ type_ tp, class "form-control", id nm, placeholder plch, name nm, onInp ] []
-        ]
-    ]
-
 colSm6ColSm6 : Html msg -> Html msg -> Html msg
 colSm6ColSm6 first second =
-   div []
+   div [ class "row" ]
    [ div [ class "col-sm-6" ] [ first ]
    , div [ class "col-sm-6" ] [ second ]
    ]
@@ -274,7 +261,7 @@ eventsView model =
         , tbody []
             ( List.map
                 (\e ->
-                    div [] [singleEventView e, br [] []]
+                    singleEventView e
                 )
                 model.events
             )
