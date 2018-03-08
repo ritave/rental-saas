@@ -46,17 +46,19 @@ type alias Event =
     , end : String
     , location : String
     , creationDate : String
+    , uuid : String
     }
 
 decodeEvent : Decode.Decoder Event
 decodeEvent =
-    Decode.map6 Event
+    Decode.map7 Event
         (Decode.field "summary" Decode.string)
         (Decode.field "user" Decode.string)
         (Decode.field "start" Decode.string)
         (Decode.field "end" Decode.string)
         (Decode.field "location" Decode.string)
         (Decode.field "creationDate" Decode.string)
+        (Decode.field "uuid" Decode.string)
 
 encodeEvent : Event -> Encode.Value
 encodeEvent record =
@@ -67,6 +69,7 @@ encodeEvent record =
         , ("end",  Encode.string <| record.end)
         , ("location",  Encode.string <| record.location)
         , ("creationDate",  Encode.string <| record.creationDate)
+        , ("uuid",  Encode.string <| record.uuid)
         ]
 
 eventCreateResponseDecoder : Decode.Decoder String
@@ -161,6 +164,7 @@ type Msg =
     | EventCreateResponse (Result Http.Error String)
     | EventListResponse (Result Http.Error (List Event))
     | Error String
+    | EventDelete String
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -207,6 +211,11 @@ update msg model =
                     ({model | error = errorMsg}, Cmd.none)
         Error error ->
             ({ model | error = error}, Cmd.none)
+        EventDelete uuid ->
+            let
+                _ = log "Button clicked!" uuid
+            in
+                (model, Cmd.none)
 
 
 -- VIEW
@@ -248,7 +257,7 @@ colSm6ColSm6 first second =
    , div [ class "col-sm-6" ] [ second ]
    ]
 
-eventsView : Model -> Html msg
+eventsView : Model -> Html Msg
 eventsView model =
     colSm12
     [
@@ -274,10 +283,11 @@ eventsViewHead =
         , td [] [ text "Location" ]
         , td [] [ text "Summary" ]
         , td [] [ text "Created" ]
+        , td [] []
         ]
     ]
 
-singleEventView : Event -> Html msg
+singleEventView : Event -> Html Msg
 singleEventView event =
     tr []
     [ td [] [ text (event.user) ]
@@ -286,11 +296,16 @@ singleEventView event =
     , td [] [ text (event.location) ]
     , td [] [ text (event.summary) ]
     , td [] [ text (event.creationDate) ]
+    , td [] [ buttonDeleteEvent event.uuid ]
     ]
 
 colSm12 : List(Html msg) -> Html msg
 colSm12 whatever =
     div [ class "row", style [("margin-top", "30px")] ] [ div [ class "col-sm-12" ] whatever ]
+
+buttonDeleteEvent : String -> Html Msg
+buttonDeleteEvent uuid =
+    button [ class "btn btn-danger btn-xs", onClick (EventDelete uuid)] [ span [ class "glyphicon glyphicon-trash" ] [] ]
 
 -- TODO?
 -- SUBSCRIPTIONS
