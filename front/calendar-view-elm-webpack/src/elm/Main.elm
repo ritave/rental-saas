@@ -1,7 +1,7 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
-import Http
+import Http exposing (Response)
 
 import Json.Encode as Encode
 import Json.Decode as Decode
@@ -347,6 +347,6 @@ errorToString error =
         Http.BadUrl something -> "Bad url: " ++ something
         Http.Timeout -> "Timeout"
         Http.NetworkError -> "Network error"
-        Http.BadStatus _ -> "Bad status"
+        Http.BadStatus response -> "Bad status: " ++ response.body
         Http.BadPayload something response -> "Bad payload: " ++ something ++ response.body
 

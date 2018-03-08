@@ -24,11 +24,11 @@ func EvenMoreChecksForTheEvent(ev Event) (error) {
 	}
 
 	if startT.Before(time.Now()) {
-		return errors.New("event start cannot be set in the past")
+		return errors.New("event's start cannot be set in the past")
 	}
 
 	if endT.Before(startT) {
-		return errors.New("event end cannot be before the start")
+		return errors.New("event's end earlier than the beggining")
 	}
 
 	if endT.Before(time.Now()) {
