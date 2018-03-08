@@ -223,22 +223,44 @@ view model =
 inputView : Model -> Html Msg
 inputView model =
     colSm12
-        [ formGroup "text" "Email" "Email" "Email" (onInput User)
-        , formGroup "text" "Summary" "Summary" "Summary" (onInput Summary)
-        , formGroup "text" "Location" "Location" "Location" (onInput Location)
-        , formGroup "date" "Start" "" "" (onInput StartDate)
-        , formGroup "time" "09:00" "09:00" "09:00" (onInput StartTime)
-        , formGroup "date" "End" "" "" (onInput EndDate)
-        , formGroup "time" "10:00" "10:00" "10:00" (onInput EndTime)
-        , button [ onClick SubmitForm ] [ text "Send" ]
+        [ formGroupInputWithLabel "text" "Email" "Email" "Email" (onInput User)
+        , formGroupInputWithLabel "text" "Summary" "Summary" "Summary" (onInput Summary)
+        , formGroupInputWithLabel "text" "Location" "Location" "Location" (onInput Location)
+        , div [ class "form-inline" ]
+            [ colSm6ColSm6
+                (formGroupInputWithLabel "date" "Start" "" "" (onInput StartDate))
+                (input [ type_ "time", onInput StartTime, placeholder "09:00" ] [])
+            ]
+        , div [ class "form-inline" ]
+            [ colSm6ColSm6
+                (formGroupInputWithLabel "date" "End  " "" "" (onInput EndDate))
+                (input [ type_ "time", onInput EndTime, placeholder "10:00" ] [])
+            ]
+        , button [ class "btn btn-default", onClick SubmitForm ] [ text "Send" ]
         ]
 
-formGroup : String -> String -> String -> String -> Attribute msg -> Html msg
-formGroup tp lbl nm plch onInp =
+formGroupInputWithLabel : String -> String -> String -> String -> Attribute msg -> Html msg
+formGroupInputWithLabel tp lbl nm plch onInp =
     div [ class "form-group" ]
     [ label [ for nm ] [ text lbl ]
     , input [ type_ tp, class "form-control", id nm, placeholder plch, name nm, onInp ] []
     ]
+
+formGroupInputWithLabel2to10 : String -> String -> String -> String -> Attribute msg -> Html msg
+formGroupInputWithLabel2to10 tp lbl nm plch onInp =
+    div [ class "form-group" ]
+    [ label [ class "col-sm-2", for nm ] [ text lbl ]
+    , div [ class "col-sm-10" ]
+        [ input [ type_ tp, class "form-control", id nm, placeholder plch, name nm, onInp ] []
+        ]
+    ]
+
+colSm6ColSm6 : Html msg -> Html msg -> Html msg
+colSm6ColSm6 first second =
+   div []
+   [ div [ class "col-sm-6" ] [ first ]
+   , div [ class "col-sm-6" ] [ second ]
+   ]
 
 eventsView : Model -> Html msg
 eventsView model =
