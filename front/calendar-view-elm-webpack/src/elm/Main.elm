@@ -29,11 +29,6 @@ type alias Flags =
     { backend : String
     }
 
---apiBase : String
---apiBase =
---    "https://calendarcron.appspot.com/"
-----    "http://localhost:8080/" -- TODO env variables/config -- generally webpack should be my friend
-
 apiEventCreate : String -> String
 apiEventCreate apiBase =
     apiBase ++ "event/create"
@@ -121,6 +116,7 @@ formEncoder model =
         , ("end", Encode.string model.end)
         ]
 
+--TODO true variable timezone (I'm not going to change it in a few months by hand)
 --timeZone = "+01:00"
 timeZone : String
 timeZone = "Z"
@@ -227,14 +223,14 @@ inputView : Model -> Html Msg
 inputView model =
     colSm12
         [ formGroupInputWithLabel "email" "Email" "Email" "e@mail.com" (onInput User)
-        , formGroupInputWithLabel "text" "Summary" "Summary" "Summary" (onInput Summary)
-        , formGroupInputWithLabel "text" "Location" "Location" "Location" (onInput Location)
+        , formGroupInputWithLabel "text" "Summary" "Summary" "Description of an event" (onInput Summary)
+        , formGroupInputWithLabel "text" "Location" "Location" "Where is it going to take place?" (onInput Location)
         , colSm6ColSm6
-            (formGroupInputWithLabel "date" "Start date" "" "" (onInput StartDate))
-            (formGroupInputWithLabel "time" "Start time" "" "09:00" (onInput StartTime))
+            (formGroupInputWithLabel "date" "Start date" "sd" "" (onInput StartDate))
+            (formGroupInputWithLabel "time" "Start time" "st" "09:00" (onInput StartTime))
         , colSm6ColSm6
-            (formGroupInputWithLabel "date" "End date" "" "" (onInput EndDate))
-            (formGroupInputWithLabel "time" "End time" "" "10:00" (onInput EndTime))
+            (formGroupInputWithLabel "date" "End date" "ed" "" (onInput EndDate))
+            (formGroupInputWithLabel "time" "End time" "et" "10:00" (onInput EndTime))
         , button [ class "btn btn-default", onClick SubmitForm ] [ text "Send" ]
         ]
 

@@ -5,7 +5,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
-var dotenv = require('dotenv').config();
+var WebpackShellPlugin = require('webpack-shell-plugin');
 
 
 const prod = 'production';
@@ -51,7 +51,6 @@ var commonConfig = {
             inject: 'body',
             filename: 'index.html'
         }),
-        new webpack.EnvironmentPlugin(["BACKEND"])
     ]
 }
 
@@ -81,16 +80,24 @@ if (isDev === true) {
                         debug: true
                     }
                 }]
-            },{
+            }, {
                 test: /\.sc?ss$/,
                 use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
             }]
-        }
+        },
+        plugins: [
+            new webpack.EnvironmentPlugin(
+                {
+                    'BACKEND': 'http://localhost:8080/'
+                }
+            )
+        ]
     });
 }
 
 // additional webpack settings for prod env (when invoked via 'npm run build')
 if (isProd === true) {
+    var dotenv = require('dotenv').config();
     module.exports = merge(commonConfig, {
         entry: entryPath,
         module: {
@@ -112,9 +119,6 @@ if (isProd === true) {
                 allChunks: true,
             }),
             new CopyWebpackPlugin([{
-                from: 'src/static/img/',
-                to: 'static/img/'
-            }, {
                 from: 'src/favicon.ico'
             }]),
 
@@ -126,6 +130,17 @@ if (isProd === true) {
                     warnings: false
                 }
                 // mangle:  true
+            }),
+            new webpack.EnvironmentPlugin(["BACKEND"]),
+            new WebpackShellPlugin({
+                // onBuildStart: ['rd /s /q ..\\..\\app_engine\\default\\static'],
+                // onBuildEnd: ['xcopy .\\dist ..\\..\\app_engine\\default /s /e']
+                onBuildStart: [
+                    'powershell Remove-Item -Recurse -Force -Path ..\\..\\app_engine\\default\\static'
+                ],
+                onBuildEnd: [
+                    'powershell Copy-Item -Recurse -Force .\\dist\\* ..\\..\\app_engine\\default\\'
+                ]
             })
         ]
     });
