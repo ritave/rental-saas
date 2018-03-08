@@ -14,9 +14,9 @@ import Debug
 
 -- TOOD split everything into modules
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-  Html.program
+  Html.programWithFlags
     { init = init
     , view = view
     , update = update
@@ -25,17 +25,21 @@ main =
 
 -- DEFINITIONS
 
-apiBase : String
-apiBase =
-    "https://calendarcron.appspot.com/"
---    "http://localhost:8080/" -- TODO env variables/config -- generally webpack should be my friend
+type alias Flags =
+    { backend : String
+    }
 
-apiEventCreate : String
-apiEventCreate =
+--apiBase : String
+--apiBase =
+--    "https://calendarcron.appspot.com/"
+----    "http://localhost:8080/" -- TODO env variables/config -- generally webpack should be my friend
+
+apiEventCreate : String -> String
+apiEventCreate apiBase =
     apiBase ++ "event/create"
 
-apiEventList : String
-apiEventList =
+apiEventList : String -> String
+apiEventList apiBase =
     apiBase ++ "event/list"
 
 -- TYPES
@@ -103,10 +107,9 @@ type alias Model =
 
     , error : String
     , events : List Event
-    }
 
-model : Model
-model = startUpValue
+    , backend : String
+    }
 
 formEncoder : Model -> Encode.Value
 formEncoder model =
@@ -140,13 +143,13 @@ validateForm model =
 
 -- INIT
 
-startUpValue : Model
+startUpValue : String -> Model
 --startUpValue = Model "Summary" "radekantichrist@gmail.com" "Location" ("") ("") "2018-02-25" "2018-02-25" "09:00" "10:00" "" []
 startUpValue = Model "" "" "" ("") ("") "" "" "" "" "" []
 
-init : (Model, Cmd Msg)
-init =
-    (startUpValue, eventListGet)
+init : Flags -> (Model, Cmd Msg)
+init flags =
+    (startUpValue flags.backend, eventListGet (startUpValue flags.backend))
 
 -- UPDATE
 
@@ -188,7 +191,7 @@ update msg model =
                     let
                         _ = log "EventCreate" trueResponse -- WILL IT BLEND?
                     in
-                    ({model | error = ""}, eventListGet)
+                    ({model | error = ""}, eventListGet model)
                 Err error ->
                     let
                         errorMsg = errorToString error
@@ -323,15 +326,15 @@ eventCreateRequestBuilder model =
                 |> formEncoder
                 |> Http.jsonBody
     in
-        Http.post apiEventCreate body eventCreateResponseDecoder
+        Http.post (apiEventCreate model.backend) body eventCreateResponseDecoder
 
 eventCreatePost : Model -> Cmd Msg
 eventCreatePost model =
     Http.send EventCreateResponse (eventCreateRequestBuilder model)
 
-eventListGet : Cmd Msg
-eventListGet =
-    Http.send EventListResponse (Http.get apiEventList eventListResponseDecoder)
+eventListGet : Model -> Cmd Msg
+eventListGet model =
+    Http.send EventListResponse (Http.get (apiEventList model.backend) eventListResponseDecoder)
 
 -- LOGGING
 

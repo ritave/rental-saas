@@ -5,6 +5,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+var dotenv = require('dotenv').config();
 
 
 const prod = 'production';
@@ -49,7 +50,8 @@ var commonConfig = {
             template: 'src/static/index.html',
             inject: 'body',
             filename: 'index.html'
-        })
+        }),
+        new webpack.EnvironmentPlugin(["BACKEND"])
     ]
 }
 
@@ -57,14 +59,15 @@ var commonConfig = {
 if (isDev === true) {
     module.exports = merge(commonConfig, {
         entry: [
-            'webpack-dev-server/client?http://localhost:8080',
+            'webpack-dev-server/client?http://localhost:5000',
             entryPath
         ],
         devServer: {
             // serve index.html in place of 404 responses
             historyApiFallback: true,
             contentBase: './src',
-            hot: true
+            hot: false,
+            port: 5000,
         },
         module: {
             rules: [{
