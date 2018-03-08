@@ -294,7 +294,7 @@ singleEventView event =
 
 colSm12 : List(Html msg) -> Html msg
 colSm12 whatever =
-    div [ class "row" ] [ div [ class "col-sm-12" ] whatever ]
+    div [ class "row", style [("margin-top", "30px")] ] [ div [ class "col-sm-12" ] whatever ]
 
 -- TODO?
 -- SUBSCRIPTIONS
