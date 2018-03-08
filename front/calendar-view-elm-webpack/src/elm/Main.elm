@@ -1,63 +1,340 @@
-module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing ( onClick )
+import Html.Events exposing (onInput, onClick)
+import Http
 
--- component import example
-import Components.Hello exposing ( hello )
+import Json.Encode as Encode
+import Json.Decode as Decode
 
+--import Dict exposing (..)
+--import Date exposing (..)
+import List
 
--- APP
+import Debug
+
+-- TOOD split everything into modules
+
 main : Program Never Model Msg
 main =
-  Html.beginnerProgram { model = model, view = view, update = update }
+  Html.program
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
 
+-- DEFINITIONS
+
+apiBase : String
+apiBase =
+    "https://calendarcron.appspot.com/"
+--    "http://localhost:8080/" -- TODO env variables/config -- generally webpack should be my friend
+
+apiEventCreate : String
+apiEventCreate =
+    apiBase ++ "event/create"
+
+apiEventList : String
+apiEventList =
+    apiBase ++ "event/list"
+
+-- TYPES
+
+type alias Event =
+    { summary : String
+    , user : String
+    , start : String
+    , end : String
+    , location : String
+    , creationDate : String
+    }
+
+decodeEvent : Decode.Decoder Event
+decodeEvent =
+    Decode.map6 Event
+        (Decode.field "summary" Decode.string)
+        (Decode.field "user" Decode.string)
+        (Decode.field "start" Decode.string)
+        (Decode.field "end" Decode.string)
+        (Decode.field "location" Decode.string)
+        (Decode.field "creationDate" Decode.string)
+
+encodeEvent : Event -> Encode.Value
+encodeEvent record =
+    Encode.object
+        [ ("summary",  Encode.string <| record.summary)
+        , ("user",  Encode.string <| record.user)
+        , ("start",  Encode.string <| record.start)
+        , ("end",  Encode.string <| record.end)
+        , ("location",  Encode.string <| record.location)
+        , ("creationDate",  Encode.string <| record.creationDate)
+        ]
+
+eventCreateResponseDecoder : Decode.Decoder String
+eventCreateResponseDecoder =
+    Decode.string
+
+eventListResponseDecoder : Decode.Decoder (List Event)
+eventListResponseDecoder =
+    Decode.list (decodeEvent)
+
+eventListDecoder : String -> List Event
+eventListDecoder rawString =
+    let
+        response = Decode.decodeString eventListResponseDecoder rawString
+    in
+    case response of
+        Ok result -> result
+        Err _ -> []
 
 -- MODEL
-type alias Model = Int
+
+type alias Model =
+    { summary : String
+    , user : String
+    , location : String
+    , start : String
+    , end : String
+
+    , startDate : String
+    , endDate : String
+    , startTime : String
+    , endTime : String
+
+    , error : String
+    , events : List Event
+    }
 
 model : Model
-model = 0
+model = startUpValue
 
+formEncoder : Model -> Encode.Value
+formEncoder model =
+    Encode.object
+        [ ("summary", Encode.string model.summary)
+        , ("user", Encode.string model.user)
+        , ("location", Encode.string model.location)
+        , ("start", Encode.string model.start)
+        , ("end", Encode.string model.end)
+        ]
+
+--timeZone = "+01:00"
+timeZone : String
+timeZone = "Z"
+
+validateForm : Model -> (Model, Cmd Msg)
+validateForm model =
+    if model.user == "" then ({model | error = "No user specified"}, Cmd.none) else 
+    if model.startDate == "" then ({model | error = "No start date"}, Cmd.none) else
+    if model.endDate == "" then ({model | error = "No end date"}, Cmd.none) else
+    if model.startTime == "" then ({model | error = "No start time"}, Cmd.none) else
+    if model.endTime == "" then ({model | error = "No end time"}, Cmd.none) else
+    let
+--        "2006-01-02T15:04:05Z07:00"
+        start = model.startDate ++ "T" ++ model.startTime ++ ":00" ++ timeZone
+        end = model.endDate ++ "T" ++ model.endTime ++ ":00" ++ timeZone
+        updatedModel = {model | start = start, end = end}
+    in
+     ({model | start = start, end = end}, eventCreatePost updatedModel)
+
+
+-- INIT
+
+startUpValue : Model
+--startUpValue = Model "Summary" "radekantichrist@gmail.com" "Location" ("") ("") "2018-02-25" "2018-02-25" "09:00" "10:00" "" []
+startUpValue = Model "" "" "" ("") ("") "" "" "" "" "" []
+
+init : (Model, Cmd Msg)
+init =
+    (startUpValue, eventListGet)
 
 -- UPDATE
-type Msg = NoOp | Increment
 
-update : Msg -> Model -> Model
+type Msg =
+    Summary String
+    | User String
+    | Location String
+    | StartDate String
+    | EndDate String
+    | StartTime String
+    | EndTime String
+    | SubmitForm
+    | EventCreateResponse (Result Http.Error String)
+    | EventListResponse (Result Http.Error (List Event))
+    | Error String
+
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of
-    NoOp -> model
-    Increment -> model + 1
+    case msg of
+        Summary summary ->
+            ({model | summary = summary}, Cmd.none)
+        User user ->
+            ({model | user = user}, Cmd.none)
+        Location location ->
+            ({model | location = location}, Cmd.none)
+        EndDate endDate ->
+            ({model | endDate = endDate}, Cmd.none)
+        StartDate startDate ->
+            ({model | startDate = startDate}, Cmd.none)
+        EndTime endTime ->
+            ({model | endTime = endTime}, Cmd.none)
+        StartTime startTime ->
+            ({model | startTime = startTime}, Cmd.none)
+        SubmitForm ->
+            validateForm model
+        EventCreateResponse response ->
+            case response of
+                Ok trueResponse ->
+                    let
+                        _ = log "EventCreate" trueResponse -- WILL IT BLEND?
+                    in
+                    ({model | error = ""}, eventListGet)
+                Err error ->
+                    let
+                        errorMsg = errorToString error
+                    in
+                    ({model | error = errorMsg}, Cmd.none)
+        EventListResponse response ->
+            case response of
+                Ok events ->
+                    let
+                        _ = log "Events" events
+                    in
+                    ({model | events = events}, Cmd.none)
+                Err error ->
+                    let
+                        errorMsg = errorToString error
+                    in
+                    ({model | error = errorMsg}, Cmd.none)
+        Error error ->
+            ({ model | error = error}, Cmd.none)
 
 
 -- VIEW
--- Html is defined as: elem [ attribs ][ children ]
--- CSS can be applied via class names or inline style attrib
+
 view : Model -> Html Msg
 view model =
-  div [ class "container", style [("margin-top", "30px"), ( "text-align", "center" )] ][    -- inline CSS (literal)
-    div [ class "row" ][
-      div [ class "col-xs-12" ][
-        div [ class "jumbotron" ][
-          img [ src "static/img/elm.jpg", style styles.img ] []                             -- inline CSS (via var)
-          , hello model                                                                     -- ext 'hello' component (takes 'model' as arg)
-          , p [] [ text ( "Elm Webpack Starter" ) ]
-          , button [ class "btn btn-primary btn-lg", onClick Increment ] [                  -- click handler
-            span[ class "glyphicon glyphicon-star" ][]                                      -- glyphicon
-            , span[][ text "FTW!" ]
-          ]
-        ]
-      ]
+  div [ class "container" ]
+    [ inputView model
+    , errorView model
+    , eventsView model
     ]
-  ]
 
+inputView : Model -> Html Msg
+inputView model =
+    colSm12
+        [ formGroup "text" "Email" "Email" "Email" (onInput User)
+        , formGroup "text" "Summary" "Summary" "Summary" (onInput Summary)
+        , formGroup "text" "Location" "Location" "Location" (onInput Location)
+        , formGroup "date" "Start" "" "" (onInput StartDate)
+        , formGroup "time" "09:00" "09:00" "09:00" (onInput StartTime)
+        , formGroup "date" "End" "" "" (onInput EndDate)
+        , formGroup "time" "10:00" "10:00" "10:00" (onInput EndTime)
+        , button [ onClick SubmitForm ] [ text "Send" ]
+        ]
 
--- CSS STYLES
-styles : { img : List ( String, String ) }
-styles =
-  {
-    img =
-      [ ( "width", "33%" )
-      , ( "border", "4px solid #337AB7")
-      ]
-  }
+formGroup : String -> String -> String -> String -> Attribute msg -> Html msg
+formGroup tp lbl nm plch onInp =
+    div [ class "form-group" ]
+    [ label [ for nm ] [ text lbl ]
+    , input [ type_ tp, class "form-control", id nm, placeholder plch, name nm, onInp ] []
+    ]
+
+eventsView : Model -> Html msg
+eventsView model =
+    colSm12
+    [
+        table [ class "table table-bordered" ]
+        [ eventsViewHead
+        , tbody []
+            ( List.map
+                (\e ->
+                    div [] [singleEventView e, br [] []]
+                )
+                model.events
+            )
+        ]
+    ]
+
+eventsViewHead : Html msg
+eventsViewHead =
+    thead []
+    [ tr []
+        [ td [] [ text "User" ]
+        , td [] [ text "Start" ]
+        , td [] [ text "End" ]
+        , td [] [ text "Location" ]
+        , td [] [ text "Summary" ]
+        , td [] [ text "Created" ]
+        ]
+    ]
+
+singleEventView : Event -> Html msg
+singleEventView event =
+    tr []
+    [ td [] [ text (event.user) ]
+    , td [] [ text (event.start) ]
+    , td [] [ text (event.end) ]
+    , td [] [ text (event.location) ]
+    , td [] [ text (event.summary) ]
+    , td [] [ text (event.creationDate) ]
+    ]
+
+colSm12 : List(Html msg) -> Html msg
+colSm12 whatever =
+    div [ class "row" ] [ div [ class "col-sm-12" ] whatever ]
+
+-- TODO?
+-- SUBSCRIPTIONS
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+-- HTTP
+
+eventCreateRequestBuilder : Model -> Http.Request String
+eventCreateRequestBuilder model =
+    let
+        body =
+            model
+                |> formEncoder
+                |> Http.jsonBody
+    in
+        Http.post apiEventCreate body eventCreateResponseDecoder
+
+eventCreatePost : Model -> Cmd Msg
+eventCreatePost model =
+    Http.send EventCreateResponse (eventCreateRequestBuilder model)
+
+eventListGet : Cmd Msg
+eventListGet =
+    Http.send EventListResponse (Http.get apiEventList eventListResponseDecoder)
+
+-- LOGGING
+
+log : String -> a -> a
+log = Debug.log
+
+-- ERRORS
+errorView : Model -> Html msg
+errorView model =
+  let
+    (color, message) =
+      if model.error == "" then
+        ("success", "No errors")
+      else
+        ("danger", model.error)
+  in
+    colSm12
+    [ div [ class ("alert alert-" ++ color) ] [ text message ] ]
+
+errorToString : Http.Error -> String
+errorToString error =
+    case error of 
+        Http.BadUrl something -> "Bad url: " ++ something
+        Http.Timeout -> "Timeout"
+        Http.NetworkError -> "Network error"
+        Http.BadStatus _ -> "Bad status"
+        Http.BadPayload something response -> "Bad payload: " ++ something ++ response.body
+
