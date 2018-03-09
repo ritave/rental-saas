@@ -1,6 +1,6 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onClick)
+import Html.Events exposing (onInput, onClick, on, keyCode)
 import Http exposing (Response)
 
 import Json.Encode as Encode
@@ -134,13 +134,14 @@ formEncoder model =
         ]
 
 --TODO true variable timezone (I'm not going to change it in a few months by hand)
---timeZone = "+01:00"
 timeZone : String
-timeZone = "Z"
+--timeZone = "Z"
+timeZone = "+01:00"
 
 validateForm : Model -> (Model, Cmd Msg)
 validateForm model =
     if model.user == "" then ({model | error = "No user specified"}, Cmd.none) else 
+    if model.location == "" then ({model | error = "No location specified"}, Cmd.none) else
     if model.startDate == "" then ({model | error = "No start date"}, Cmd.none) else
     if model.endDate == "" then ({model | error = "No end date"}, Cmd.none) else
     if model.startTime == "" then ({model | error = "No start time"}, Cmd.none) else
@@ -180,6 +181,7 @@ type Msg =
     | Error String
     | EventDelete String
     | EventDeleteResponse (Result Http.Error String)
+    | KeyDown Int
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -243,7 +245,11 @@ update msg model =
                         errorMsg = errorToString error
                     in
                     ({model | error = errorMsg}, Cmd.none)
-
+        KeyDown key ->
+            if key == 13 then
+                validateForm model
+            else
+                (model, Cmd.none)
 
 
 -- VIEW
@@ -259,23 +265,23 @@ view model =
 inputView : Model -> Html Msg
 inputView model =
     colSm12
-        [ formGroupInputWithLabel "email" "Email" "Email" "e@mail.com" (onInput User)
-        , formGroupInputWithLabel "text" "Summary" "Summary" "Description of the event" (onInput Summary)
-        , formGroupInputWithLabel "text" "Location" "Location" "Where is it going to take place?" (onInput Location)
+        [ formGroupInputWithLabel "email" "Email" "Email" "e@mail.com" [onInput User, onKeyDown KeyDown]
+        , formGroupInputWithLabel "text" "Summary" "Summary" "Description of the event" [onInput Summary, onKeyDown KeyDown]
+        , formGroupInputWithLabel "text" "Location" "Location" "Where is it going to take place?" [onInput Location, onKeyDown KeyDown]
         , colSm6ColSm6
-            (formGroupInputWithLabel "date" "Start date" "sd" "" (onInput StartDate))
-            (formGroupInputWithLabel "time" "Start time" "st" "09:00" (onInput StartTime))
+            (formGroupInputWithLabel "date" "Start date" "sd" "" [onInput StartDate, onKeyDown KeyDown])
+            (formGroupInputWithLabel "time" "Start time" "st" "09:00" [onInput StartTime, onKeyDown KeyDown])
         , colSm6ColSm6
-            (formGroupInputWithLabel "date" "End date" "ed" "" (onInput EndDate))
-            (formGroupInputWithLabel "time" "End time" "et" "10:00" (onInput EndTime))
+            (formGroupInputWithLabel "date" "End date" "ed" "" [onInput EndDate, onKeyDown KeyDown])
+            (formGroupInputWithLabel "time" "End time" "et" "10:00" [onInput EndTime, onKeyDown KeyDown])
         , button [ class "btn btn-default", onClick SubmitForm ] [ text "Send" ]
         ]
 
-formGroupInputWithLabel : String -> String -> String -> String -> Attribute msg -> Html msg
+formGroupInputWithLabel : String -> String -> String -> String -> List(Attribute msg) -> Html msg
 formGroupInputWithLabel tp lbl nm plch onInp =
     div [ class "form-group" ]
     [ label [ for nm ] [ text lbl ]
-    , input [ type_ tp, class "form-control", id nm, placeholder plch, name nm, onInp ] []
+    , input ( List.append [ type_ tp, class "form-control", id nm, placeholder plch, name nm ] onInp ) []
     ]
 
 colSm6ColSm6 : Html msg -> Html msg -> Html msg
@@ -403,3 +409,7 @@ errorToString error =
         Http.BadStatus response -> "Bad status: " ++ response.body
         Http.BadPayload something response -> "Bad payload: " ++ something ++ response.body
 
+-- LOLS
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+  on "keydown" (Decode.map tagger keyCode)
