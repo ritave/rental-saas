@@ -37,6 +37,10 @@ apiEventList : String -> String
 apiEventList apiBase =
     apiBase ++ "event/list"
 
+apiEventDelete : String -> String
+apiEventDelete apiBase =
+    apiBase ++ "event/delete"
+
 -- TYPES
 
 type alias Event =
@@ -72,6 +76,12 @@ encodeEvent record =
         , ("uuid",  Encode.string <| record.uuid)
         ]
 
+encodeEventDelete : String -> Encode.Value
+encodeEventDelete uuid =
+    Encode.object
+        [ ("uuid", Encode.string <| uuid)
+        ]
+
 eventCreateResponseDecoder : Decode.Decoder String
 eventCreateResponseDecoder =
     Decode.string
@@ -88,6 +98,10 @@ eventListDecoder rawString =
     case response of
         Ok result -> result
         Err _ -> []
+
+eventDeleteResponseDecoder : Decode.Decoder String
+eventDeleteResponseDecoder =
+    Decode.string
 
 -- MODEL
 
@@ -165,6 +179,7 @@ type Msg =
     | EventListResponse (Result Http.Error (List Event))
     | Error String
     | EventDelete String
+    | EventDeleteResponse (Result Http.Error String)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -215,7 +230,20 @@ update msg model =
             let
                 _ = log "Button clicked!" uuid
             in
-                (model, Cmd.none)
+                (model, eventDelete model uuid)
+        EventDeleteResponse response ->
+            case response of
+                Ok trueResponse ->
+                    let
+                        _ = log "EventDelete" trueResponse
+                    in
+                    ({model | error = ""}, eventListGet model)
+                Err error ->
+                    let
+                        errorMsg = errorToString error
+                    in
+                    ({model | error = errorMsg}, Cmd.none)
+
 
 
 -- VIEW
@@ -232,7 +260,7 @@ inputView : Model -> Html Msg
 inputView model =
     colSm12
         [ formGroupInputWithLabel "email" "Email" "Email" "e@mail.com" (onInput User)
-        , formGroupInputWithLabel "text" "Summary" "Summary" "Description of an event" (onInput Summary)
+        , formGroupInputWithLabel "text" "Summary" "Summary" "Description of the event" (onInput Summary)
         , formGroupInputWithLabel "text" "Location" "Location" "Where is it going to take place?" (onInput Location)
         , colSm6ColSm6
             (formGroupInputWithLabel "date" "Start date" "sd" "" (onInput StartDate))
@@ -333,6 +361,20 @@ eventCreatePost model =
 eventListGet : Model -> Cmd Msg
 eventListGet model =
     Http.send EventListResponse (Http.get (apiEventList model.backend) eventListResponseDecoder)
+
+eventDeleteRequestBuilder : Model -> String -> Http.Request String
+eventDeleteRequestBuilder model uuid =
+    let
+        body =
+            uuid
+                |> encodeEventDelete
+                |> Http.jsonBody
+    in
+        Http.post (apiEventDelete model.backend) body eventDeleteResponseDecoder
+
+eventDelete : Model -> String -> Cmd Msg
+eventDelete model uuid =
+    Http.send EventDeleteResponse (eventDeleteRequestBuilder model uuid)
 
 -- LOGGING
 
