@@ -8,15 +8,16 @@ import (
 	"net/http"
 	"google.golang.org/appengine"
 	"log"
+	gaeLog "google.golang.org/appengine/log"
 )
 
 func View(w http.ResponseWriter, r *http.Request) {
 	srv := calendar_wrap.NewStandard(r)
+	ctx := appengine.NewContext(r)
 
 	events, err := srv.Events.List("primary").ShowDeleted(false).OrderBy("updated").Do()
 	if err != nil {
-		log.Println("Error fetching events")
-		log.Println(err.Error())
+		gaeLog.Debugf(ctx, "Listing events %s", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -28,7 +29,7 @@ func View(w http.ResponseWriter, r *http.Request) {
 	}
 	bytez, err := json.Marshal(&result)
 	if err != nil {
-		log.Println("Error marshalling response")
+		gaeLog.Debugf(ctx, "Marshalling events %s", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
