@@ -10,6 +10,8 @@ import (
 	"log"
 	"calendar-synch/src/logic/my_calendar"
 	"calendar-synch/src/logic/my_datastore"
+	"calendar-synch/src/utils"
+	gaeLog "google.golang.org/appengine/log"
 )
 
 type CreateRequest struct {
@@ -19,50 +21,42 @@ type CreateRequest struct {
 	End          string `json:"end"`
 	Location     string `json:"location"`
 	CreationDate string `json:"-"`
-	Timestamp    int64  `json:"-"` //not used
+	Timestamp    int64  `json:"-"`
 	UUID         string `json:"-"`
 }
 
-// TODO mux + contexts + jsonification of interface{}
-
-// TODO distinction of POST, GET, OPTIONS
-
-// TODO split this into different files for each handler
-
-// TODO -> env var
 func Create(w http.ResponseWriter, r *http.Request) {
 	eventRequest, err := extractCreateRequestFromBody(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("\"Malformed json\""))
+		utils.WriteAsJSON(w, "Malformed JSON")
 		return
 	}
 
 	err = objects.EvenMoreChecksForTheEvent(objects.Event(eventRequest))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("\"" + err.Error() + "\""))
+		utils.WriteAsJSON(w, err.Error())
 		return
 	}
 
 	cal := calendar_wrap.NewStandard(r)
 	ctx := appengine.NewContext(r)
 
-	// TODO move this logic level down
-
-	// TODO rollbacks
 	event, err := my_calendar.AddEvent(cal, objects.Event(eventRequest))
 	if err != nil {
+		gaeLog.Debugf(ctx, "Calendar create %s: %s", eventRequest.UUID, err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	err = my_datastore.SaveEventInDatastore(ctx, event)
 	if err != nil {
+		gaeLog.Debugf(ctx, "Datastore create %s: %s", eventRequest.UUID, err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	w.Write([]byte("\"Created event\""))
+	utils.WriteAsJSON(w, "Created event")
 }
 
 func extractCreateRequestFromBody(r *http.Request) (CreateRequest, error) {

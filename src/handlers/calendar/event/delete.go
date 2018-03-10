@@ -7,8 +7,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"log"
+	gaeLog "google.golang.org/appengine/log"
 	"calendar-synch/src/logic/my_calendar"
 	"calendar-synch/src/logic/my_datastore"
+	"calendar-synch/src/utils"
 )
 
 type DeleteRequest struct {
@@ -19,7 +21,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	eventRequest, err := extractDeleteRequestFromBody(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("\"Malformed json\""))
+		utils.WriteAsJSON(w, "Malformed JSON")
 		return
 	}
 
@@ -28,18 +30,18 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	err = my_calendar.DeleteEvent(cal, eventRequest.UUID)
 	if err != nil {
-		log.Printf("Calendar delete %s: %s", eventRequest.UUID, err.Error())
+		gaeLog.Debugf(ctx, "Calendar delete %s: %s", eventRequest.UUID, err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	err = my_datastore.DeleteEvent(ctx, eventRequest.UUID)
 	if err != nil {
-		log.Printf("Datastore delete %s: %s", eventRequest.UUID, err.Error())
+		gaeLog.Debugf(ctx, "Datastore delete %s: %s", eventRequest.UUID, err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	w.Write([]byte("\"Created event\""))
+	utils.WriteAsJSON(w, "Delted event")
 }
 
 func extractDeleteRequestFromBody(r *http.Request) (DeleteRequest, error) {
