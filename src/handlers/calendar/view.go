@@ -10,22 +10,7 @@ import (
 	"log"
 )
 
-var allowAccessFromLocalhost = true
-
-const (
-	CORSlocalhost = "http://localhost:5000"
-	CORSapp       = "https://calendarcron.appspot.com"
-)
 func View(w http.ResponseWriter, r *http.Request) {
-	if allowAccessFromLocalhost {
-		if appengine.IsDevAppServer() {
-			w.Header().Set("Access-Control-Allow-Origin", CORSlocalhost)
-		} else {
-			w.Header().Set("Access-Control-Allow-Origin", CORSapp)
-		}
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	}
-
 	srv := calendar_wrap.NewStandard(r)
 
 	events, err := srv.Events.List("primary").ShowDeleted(false).OrderBy("updated").Do()

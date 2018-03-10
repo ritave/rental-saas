@@ -30,29 +30,7 @@ type CreateRequest struct {
 // TODO split this into different files for each handler
 
 // TODO -> env var
-var allowAccessFromLocalhost = true
-
-const (
-	CORSlocalhost = "http://localhost:5000"
-	CORSapp       = "https://calendarcron.appspot.com"
-)
-
-var dev = appengine.IsDevAppServer()
-
 func Create(w http.ResponseWriter, r *http.Request) {
-	if allowAccessFromLocalhost {
-		if appengine.IsDevAppServer() {
-			w.Header().Set("Access-Control-Allow-Origin", CORSlocalhost)
-		} else {
-			w.Header().Set("Access-Control-Allow-Origin", CORSapp)
-		}
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	}
-
-	if r.Method == http.MethodOptions {
-		return
-	}
-
 	eventRequest, err := extractCreateRequestFromBody(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

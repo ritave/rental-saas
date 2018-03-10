@@ -16,27 +16,12 @@ type DeleteRequest struct {
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {
-	if allowAccessFromLocalhost {
-		if appengine.IsDevAppServer() {
-			w.Header().Set("Access-Control-Allow-Origin", CORSlocalhost)
-		} else {
-			w.Header().Set("Access-Control-Allow-Origin", CORSapp)
-		}
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	}
-
-	if r.Method == http.MethodOptions {
-		return
-	}
-
 	eventRequest, err := extractDeleteRequestFromBody(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("\"Malformed json\""))
 		return
 	}
-	//r.ParseForm()
-	//eventRequest := DeleteRequest{r.Form.Get("UUID")}
 
 	cal := calendar_wrap.NewStandard(r)
 	ctx := appengine.NewContext(r)
@@ -54,12 +39,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//if appengine.IsDevAppServer() {
-	//	http.Redirect(w, r, "localhost:8080/calendar/view", http.StatusSeeOther)
-	//	return
-	//}
 	w.Write([]byte("\"Created event\""))
-	//http.Redirect(w, r, "https://calendarcron.appspot.com/calendar/view", http.StatusSeeOther)
 }
 
 func extractDeleteRequestFromBody(r *http.Request) (DeleteRequest, error) {
