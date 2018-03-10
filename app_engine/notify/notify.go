@@ -20,7 +20,6 @@ const NotifyPing = "/notify/ping"
 const NotifyChannelDelete = "/notify/channel/delete"
 
 const (
-	EnvAppPing = "CALENDAR_APP_PING"
 	EnvAppChanged = "CALENDAR_APP_CHANGED"
 	EnvApp = "CALENDAR_APP"
 
@@ -62,8 +61,6 @@ func HandlerPing(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	testPing()
-
 	background := context.Background()
 	cal := calendar_wrap.NewFlex(background)
 
@@ -84,17 +81,6 @@ func init() {
 	err := notifyMainApp()
 	if err != nil {
 		log.Printf("Notifying at init failed %s", err.Error())
-	}
-}
-
-func testPing() {
-	pingAddr := getStringFromEnv(EnvAppPing, "https://calendarcron.appspot.com/event/ping")
-
-	resp, err := http.DefaultClient.Get(pingAddr)
-	if err != nil {
-		log.Printf("Request on init: %s", err.Error())
-	} else {
-		log.Printf("Response status: %d", resp.StatusCode)
 	}
 }
 
