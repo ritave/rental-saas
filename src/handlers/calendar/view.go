@@ -3,7 +3,6 @@ package calendar
 import (
 	"calendar-synch/src/calendar_wrap"
 	"calendar-synch/src/objects"
-	"calendar-synch/src/logic"
 	"encoding/json"
 	"net/http"
 	"google.golang.org/appengine"
@@ -24,7 +23,7 @@ func View(w http.ResponseWriter, r *http.Request) {
 
 	result := make([]objects.Event, 0)
 	for _, ev := range events.Items {
-		converted, _ := logic.ConvertGoogleEventToMyEvent(ev)
+		converted, _ := objects.ConvertGoogleEventToMyEvent(ev)
 		result = append(result, *converted)
 	}
 	bytez, err := json.Marshal(&result)

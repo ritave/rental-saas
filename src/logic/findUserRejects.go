@@ -23,7 +23,7 @@ func FindUserRejects(ctx context.Context, cal *calendar.Service) ([]*objects.Eve
 		return nil, err
 	}
 	savedSortable := objects.SortableEvents(saved)
-	actualSortable := objects.SortableEvents(EventsMap(actual.Items, ConvertGoogleEventToMyEvent))
+	actualSortable := objects.SortableEvents(EventsMap(actual.Items, objects.ConvertGoogleEventToMyEvent))
 
 	if appengine.IsDevAppServer() {
 		log.Printf("\nSaved: %v\n", savedSortable)
