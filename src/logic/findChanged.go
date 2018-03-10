@@ -22,7 +22,7 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]*objects.EventMo
 		return nil, err
 	}
 	savedSortable := objects.SortableEvents(saved)
-	actualSortable := objects.SortableEvents(objects.EventsMap(actual.Items, objects.ConvertGoogleEventToMyEvent))
+	actualSortable := objects.SortableEvents(objects.ConvertGoogleToMineSlice(actual.Items))
 
 	if appengine.IsDevAppServer() {
 		log.Printf("\nSaved: %v\n", savedSortable)

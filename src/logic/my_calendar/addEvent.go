@@ -7,10 +7,12 @@ import (
 	"calendar-synch/src/utils"
 	"time"
 	"fmt"
+	"context"
+	gaeLog "google.golang.org/appengine/log"
 )
 
 
-func AddEvent(cal *calendar.Service, ev objects.Event) (*objects.Event, error){
+func AddEvent(ctx context.Context, cal *calendar.Service, ev objects.Event) (*objects.Event, error){
 	newEvent := &calendar.Event{
 		Summary:     ev.Summary,
 		Location:    ev.Location,
@@ -31,18 +33,14 @@ func AddEvent(cal *calendar.Service, ev objects.Event) (*objects.Event, error){
 
 	evResp, err := cal.Events.Insert("primary", newEvent).Do()
 	if err != nil {
-		log.Println("Adding event failed")
-		log.Printf("Error: %s", err.Error())
-		log.Printf("Event: %v", ev)
+		gaeLog.Debugf(ctx, "Adding event failed %#v %s", ev, err.Error())
 	} else {
 		log.Printf("Link: %s", evResp.HtmlLink)
 
 		// Creation date will be my "primary-key"
 		eventCreationTime, err := utils.VerifyStringToTime(evResp.Created)
 		if err != nil {
-			// TODO how to make it stand out?
-			log.Println("Google passed to us string that is not of valid format")
-			log.Println("IMPOSSIBRU")
+			gaeLog.Criticalf(ctx, "Google passed to us string that is not of valid format! IMPOSSIBRU!")
 			eventCreationTime = time.Now()
 		}
 		eventOrderingKey := utils.TimeToMilliseconds(eventCreationTime)

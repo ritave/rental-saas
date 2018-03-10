@@ -43,7 +43,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	cal := calendar_wrap.NewStandard(r)
 	ctx := appengine.NewContext(r)
 
-	event, err := my_calendar.AddEvent(cal, objects.Event(eventRequest))
+	event, err := my_calendar.AddEvent(ctx, cal, objects.Event(eventRequest))
 	if err != nil {
 		gaeLog.Debugf(ctx, "Calendar create %s: %s", eventRequest.UUID, err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

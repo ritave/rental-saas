@@ -23,7 +23,7 @@ func View(w http.ResponseWriter, r *http.Request) {
 
 	result := make([]objects.Event, 0)
 	for _, ev := range events.Items {
-		converted, _ := objects.ConvertGoogleEventToMyEvent(ev)
+		converted, _ := objects.ConvertGoogleToMine(ev)
 		result = append(result, *converted)
 	}
 	bytez, err := json.Marshal(&result)
