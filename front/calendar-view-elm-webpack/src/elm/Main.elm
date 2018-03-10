@@ -31,15 +31,15 @@ type alias Flags =
 
 apiEventCreate : String -> String
 apiEventCreate apiBase =
-    apiBase ++ "event/create"
+    apiBase ++ "calendar/event/create"
 
 apiEventList : String -> String
 apiEventList apiBase =
-    apiBase ++ "event/list"
+    apiBase ++ "calendar/view"
 
 apiEventDelete : String -> String
 apiEventDelete apiBase =
-    apiBase ++ "event/delete"
+    apiBase ++ "calendar/event/delete"
 
 -- TYPES
 

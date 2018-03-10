@@ -2,7 +2,7 @@ package objects
 
 import (
 	"testing"
-	"calendar-synch/src/handlers/event"
+	"calendar-synch/src/handlers/calendar/event"
 )
 
 func TestEvent_IsTheSame(t *testing.T) {

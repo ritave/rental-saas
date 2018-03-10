@@ -13,14 +13,14 @@ import (
 	"encoding/json"
 	stdLog "log"
 	"calendar-synch/src/utils"
-	"calendar-synch/src/handlers/event"
 	"calendar-synch/src/logic/my_datastore"
+	"calendar-synch/src/handlers/calendar"
 )
 
 var lastKey *datastore.Key
 
 type WhatWeReallyWantToStoreIs struct {
-	event.Modification
+	calendar.Modification
 	Received string
 }
 
@@ -120,8 +120,8 @@ func handleSend(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func extractEventsFromBody(r *http.Request) (event.ChangedResponse, error) {
-	var target = make(event.ChangedResponse, 0)
+func extractEventsFromBody(r *http.Request) (calendar.ChangedResponse, error) {
+	var target = make(calendar.ChangedResponse, 0)
 	defer r.Body.Close()
 
 	err := json.NewDecoder(r.Body).Decode(&target)

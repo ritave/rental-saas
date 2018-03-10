@@ -1,4 +1,4 @@
-package event
+package calendar
 
 import (
 	"calendar-synch/src/objects"
