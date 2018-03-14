@@ -32,6 +32,7 @@
           <th>Location</th>
           <th>Received</th>
           <th>Flags</th>
+          <th>Extra</th>
         </tr>
         {{range . }}
         <tr>
@@ -42,6 +43,7 @@
           <td>{{.Location}}</td>
           <td>{{.Received}}</td>
           <td>{{range .Flags}} {{ . }}; {{end}}</td>
+          <td>{{.TestFields}}</td>
         </tr>
         {{end}}
                 

@@ -5,6 +5,7 @@ import (
 	"google.golang.org/api/calendar/v3"
 	"strconv"
 	"strings"
+	"fmt"
 )
 
 func ConvertGoogleToMine(gEvent *calendar.Event) (myEvent *Event) {
@@ -40,6 +41,21 @@ func ConvertGoogleToMine(gEvent *calendar.Event) (myEvent *Event) {
 
 	// creationDate
 	myEvent.CreationDate = gEvent.Created
+
+	// testFields
+	var addField = func(key string, val interface{}) (string) {
+		return fmt.Sprintf("%s %v; ", key, val)
+	}
+	var testString string
+	testString += addField("AttendeeOmitted", gEvent.AttendeesOmitted)
+	testString += addField("Status", gEvent.Status)
+	testString += addField("GuestsCanInviteOthers", gEvent.GuestsCanInviteOthers)
+	testString += addField("GuestsCanModify", gEvent.GuestsCanModify)
+	if len(gEvent.Attendees) > 0 {
+		testString += addField("Attendees", len(gEvent.Attendees))
+		testString += addField("ResponseStatus", gEvent.Attendees[0].ResponseStatus)
+		testString += addField("Self", gEvent.Attendees[0].Self)
+	}
 
 	return myEvent
 }

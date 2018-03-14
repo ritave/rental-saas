@@ -10,6 +10,7 @@ type Event struct {
 	// number of MILLISECONDS (agreeing on Google's terms)
 	Timestamp    int64  `json:"timestamp"`
 	UUID         string `json:"uuid"`
+	TestFields   string `json:"testFields"`
 }
 
 //IsTheSame checks if two events have the same fields (used in checking if they've been changed).

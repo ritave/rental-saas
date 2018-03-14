@@ -23,6 +23,7 @@ type CreateRequest struct {
 	CreationDate string `json:"-"`
 	Timestamp    int64  `json:"-"`
 	UUID         string `json:"-"`
+	TestFields string `json:"-"`
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {

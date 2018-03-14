@@ -2,15 +2,14 @@ package my_calendar
 
 import (
 	"google.golang.org/api/calendar/v3"
-	"log"
 	"calendar-synch/src/objects"
-	"calendar-synch/src/utils"
 	"time"
 	"fmt"
 	"context"
 	gaeLog "google.golang.org/appengine/log"
 )
 
+var wat = false
 
 func AddEvent(ctx context.Context, cal *calendar.Service, ev objects.Event) (*objects.Event, error){
 	newEvent := &calendar.Event{
@@ -27,6 +26,7 @@ func AddEvent(ctx context.Context, cal *calendar.Service, ev objects.Event) (*ob
 			{Email: ev.User},
 		},
 		GuestsCanModify: true, // that's what allows for changing the date of the event... but also all the other fields
+		GuestsCanInviteOthers: &wat,
 	}
 
 	//creationDate := utils.TimeToString(time.Now())
@@ -34,22 +34,21 @@ func AddEvent(ctx context.Context, cal *calendar.Service, ev objects.Event) (*ob
 	evResp, err := cal.Events.Insert("primary", newEvent).Do()
 	if err != nil {
 		gaeLog.Debugf(ctx, "Adding event failed %#v %s", ev, err.Error())
-	} else {
-		log.Printf("Link: %s", evResp.HtmlLink)
-
-		// Creation date will be my "primary-key"
-		eventCreationTime, err := utils.VerifyStringToTime(evResp.Created)
-		if err != nil {
-			gaeLog.Criticalf(ctx, "Google passed to us string that is not of valid format! IMPOSSIBRU!")
-			eventCreationTime = time.Now()
-		}
-		eventOrderingKey := utils.TimeToMilliseconds(eventCreationTime)
-		ev.Timestamp = eventOrderingKey
-		ev.UUID = evResp.Id
-
-		return &ev, nil
+		return nil, err
 	}
-
-	return nil, err
+		//log.Printf("Link: %s", evResp.HtmlLink)
+		//
+		//// Creation date will be my "primary-key"
+		//eventCreationTime, err := utils.VerifyStringToTime(evResp.Created)
+		//if err != nil {
+		//	gaeLog.Criticalf(ctx, "Google passed to us string that is not of valid format! IMPOSSIBRU!")
+		//	eventCreationTime = time.Now()
+		//}
+		//eventOrderingKey := utils.TimeToMilliseconds(eventCreationTime)
+		//ev.Timestamp = eventOrderingKey
+		//ev.UUID = evResp.Id
+		//
+		//return &ev, nil
+		return objects.ConvertGoogleToMine(evResp), nil
 }
 
