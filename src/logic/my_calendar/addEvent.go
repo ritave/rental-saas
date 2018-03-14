@@ -9,7 +9,10 @@ import (
 	gaeLog "google.golang.org/appengine/log"
 )
 
-var wat = false
+var wat = func() *bool {
+	b := false
+	return &b
+}
 
 func AddEvent(ctx context.Context, cal *calendar.Service, ev objects.Event) (*objects.Event, error){
 	newEvent := &calendar.Event{
@@ -26,7 +29,8 @@ func AddEvent(ctx context.Context, cal *calendar.Service, ev objects.Event) (*ob
 			{Email: ev.User},
 		},
 		GuestsCanModify: true, // that's what allows for changing the date of the event... but also all the other fields
-		GuestsCanInviteOthers: &wat,
+		GuestsCanInviteOthers: wat(),
+		GuestsCanSeeOtherGuests: wat(),
 	}
 
 	//creationDate := utils.TimeToString(time.Now())
