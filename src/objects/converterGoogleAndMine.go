@@ -56,6 +56,7 @@ func ConvertGoogleToMine(gEvent *calendar.Event) (myEvent *Event) {
 		testString += addField("ResponseStatus", gEvent.Attendees[0].ResponseStatus)
 		testString += addField("Self", gEvent.Attendees[0].Self)
 	}
+	myEvent.TestFields = testString
 
 	return myEvent
 }
