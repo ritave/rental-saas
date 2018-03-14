@@ -23,10 +23,10 @@ type Modification struct {
 func Changed(w http.ResponseWriter, r *http.Request) {
 	log.Println("Captain, we are being hailed.")
 
-	srv := calendar_wrap.NewStandard(r)
+	cal := calendar_wrap.NewStandard(r)
 	ctx := appengine.NewContext(r)
 
-	diff, err := logic.FindChanged(ctx, srv)
+	diff, err := logic.FindChanged(ctx, cal)
 	if err != nil {
 		gaeLog.Debugf(ctx, "Finding changes: %s", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
@@ -73,4 +73,6 @@ func Changed(w http.ResponseWriter, r *http.Request) {
 		log.Println("Unlikely success sending that son of a bitch")
 		log.Println(*resp)
 	}
+
+	logic.TakeActionOnDifferences(ctx, cal, diff)
 }

@@ -32,10 +32,10 @@ func FindChanged(ctx context.Context, cal *calendar.Service) ([]*objects.EventMo
 		gaeLog.Debugf(ctx, "\nActual: %v\n", actualSortable)
 	}
 
-	return CompareSortable(savedSortable, actualSortable)
+	return CompareSortable(savedSortable, actualSortable, ctx)
 }
 
-func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents) ([]*objects.EventModified, error) {
+func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents, ctx context.Context) ([]*objects.EventModified, error) {
 	// sort by creation date
 	sort.Sort(objects.SortableEvents(saved)) // S, i indices
 	sort.Sort(objects.SortableEvents(actual)) // A, j indices
@@ -81,6 +81,15 @@ func CompareSortable(saved objects.SortableEvents, actual objects.SortableEvents
 				if s.Start != a.Start || s.End != a.End {
 					d.Flag(objects.ModifiedTime)
 					modifications ++
+				}
+
+				if a.User != s.User {
+					if a.User == "" {
+						d.Flag(objects.UserRejected)
+					} else {
+						d.Flag(objects.SomethingWonkyHappened)
+						gaeLog.Debugf(ctx, "WONKY lol: Actual %#v; Saved %#v", a, s)
+					}
 				}
 
 				// TODO

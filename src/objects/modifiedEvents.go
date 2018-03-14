@@ -22,6 +22,8 @@ const (
 	ModifiedLocation
 	UserAccepted
 	UserRejected
+
+	SomethingWonkyHappened
 )
 
 func (em *EventModified) Flag(mod EventModification) (*EventModified) {
@@ -47,6 +49,8 @@ func (em *EventModified) ToListOfWords() ([]string) {
 			word = "user accepted"
 		case UserRejected:
 			word = "user rejected"
+		case SomethingWonkyHappened:
+			word = "something wonky happened"
 		}
 
 		words = append(words, word)

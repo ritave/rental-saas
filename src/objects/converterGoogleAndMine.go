@@ -2,21 +2,20 @@ package objects
 
 import (
 	"calendar-synch/src/utils"
-	"time"
 	"google.golang.org/api/calendar/v3"
 	"strconv"
+	"strings"
 )
 
-func ConvertGoogleToMine(gEvent *calendar.Event) (myEvent *Event, err error) {
+func ConvertGoogleToMine(gEvent *calendar.Event) (myEvent *Event) {
 	myEvent = &Event{}
 
-	// TODO
 	// user, what if user added someone as attendee or rejected being invited to it?
-	if len(gEvent.Attendees) != 1 {
-		return myEvent, ConvertingErrorConstructor(UserScrewedUpTheEvent)
-	} else {
-		myEvent.User = gEvent.Attendees[0].Email
+	probablyManyEmails := make([]string, len(gEvent.Attendees))
+	for ind, at := range gEvent.Attendees {
+		probablyManyEmails[ind] = at.Email
 	}
+	myEvent.User = strings.Join(probablyManyEmails, ";")
 
 	// creation date
 	creation := utils.StringToTime(gEvent.Created)
@@ -24,13 +23,6 @@ func ConvertGoogleToMine(gEvent *calendar.Event) (myEvent *Event, err error) {
 	myEvent.CreationDate = gEvent.Created
 
 	// date
-	dtStart, err := time.Parse(time.RFC3339, gEvent.Start.DateTime)
-	dtEnd, err := time.Parse(time.RFC3339, gEvent.End.DateTime)
-	now := time.Now()
-	if dtStart.Before(now) || dtEnd.Before(now) {
-		// not fatal I suppose
-		err = ConvertingErrorConstructor(DateHasPassed)
-	}
 	myEvent.Start = gEvent.Start.DateTime
 	myEvent.End = gEvent.End.DateTime
 
@@ -49,13 +41,13 @@ func ConvertGoogleToMine(gEvent *calendar.Event) (myEvent *Event, err error) {
 	// creationDate
 	myEvent.CreationDate = gEvent.Created
 
-	return myEvent, err
+	return myEvent
 }
 
 func ConvertGoogleToMineSlice(vs []*calendar.Event) []*Event {
 	vsm := make([]*Event, len(vs))
 	for i, v := range vs {
-		vsm[i], _ = ConvertGoogleToMine(v) // this shouldn't return an error, 'cause Google is the smarter one here
+		vsm[i] = ConvertGoogleToMine(v)
 	}
 	return vsm
 }
