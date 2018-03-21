@@ -10,12 +10,13 @@ import (
 	"strconv"
 	"time"
 	"rental-saas/src/utils"
-	"rental-saas/src/calendar_wrap"
 	"rental-saas/src/view_standalone/notify"
 	"github.com/rs/cors"
 	"rental-saas/src/view_standalone/calendar/event"
 	calendar2 "rental-saas/src/view_standalone/calendar"
 	"fmt"
+	. "rental-saas/src/presenter/wrapper"
+	"rental-saas/src/utils/config"
 )
 
 const NotifyGet = "/notify/get"
@@ -39,22 +40,23 @@ var lastReceipt presenter.ImportantChannelFields
 var ticker *utils.Ticker
 
 func main() {
+	app := New(config.C{})
 	mux := http.NewServeMux()
 
 	// events related
-	mux.HandleFunc("/calendar/event/create", event.Create)
-	mux.HandleFunc("/calendar/event/delete", event.Delete)
+	mux.Handle("/calendar/event/create", &AppHandler{app, event.CreateRequest{}, event.Create})
+	mux.Handle("/calendar/event/delete", &AppHandler{app, event.DeleteRequest{}, event.Delete})
 
 	// calendar related
-	mux.HandleFunc("/calendar/changed", calendar2.Changed)
-	mux.HandleFunc("/calendar/view", calendar2.View)
+	mux.Handle("/calendar/changed", &AppHandler{app, calendar2.ChangedRequest{}, calendar2.Changed})
+	mux.Handle("/calendar/view", &AppHandler{app, calendar2.ViewRequest{}, calendar2.View})
 	
 	// notify related
 	mux.HandleFunc("/notify/get", HandlerGet)
 	mux.HandleFunc("/notify/channel/delete", notify.DeleteChannel)
 
-	// keep alive & admin
-	mux.HandleFunc("/notify/ping", HandlerPing)
+	// keep alive & admin retarted
+	mux.HandleFunc("/ping", HandlerPing)
 
 	// cors
 	c := cors.New(cors.Options{
@@ -68,8 +70,6 @@ func main() {
 }
 
 func HandlerGet(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Thanks Google, I got this from here."))
-
 	ticker.Restart()
 }
 
@@ -78,12 +78,6 @@ func HandlerPing(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	background := context.Background()
-	cal := calendar_wrap.NewFlex(background)
-
-	if cal == nil {
-		log.Fatalf("Calendar As A Service was a nil")
-	}
 
 	ticker = utils.New(3*time.Second, func(){
 		err := notifyMainApp()
@@ -94,7 +88,7 @@ func init() {
 		}
 	})
 
-	registerReceiver(cal)
+	registerReceiver(cal) // TODO ticker in notify/get now
 	err := notifyMainApp()
 	if err != nil {
 		log.Printf("Notifying at init failed %s", err.Error())
