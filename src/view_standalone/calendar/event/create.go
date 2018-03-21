@@ -2,12 +2,8 @@ package event
 
 import (
 	"rental-saas/src/model"
-	"rental-saas/src/calendar_wrap"
-	"rental-saas/src/presenter/my_calendar"
-	"rental-saas/src/presenter/my_datastore"
 	"rental-saas/src/presenter/wrapper"
 	"errors"
-	"google.golang.org/appengine"
 )
 
 type CreateRequest struct {
@@ -33,19 +29,20 @@ func Create(a *wrapper.Application, r interface{}) (interface{}, error) {
 		return nil, errors.New("reflection failed")
 	}
 
-	err = model.EvenMoreChecksForTheEvent(model.Event(eventRequest))
+	// FIXME
+	wat := model.Event(eventRequest)
+	event := &wat
+	// TODO this should returned 'corrected' event (even a pointer to it)
+	err = model.EvenMoreChecksForTheEvent(*event)
 	if err != nil {
 		return nil, err
 	}
 
-	cal := calendar_wrap.NewStandard(r)
-	ctx := appengine.NewContext(r)
-
-	event, err := my_calendar.AddEvent(ctx, cal, model.Event(eventRequest))
+	event, err = a.Calendar.AddEvent(event)
 	if err != nil {
 		return nil, err
 	}
-	err = my_datastore.SaveEventInDatastore(ctx, event)
+	err = a.DB.SaveEvent(event)
 	if err != nil {
 		return nil, err
 	}

@@ -3,10 +3,19 @@ package wrapper
 import (
 	"rental-saas/src/utils/config"
 	"rental-saas/src/utils"
+	"rental-saas/src/model"
 )
 
-type DBInterface interface{}
-type CalendarInterface interface{}
+type DBInterface interface{
+	QueryEvents()
+	DeleteEvent(event *model.Event)
+	SaveEvent(event *model.Event) (error)
+	SynchroniseDatastore()
+}
+type CalendarInterface interface{
+	AddEvent(event *model.Event) (*model.Event, error)
+	DeleteEvent(event *model.Event) (error)
+}
 
 type Application struct {
 	DB DBInterface
