@@ -12,6 +12,8 @@ import (
 	"google.golang.org/appengine"
 	gaeLog "google.golang.org/appengine/log"
 	"rental-saas/src/presenter/my_datastore"
+	"rental-saas/src/presenter/wrapper"
+	"errors"
 )
 
 type ChangedResponse []Modification
@@ -20,11 +22,12 @@ type Modification struct {
 	model.Event
 }
 
-func Changed(w http.ResponseWriter, r *http.Request) {
-	log.Println("Captain, we are being hailed.")
-
-	cal := calendar_wrap.NewStandard(r)
-	ctx := appengine.NewContext(r)
+func Changed(a *wrapper.Application, r interface{}) (interface{}, error) {
+	var err error
+	request, ok := r.(ChangedResponse)
+	if !ok {
+		return nil, errors.New("reflection failed")
+	}
 
 	diff, err := presenter.FindChanged(ctx, cal)
 	if err != nil {

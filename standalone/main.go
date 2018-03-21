@@ -11,10 +11,10 @@ import (
 	"time"
 	"rental-saas/src/utils"
 	"rental-saas/src/calendar_wrap"
-	"rental-saas/src/view_appengine/notify"
+	"rental-saas/src/view_standalone/notify"
 	"github.com/rs/cors"
-	"rental-saas/src/view_appengine/calendar/event"
-	calendar2 "rental-saas/src/view_appengine/calendar"
+	"rental-saas/src/view_standalone/calendar/event"
+	calendar2 "rental-saas/src/view_standalone/calendar"
 	"fmt"
 )
 
