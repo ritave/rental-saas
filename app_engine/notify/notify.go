@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"log"
 	"context"
-	"rental-saas/src/logic"
+	"rental-saas/src/presenter"
 	"google.golang.org/api/calendar/v3"
 	"os"
 	"strconv"
@@ -12,7 +12,7 @@ import (
 	"rental-saas/src/utils"
 	"encoding/json"
 	"rental-saas/src/calendar_wrap"
-	"rental-saas/src/handlers/notify"
+	"rental-saas/src/view/notify"
 )
 
 const NotifyGet = "/notify/get"
@@ -26,7 +26,7 @@ const (
 	NotifyExpireAfter = "NOTIFY_EXPIRE_AFTER"
 )
 
-var lastReceipt logic.ImportantChannelFields
+var lastReceipt presenter.ImportantChannelFields
 var ticker *utils.Ticker
 
 func main() {
@@ -44,14 +44,14 @@ func HandlerGet(w http.ResponseWriter, r *http.Request) {
 	ticker.Restart()
 }
 
-var emptyICF = logic.ImportantChannelFields{}
+var emptyICF = presenter.ImportantChannelFields{}
 func HandlerPing(w http.ResponseWriter, r *http.Request) {
 	if lastReceipt == emptyICF {
 		w.Write([]byte("{\"Error\":\"there is no receiver registered\"}"))
 	} else {
 		bytez, _ := json.Marshal(&struct{
 			Error string
-			logic.ImportantChannelFields
+			presenter.ImportantChannelFields
 		}{
 			Error: "congratz",
 			ImportantChannelFields: lastReceipt,
@@ -96,7 +96,7 @@ func registerReceiver(cal *calendar.Service) {
 		log.Fatalf("ATOI: %s", err.Error())
 	}
 
-	err, channelReceipt := logic.WatchForChanges(cal, selfAddr + NotifyGet, time.Duration(expireAfter)*time.Second)
+	err, channelReceipt := presenter.WatchForChanges(cal, selfAddr + NotifyGet, time.Duration(expireAfter)*time.Second)
 	if err != nil {
 		log.Printf("Error sending watch request: %s", err.Error())
 

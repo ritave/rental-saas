@@ -1,9 +1,9 @@
 package calendar
 
 import (
-	"rental-saas/src/objects"
+	"rental-saas/src/model"
 	"rental-saas/src/calendar_wrap"
-	"rental-saas/src/logic"
+	"rental-saas/src/presenter"
 	"encoding/json"
 	"google.golang.org/appengine/urlfetch"
 	"bytes"
@@ -11,13 +11,13 @@ import (
 	"log"
 	"google.golang.org/appengine"
 	gaeLog "google.golang.org/appengine/log"
-	"rental-saas/src/logic/my_datastore"
+	"rental-saas/src/presenter/my_datastore"
 )
 
 type ChangedResponse []Modification
 type Modification struct {
 	Flags []string `json:"flags"`
-	objects.Event
+	model.Event
 }
 
 func Changed(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +26,7 @@ func Changed(w http.ResponseWriter, r *http.Request) {
 	cal := calendar_wrap.NewStandard(r)
 	ctx := appengine.NewContext(r)
 
-	diff, err := logic.FindChanged(ctx, cal)
+	diff, err := presenter.FindChanged(ctx, cal)
 	if err != nil {
 		gaeLog.Debugf(ctx, "Finding changes: %s", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
@@ -74,5 +74,5 @@ func Changed(w http.ResponseWriter, r *http.Request) {
 		log.Println(*resp)
 	}
 
-	logic.TakeActionOnDifferences(ctx, cal, diff)
+	presenter.TakeActionOnDifferences(ctx, cal, diff)
 }

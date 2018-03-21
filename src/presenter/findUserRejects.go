@@ -1,8 +1,8 @@
-package logic
+package presenter
 
 import (
-	"rental-saas/src/objects"
-	"rental-saas/src/logic/my_datastore"
+	"rental-saas/src/model"
+	"rental-saas/src/presenter/my_datastore"
 	"context"
 	"google.golang.org/api/calendar/v3"
 	"google.golang.org/appengine"
@@ -13,7 +13,7 @@ import (
 )
 
 // FIXME this is a major temporary hack
-func FindUserRejects(ctx context.Context, cal *calendar.Service) ([]*objects.Event, error) {
+func FindUserRejects(ctx context.Context, cal *calendar.Service) ([]*model.Event, error) {
 	saved, err := my_datastore.QueryEvents(ctx)
 	if err != nil {
 		return nil, err
@@ -22,8 +22,8 @@ func FindUserRejects(ctx context.Context, cal *calendar.Service) ([]*objects.Eve
 	if err != nil {
 		return nil, err
 	}
-	savedSortable := objects.SortableEvents(saved)
-	actualSortable := objects.SortableEvents(objects.ConvertGoogleToMineSlice(actual.Items))
+	savedSortable := model.SortableEvents(saved)
+	actualSortable := model.SortableEvents(model.ConvertGoogleToMineSlice(actual.Items))
 
 	if appengine.IsDevAppServer() {
 		log.Printf("\nSaved: %v\n", savedSortable)

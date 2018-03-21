@@ -1,4 +1,4 @@
-package logic
+package presenter
 
 import (
 	"google.golang.org/api/calendar/v3"

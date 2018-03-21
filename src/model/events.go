@@ -1,4 +1,4 @@
-package objects
+package model
 
 type Event struct {
 	Summary  string `json:"summary"`

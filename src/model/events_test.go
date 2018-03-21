@@ -1,8 +1,8 @@
-package objects
+package model
 
 import (
 	"testing"
-	"rental-saas/src/handlers/calendar/event"
+	"rental-saas/src/view/calendar/event"
 )
 
 func TestEvent_IsTheSame(t *testing.T) {

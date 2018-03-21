@@ -1,4 +1,4 @@
-package objects
+package model
 
 func NewModified(event *Event) (*EventModified) {
 	return &EventModified{

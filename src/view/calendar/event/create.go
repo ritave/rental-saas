@@ -1,15 +1,15 @@
 package event
 
 import (
-	"rental-saas/src/objects"
+	"rental-saas/src/model"
 	"rental-saas/src/calendar_wrap"
 	"io/ioutil"
 	"encoding/json"
 	"google.golang.org/appengine"
 	"net/http"
 	"log"
-	"rental-saas/src/logic/my_calendar"
-	"rental-saas/src/logic/my_datastore"
+	"rental-saas/src/presenter/my_calendar"
+	"rental-saas/src/presenter/my_datastore"
 	"rental-saas/src/utils"
 	gaeLog "google.golang.org/appengine/log"
 )
@@ -34,7 +34,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = objects.EvenMoreChecksForTheEvent(objects.Event(eventRequest))
+	err = model.EvenMoreChecksForTheEvent(model.Event(eventRequest))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		utils.WriteAsJSON(w, err.Error())
@@ -44,7 +44,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	cal := calendar_wrap.NewStandard(r)
 	ctx := appengine.NewContext(r)
 
-	event, err := my_calendar.AddEvent(ctx, cal, objects.Event(eventRequest))
+	event, err := my_calendar.AddEvent(ctx, cal, model.Event(eventRequest))
 	if err != nil {
 		gaeLog.Debugf(ctx, "Calendar create %s: %s", eventRequest.UUID, err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

@@ -1,17 +1,17 @@
-package logic
+package presenter
 
 import (
-	"rental-saas/src/objects"
+	"rental-saas/src/model"
 	"google.golang.org/api/calendar/v3"
 	"context"
 	gaeLog "google.golang.org/appengine/log"
 )
 
-func TakeActionOnDifferences(ctx context.Context, cal *calendar.Service, diff []*objects.EventModified) {
+func TakeActionOnDifferences(ctx context.Context, cal *calendar.Service, diff []*model.EventModified) {
 	for _, event := range diff {
 		for k := range event.Modifications {
 			switch k {
-			case objects.Deleted:
+			case model.Deleted:
 				// send again, with instructions on how to delete this
 				resp, err := cal.Events.Update("primary", event.Event.UUID, &calendar.Event{
 					Attendees: []*calendar.EventAttendee{{Email: event.Event.User}},
@@ -22,9 +22,9 @@ func TakeActionOnDifferences(ctx context.Context, cal *calendar.Service, diff []
 				} else {
 					gaeLog.Debugf(ctx, "Hacking succeeded: %#v", resp)
 				}
-			case objects.ModifiedLocation:
+			case model.ModifiedLocation:
 				// YOU KNOW WHAT TO DO
-			case objects.ModifiedTime:
+			case model.ModifiedTime:
 				// YOU KNOW WHAT TO DO
 			}
 		}

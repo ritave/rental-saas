@@ -3,8 +3,8 @@ package tests
 import (
 	"reflect"
 	"testing"
-	"rental-saas/src/logic"
-	"rental-saas/src/objects"
+	"rental-saas/src/presenter"
+	"rental-saas/src/model"
 	"time"
 	"rental-saas/src/utils"
 	"github.com/satori/go.uuid"
@@ -36,24 +36,24 @@ func TestCompareSortable(t *testing.T) {
 
 	// YO DAWG I HERD YOU LIKE VARIABLES SO WE PUT VARIABLES IN YO VARIABLES SO YOU CAN COMPUTE WHILE YOU COMPUTE
 
-	var xzibit1 = &objects.Event{"summary", "user1@mail.com", tts(zeroth), tts(first), "location1", tBS[0], uuidString()}
-	var xzibit1ModifiedTimeForward = &objects.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1", tBS[0], uuidString()}
-	var xzibit1ModifiedTimeForwardAndPlace = &objects.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1-modified", tBS[0], uuidString()}
+	var xzibit1 = &model.Event{"summary", "user1@mail.com", tts(zeroth), tts(first), "location1", tBS[0], uuidString()}
+	var xzibit1ModifiedTimeForward = &model.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1", tBS[0], uuidString()}
+	var xzibit1ModifiedTimeForwardAndPlace = &model.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1-modified", tBS[0], uuidString()}
 
-	var xzibit2 = &objects.Event{"summary", "user2@mail.com", tts(first), tts(second), "location2", tBS[1], uuidString()}
-	var xzibit2ModifiedTimeBackward = &objects.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2", tBS[1], uuidString()}
-	var xzibit2ModifiedTimeBackwardAndPlace = &objects.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2-modified", tBS[1], uuidString()}
+	var xzibit2 = &model.Event{"summary", "user2@mail.com", tts(first), tts(second), "location2", tBS[1], uuidString()}
+	var xzibit2ModifiedTimeBackward = &model.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2", tBS[1], uuidString()}
+	var xzibit2ModifiedTimeBackwardAndPlace = &model.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2-modified", tBS[1], uuidString()}
 
-	var xzibit3 = &objects.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3", tBS[2], uuidString()}
-	var xzibit3ModifiedPlace = &objects.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3-modified", tBS[2], uuidString()}
+	var xzibit3 = &model.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3", tBS[2], uuidString()}
+	var xzibit3ModifiedPlace = &model.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3-modified", tBS[2], uuidString()}
 
-	var xzibit4 = &objects.Event{"summary", "user4@mail.com", tts(third), tts(fourth), "location4", tBS[3], uuidString()}
-	var xzibit4SecondEvent = &objects.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4-some-other", tBS[6], uuidString()}
-	var xzibit4ThirdEvent = &objects.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4", tBS[7], uuidString()}
+	var xzibit4 = &model.Event{"summary", "user4@mail.com", tts(third), tts(fourth), "location4", tBS[3], uuidString()}
+	var xzibit4SecondEvent = &model.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4-some-other", tBS[6], uuidString()}
+	var xzibit4ThirdEvent = &model.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4", tBS[7], uuidString()}
 
-	var xzibit5 = &objects.Event{"summary", "user5@mail.com", tts(fourth), tts(fifth), "location5", tBS[4], uuidString()}
+	var xzibit5 = &model.Event{"summary", "user5@mail.com", tts(fourth), tts(fifth), "location5", tBS[4], uuidString()}
 
-	var xzibit6 = &objects.Event{"summary", "user6@mail.com", tts(fifth), tts(sixth), "location6", tBS[5], uuidString()}
+	var xzibit6 = &model.Event{"summary", "user6@mail.com", tts(fifth), tts(sixth), "location6", tBS[5], uuidString()}
 
 	//log.Printf("xzibit 1 %p %v\n", xzibit1, *xzibit1)
 	//log.Printf("xzibit 2 %p %v\n", xzibit2, *xzibit2)
@@ -64,86 +64,86 @@ func TestCompareSortable(t *testing.T) {
 
 
 	type args struct {
-		saved  objects.SortableEvents
-		actual objects.SortableEvents
+		saved  model.SortableEvents
+		actual model.SortableEvents
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    []*objects.EventModified
+		want    []*model.EventModified
 		wantErr bool
 	}{
-		{"empty", args{objects.SortableEvents{}, objects.SortableEvents{}}, []*objects.EventModified{}, false},
+		{"empty", args{model.SortableEvents{}, model.SortableEvents{}}, []*model.EventModified{}, false},
 
 		{"nothing changed", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{}, false},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{}, false},
 
 		{"2 added inside", args{
-			objects.SortableEvents{xzibit1, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{objects.NewModified(xzibit2).Flag(objects.Added)}, false},
+			model.SortableEvents{xzibit1, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{model.NewModified(xzibit2).Flag(model.Added)}, false},
 
 		{"2 deleted inside", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit1, xzibit3, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{objects.NewModified(xzibit2).Flag(objects.Deleted)}, false},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit1, xzibit3, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{model.NewModified(xzibit2).Flag(model.Deleted)}, false},
 
 		{"1 modified time forwards", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit1ModifiedTimeForward, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{objects.NewModified(xzibit1ModifiedTimeForward).Flag(objects.ModifiedTime)}, false},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit1ModifiedTimeForward, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{model.NewModified(xzibit1ModifiedTimeForward).Flag(model.ModifiedTime)}, false},
 
 		{"2 modified time backwards", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit1, xzibit2ModifiedTimeBackward, xzibit3, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{objects.NewModified(xzibit2ModifiedTimeBackward).Flag(objects.ModifiedTime)}, false},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit1, xzibit2ModifiedTimeBackward, xzibit3, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{model.NewModified(xzibit2ModifiedTimeBackward).Flag(model.ModifiedTime)}, false},
 
 		{"1 modified time forwards and place", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit1ModifiedTimeForwardAndPlace, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{objects.NewModified(xzibit1ModifiedTimeForwardAndPlace).Flag(objects.ModifiedTime).Flag(objects.ModifiedLocation)}, false},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit1ModifiedTimeForwardAndPlace, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{model.NewModified(xzibit1ModifiedTimeForwardAndPlace).Flag(model.ModifiedTime).Flag(model.ModifiedLocation)}, false},
 
 		{"2 modified time backwards and place", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit1, xzibit2ModifiedTimeBackwardAndPlace, xzibit3, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{objects.NewModified(xzibit2ModifiedTimeBackwardAndPlace).Flag(objects.ModifiedTime).Flag(objects.ModifiedLocation)}, false},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit1, xzibit2ModifiedTimeBackwardAndPlace, xzibit3, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{model.NewModified(xzibit2ModifiedTimeBackwardAndPlace).Flag(model.ModifiedTime).Flag(model.ModifiedLocation)}, false},
 
 		{"3 modified place", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3ModifiedPlace, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{objects.NewModified(xzibit3ModifiedPlace).Flag(objects.ModifiedLocation)}, false},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3ModifiedPlace, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{model.NewModified(xzibit3ModifiedPlace).Flag(model.ModifiedLocation)}, false},
 
 		{"5 added, 3 deleted and 2 modified", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit6},
-			objects.SortableEvents{xzibit1, xzibit2ModifiedTimeBackward, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{
-			objects.NewModified(xzibit2ModifiedTimeBackward).Flag(objects.ModifiedTime),
-			objects.NewModified(xzibit3).Flag(objects.Deleted),
-			objects.NewModified(xzibit5).Flag(objects.Added),
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit6},
+			model.SortableEvents{xzibit1, xzibit2ModifiedTimeBackward, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{
+			model.NewModified(xzibit2ModifiedTimeBackward).Flag(model.ModifiedTime),
+			model.NewModified(xzibit3).Flag(model.Deleted),
+			model.NewModified(xzibit5).Flag(model.Added),
 		}, false},
 
 		{"1 and 2 swapped places", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit2ModifiedTimeBackward, xzibit1ModifiedTimeForward, xzibit3, xzibit4, xzibit5, xzibit6},
-		}, []*objects.EventModified{
-			objects.NewModified(xzibit1ModifiedTimeForward).Flag(objects.ModifiedTime),
-			objects.NewModified(xzibit2ModifiedTimeBackward).Flag(objects.ModifiedTime),
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit2ModifiedTimeBackward, xzibit1ModifiedTimeForward, xzibit3, xzibit4, xzibit5, xzibit6},
+		}, []*model.EventModified{
+			model.NewModified(xzibit1ModifiedTimeForward).Flag(model.ModifiedTime),
+			model.NewModified(xzibit2ModifiedTimeBackward).Flag(model.ModifiedTime),
 		}, false},
 
 		{"4 added two more events", args{
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
-			objects.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6, xzibit4SecondEvent, xzibit4ThirdEvent},
-		}, []*objects.EventModified{
-			objects.NewModified(xzibit4SecondEvent).Flag(objects.Added),
-			objects.NewModified(xzibit4ThirdEvent).Flag(objects.Added),
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6},
+			model.SortableEvents{xzibit1, xzibit2, xzibit3, xzibit4, xzibit5, xzibit6, xzibit4SecondEvent, xzibit4ThirdEvent},
+		}, []*model.EventModified{
+			model.NewModified(xzibit4SecondEvent).Flag(model.Added),
+			model.NewModified(xzibit4ThirdEvent).Flag(model.Added),
 		}, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := logic.CompareSortable(tt.args.saved, tt.args.actual)
+			got, err := presenter.CompareSortable(tt.args.saved, tt.args.actual)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CompareSortable() error = %v, wantErr %v", err, tt.wantErr)
 				return

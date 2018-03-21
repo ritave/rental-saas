@@ -13,8 +13,8 @@ import (
 	"encoding/json"
 	stdLog "log"
 	"rental-saas/src/utils"
-	"rental-saas/src/logic/my_datastore"
-	"rental-saas/src/handlers/calendar"
+	"rental-saas/src/presenter/my_datastore"
+	"rental-saas/src/view/calendar"
 )
 
 var lastKey *datastore.Key

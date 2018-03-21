@@ -2,7 +2,7 @@ package my_calendar
 
 import (
 	"google.golang.org/api/calendar/v3"
-	"rental-saas/src/objects"
+	"rental-saas/src/model"
 	"time"
 	"fmt"
 	"context"
@@ -14,7 +14,7 @@ var wat = func() *bool {
 	return &b
 }
 
-func AddEvent(ctx context.Context, cal *calendar.Service, ev objects.Event) (*objects.Event, error){
+func AddEvent(ctx context.Context, cal *calendar.Service, ev model.Event) (*model.Event, error){
 	newEvent := &calendar.Event{
 		Summary:     ev.Summary,
 		Location:    ev.Location,
@@ -53,6 +53,6 @@ func AddEvent(ctx context.Context, cal *calendar.Service, ev objects.Event) (*ob
 		//ev.UUID = evResp.Id
 		//
 		//return &ev, nil
-		return objects.ConvertGoogleToMine(evResp), nil
+		return model.ConvertGoogleToMine(evResp), nil
 }
 

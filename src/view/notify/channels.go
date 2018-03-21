@@ -2,7 +2,7 @@ package notify
 
 import (
 	"net/http"
-	"rental-saas/src/logic"
+	"rental-saas/src/presenter"
 	"rental-saas/src/calendar_wrap"
 	"context"
 	"io"
@@ -36,7 +36,7 @@ func DeleteChannel(w http.ResponseWriter, r *http.Request) {
 	resp := make(DeleteChannelResponse)
 
 	for _, single := range req {
-		err = logic.StopChannel(cal, single.ResourceID, single.UUID)
+		err = presenter.StopChannel(cal, single.ResourceID, single.UUID)
 		if err != nil {
 			resp[single.UUID] = err.Error()
 		}

@@ -2,7 +2,7 @@ package calendar
 
 import (
 	"rental-saas/src/calendar_wrap"
-	"rental-saas/src/objects"
+	"rental-saas/src/model"
 	"encoding/json"
 	"net/http"
 	"google.golang.org/appengine"
@@ -21,9 +21,9 @@ func View(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := make([]objects.Event, 0)
+	result := make([]model.Event, 0)
 	for _, ev := range events.Items {
-		converted := objects.ConvertGoogleToMine(ev)
+		converted := model.ConvertGoogleToMine(ev)
 		result = append(result, *converted)
 	}
 	bytez, err := json.Marshal(&result)
