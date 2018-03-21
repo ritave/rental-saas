@@ -8,13 +8,13 @@ import (
 
 type DBInterface interface{
 	QueryEvents()
-	DeleteEvent(event *model.Event)
+	DeleteEvent(UUID string) (error)
 	SaveEvent(event *model.Event) (error)
 	SynchroniseDatastore()
 }
 type CalendarInterface interface{
 	AddEvent(event *model.Event) (*model.Event, error)
-	DeleteEvent(event *model.Event) (error)
+	DeleteEvent(UUID string) (error)
 }
 
 type Application struct {
