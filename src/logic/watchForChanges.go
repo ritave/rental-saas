@@ -5,7 +5,7 @@ import (
 	"github.com/satori/go.uuid"
 	"time"
 	"log"
-	"calendar-synch/src/utils"
+	"rental-saas/src/utils"
 )
 
 type ImportantChannelFields struct {

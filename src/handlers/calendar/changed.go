@@ -1,9 +1,9 @@
 package calendar
 
 import (
-	"calendar-synch/src/objects"
-	"calendar-synch/src/calendar_wrap"
-	"calendar-synch/src/logic"
+	"rental-saas/src/objects"
+	"rental-saas/src/calendar_wrap"
+	"rental-saas/src/logic"
 	"encoding/json"
 	"google.golang.org/appengine/urlfetch"
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"log"
 	"google.golang.org/appengine"
 	gaeLog "google.golang.org/appengine/log"
-	"calendar-synch/src/logic/my_datastore"
+	"rental-saas/src/logic/my_datastore"
 )
 
 type ChangedResponse []Modification

@@ -3,10 +3,10 @@ package tests
 import (
 	"reflect"
 	"testing"
-	"calendar-synch/src/logic"
-	"calendar-synch/src/objects"
+	"rental-saas/src/logic"
+	"rental-saas/src/objects"
 	"time"
-	"calendar-synch/src/utils"
+	"rental-saas/src/utils"
 	"github.com/satori/go.uuid"
 )
 

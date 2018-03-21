@@ -1,16 +1,16 @@
 package event
 
 import (
-	"calendar-synch/src/calendar_wrap"
+	"rental-saas/src/calendar_wrap"
 	"google.golang.org/appengine"
 	"io/ioutil"
 	"encoding/json"
 	"net/http"
 	"log"
 	gaeLog "google.golang.org/appengine/log"
-	"calendar-synch/src/logic/my_calendar"
-	"calendar-synch/src/logic/my_datastore"
-	"calendar-synch/src/utils"
+	"rental-saas/src/logic/my_calendar"
+	"rental-saas/src/logic/my_datastore"
+	"rental-saas/src/utils"
 )
 
 type DeleteRequest struct {

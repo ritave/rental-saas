@@ -10,9 +10,12 @@ import (
 	"strconv"
 	"time"
 	"rental-saas/src/utils"
-	"encoding/json"
 	"rental-saas/src/calendar_wrap"
 	"rental-saas/src/handlers/notify"
+	"github.com/rs/cors"
+	"rental-saas/src/handlers/calendar/event"
+	calendar2 "rental-saas/src/handlers/calendar"
+	"fmt"
 )
 
 const NotifyGet = "/notify/get"
@@ -26,13 +29,39 @@ const (
 	NotifyExpireAfter = "NOTIFY_EXPIRE_AFTER"
 )
 
+const (
+	CORSnpmdev    = "http://localhost:5000"
+	CORSappengine = "http://localhost:8080"
+	CORSdeployed  = "https://calendarcron.appspot.com"
+)
+
 var lastReceipt logic.ImportantChannelFields
 var ticker *utils.Ticker
 
 func main() {
-	http.HandleFunc(NotifyGet, HandlerGet)
-	http.HandleFunc(NotifyPing, HandlerPing)
-	http.HandleFunc(NotifyChannelDelete, notify.DeleteChannel)
+	mux := http.NewServeMux()
+
+	// events related
+	mux.HandleFunc("/calendar/event/create", event.Create)
+	mux.HandleFunc("/calendar/event/delete", event.Delete)
+
+	// calendar related
+	mux.HandleFunc("/calendar/changed", calendar2.Changed)
+	mux.HandleFunc("/calendar/view", calendar2.View)
+	
+	// notify related
+	mux.HandleFunc("/notify/get", HandlerGet)
+	mux.HandleFunc("/notify/channel/delete", notify.DeleteChannel)
+
+	// keep alive & admin
+	mux.HandleFunc("/notify/ping", HandlerPing)
+
+	// cors
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{CORSnpmdev, CORSappengine, CORSdeployed},
+	})
+	handler := c.Handler(mux)
+	http.Handle("/", handler)
 
 	log.Print("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
@@ -44,20 +73,8 @@ func HandlerGet(w http.ResponseWriter, r *http.Request) {
 	ticker.Restart()
 }
 
-var emptyICF = logic.ImportantChannelFields{}
 func HandlerPing(w http.ResponseWriter, r *http.Request) {
-	if lastReceipt == emptyICF {
-		w.Write([]byte("{\"Error\":\"there is no receiver registered\"}"))
-	} else {
-		bytez, _ := json.Marshal(&struct{
-			Error string
-			logic.ImportantChannelFields
-		}{
-			Error: "congratz",
-			ImportantChannelFields: lastReceipt,
-		})
-		w.Write(bytez)
-	}
+	fmt.Fprintln(w, "Pong")
 }
 
 func init() {

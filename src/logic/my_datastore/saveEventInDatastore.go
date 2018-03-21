@@ -3,7 +3,7 @@ package my_datastore
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
-	"calendar-synch/src/objects"
+	"rental-saas/src/objects"
 )
 
 func SaveEventInDatastore(ctx context.Context, ev *objects.Event) error {

@@ -1,8 +1,8 @@
 package calendar
 
 import (
-	"calendar-synch/src/calendar_wrap"
-	"calendar-synch/src/objects"
+	"rental-saas/src/calendar_wrap"
+	"rental-saas/src/objects"
 	"encoding/json"
 	"net/http"
 	"google.golang.org/appengine"

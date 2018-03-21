@@ -2,7 +2,7 @@ package objects
 
 import (
 	"regexp"
-	"calendar-synch/src/utils"
+	"rental-saas/src/utils"
 	"errors"
 	"time"
 	"log"

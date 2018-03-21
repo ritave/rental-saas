@@ -1,7 +1,7 @@
 package logic
 
 import (
-	"calendar-synch/src/objects"
+	"rental-saas/src/objects"
 	"google.golang.org/api/calendar/v3"
 	"context"
 	gaeLog "google.golang.org/appengine/log"

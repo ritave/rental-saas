@@ -2,7 +2,7 @@ package my_calendar
 
 import (
 	"google.golang.org/api/calendar/v3"
-	"calendar-synch/src/objects"
+	"rental-saas/src/objects"
 	"time"
 	"fmt"
 	"context"

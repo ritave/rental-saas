@@ -12,9 +12,9 @@ import (
 	"google.golang.org/appengine/log"
 	"encoding/json"
 	stdLog "log"
-	"calendar-synch/src/utils"
-	"calendar-synch/src/logic/my_datastore"
-	"calendar-synch/src/handlers/calendar"
+	"rental-saas/src/utils"
+	"rental-saas/src/logic/my_datastore"
+	"rental-saas/src/handlers/calendar"
 )
 
 var lastKey *datastore.Key

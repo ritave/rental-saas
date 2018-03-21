@@ -1,7 +1,7 @@
 package my_datastore
 
 import (
-	"calendar-synch/src/objects"
+	"rental-saas/src/objects"
 	"context"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"

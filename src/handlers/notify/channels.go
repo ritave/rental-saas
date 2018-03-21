@@ -2,8 +2,8 @@ package notify
 
 import (
 	"net/http"
-	"calendar-synch/src/logic"
-	"calendar-synch/src/calendar_wrap"
+	"rental-saas/src/logic"
+	"rental-saas/src/calendar_wrap"
 	"context"
 	"io"
 	"encoding/json"

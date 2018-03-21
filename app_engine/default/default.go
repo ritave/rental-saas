@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"google.golang.org/appengine"
 	"log"
-	"calendar-synch/src/handlers/calendar"
-	"calendar-synch/src/handlers/calendar/event"
+	"rental-saas/src/handlers/calendar"
+	"rental-saas/src/handlers/calendar/event"
 	"github.com/rs/cors"
 )
 

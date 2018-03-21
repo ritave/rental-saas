@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"calendar-synch/src/utils"
+	"rental-saas/src/utils"
 	"google.golang.org/api/calendar/v3"
 	"strconv"
 	"strings"

@@ -1,16 +1,16 @@
 package event
 
 import (
-	"calendar-synch/src/objects"
-	"calendar-synch/src/calendar_wrap"
+	"rental-saas/src/objects"
+	"rental-saas/src/calendar_wrap"
 	"io/ioutil"
 	"encoding/json"
 	"google.golang.org/appengine"
 	"net/http"
 	"log"
-	"calendar-synch/src/logic/my_calendar"
-	"calendar-synch/src/logic/my_datastore"
-	"calendar-synch/src/utils"
+	"rental-saas/src/logic/my_calendar"
+	"rental-saas/src/logic/my_datastore"
+	"rental-saas/src/utils"
 	gaeLog "google.golang.org/appengine/log"
 )
 

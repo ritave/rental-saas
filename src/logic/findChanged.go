@@ -4,10 +4,10 @@ import (
 	"google.golang.org/api/calendar/v3"
 	"golang.org/x/net/context"
 	"sort"
-	"calendar-synch/src/objects"
+	"rental-saas/src/objects"
 	"google.golang.org/appengine"
 	"log"
-	"calendar-synch/src/logic/my_datastore"
+	"rental-saas/src/logic/my_datastore"
 	gaeLog "google.golang.org/appengine/log"
 )
 

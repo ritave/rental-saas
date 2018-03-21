@@ -3,10 +3,10 @@ package my_datastore
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/appengine/datastore"
-	"calendar-synch/src/objects"
+	"rental-saas/src/objects"
 	"time"
 	"log"
-	"calendar-synch/src/utils"
+	"rental-saas/src/utils"
 )
 
 const EventKeyKind = "Event"
