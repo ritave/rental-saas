@@ -2,7 +2,7 @@ package presenter
 
 import (
 	"rental-saas/src/model"
-	"rental-saas/src/presenter/my_datastore"
+	"rental-saas/src/model/my_datastore"
 	"context"
 	"google.golang.org/api/calendar/v3"
 	"google.golang.org/appengine"

@@ -11,7 +11,7 @@ import (
 	"log"
 	"google.golang.org/appengine"
 	gaeLog "google.golang.org/appengine/log"
-	"rental-saas/src/presenter/my_datastore"
+	"rental-saas/src/model/my_datastore"
 )
 
 type ChangedResponse []Modification

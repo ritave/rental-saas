@@ -24,7 +24,7 @@ func Delete(a *wrapper.Application, r interface{}) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = a.DB.DeleteEvent(request.UUID)
+	err = a.Datastore.DeleteEvent(request.UUID)
 	if err != nil {
 		return nil, err
 	}

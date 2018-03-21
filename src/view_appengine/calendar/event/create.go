@@ -8,8 +8,8 @@ import (
 	"google.golang.org/appengine"
 	"net/http"
 	"log"
-	"rental-saas/src/presenter/my_calendar"
-	"rental-saas/src/presenter/my_datastore"
+	"rental-saas/src/model/my_calendar"
+	"rental-saas/src/model/my_datastore"
 	"rental-saas/src/utils"
 	gaeLog "google.golang.org/appengine/log"
 )

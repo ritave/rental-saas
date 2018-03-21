@@ -42,7 +42,7 @@ func Create(a *wrapper.Application, r interface{}) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = a.DB.SaveEvent(event)
+	err = a.Datastore.SaveEvent(event)
 	if err != nil {
 		return nil, err
 	}

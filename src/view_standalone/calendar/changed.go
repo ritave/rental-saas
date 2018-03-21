@@ -2,21 +2,17 @@ package calendar
 
 import (
 	"rental-saas/src/model"
-	"rental-saas/src/calendar_wrap"
 	"rental-saas/src/presenter"
 	"encoding/json"
-	"google.golang.org/appengine/urlfetch"
 	"bytes"
 	"net/http"
 	"log"
-	"google.golang.org/appengine"
-	gaeLog "google.golang.org/appengine/log"
-	"rental-saas/src/presenter/my_datastore"
 	"rental-saas/src/presenter/wrapper"
 	"errors"
 )
 
-type ChangedResponse []Modification
+type ChangedRequest struct{}
+type ChangedResponse struct{}
 type Modification struct {
 	Flags []string `json:"flags"`
 	model.Event
@@ -24,22 +20,19 @@ type Modification struct {
 
 func Changed(a *wrapper.Application, r interface{}) (interface{}, error) {
 	var err error
-	request, ok := r.(ChangedResponse)
+	_, ok := r.(ChangedRequest)
 	if !ok {
 		return nil, errors.New("reflection failed")
 	}
 
-	diff, err := presenter.FindChanged(ctx, cal)
+	diff, err := presenter.FindChanged(a.Datastore, a.Calendar)
 	if err != nil {
-		gaeLog.Debugf(ctx, "Finding changes: %s", err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return nil, err
 	}
 
 	// no errors returned, fingers crossed it works!
-	effect := my_datastore.SynchroniseDatastore(ctx, diff)
-	gaeLog.Debugf(ctx, "Synchronisation had following effect: %#v", effect)
-	//log.Printf("Synchronisation had following effect: %v", effect)
+	effect := a.Datastore.SynchroniseDatastore(diff)
+	log.Printf("Synchronisation had following effect: %v", effect)
 
 	response := make([]Modification, len(diff))
 
@@ -52,30 +45,21 @@ func Changed(a *wrapper.Application, r interface{}) (interface{}, error) {
 
 	bytez, err := json.Marshal(&response)
 	if err != nil {
-		log.Println("Error parsing response in Changed:", err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return nil, err
 	}
 
 	whereTo := "https://calendarcron.appspot.com/dummy/send"
-	if appengine.IsDevAppServer() {
-		log.Println("Replying with this response BACK to the source")
-		w.Write(bytez)
-		return
-	}
 
-	// X-Appengine-Inbound-Appid ?
-
-	client := urlfetch.Client(ctx)
+	client := http.DefaultClient
 	resp, err := client.Post(whereTo, "application/json", bytes.NewReader(bytez))
 	if err != nil {
 		log.Printf("Error sending changes to %s: %s", whereTo, err.Error())
-		gaeLog.Debugf(ctx, "Error sending changes to %s: %s", whereTo, err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 	} else {
-		log.Println("Unlikely success sending that son of a bitch")
+		log.Println("Success sending that son of a bitch")
 		log.Println(*resp)
 	}
 
-	presenter.TakeActionOnDifferences(ctx, cal, diff)
+	presenter.TakeActionOnDifferences(a.Calendar, diff)
+
+	return ChangedResponse{}, nil
 }

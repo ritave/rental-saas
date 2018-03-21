@@ -1,41 +1,37 @@
 package presenter
 
 import (
-	"google.golang.org/api/calendar/v3"
-	"golang.org/x/net/context"
 	"sort"
 	"rental-saas/src/model"
 	"google.golang.org/appengine"
 	"log"
-	"rental-saas/src/presenter/my_datastore"
-	gaeLog "google.golang.org/appengine/log"
+	"rental-saas/src/presenter/wrapper"
 )
 
 
-func FindChanged(ctx context.Context, cal *calendar.Service) ([]*model.EventModified, error) {
-	saved, err := my_datastore.QueryEvents(ctx)
+func FindChanged(ds wrapper.DatastoreInterface, cal wrapper.CalendarInterface) ([]*model.EventModified, error) {
+	saved, err := ds.QueryEvents()
 	if err != nil {
 		return nil, err
 	}
-	actual, err := cal.Events.List("primary").Do()
+
+	actual, err := cal.QueryEvents()
 	if err != nil {
 		return nil, err
 	}
+
 	savedSortable := model.SortableEvents(saved)
-	actualSortable := model.SortableEvents(model.ConvertGoogleToMineSlice(actual.Items))
+	actualSortable := model.SortableEvents(actual)
 
 	if appengine.IsDevAppServer() {
 		log.Printf("\nSaved: %v\n", savedSortable)
 		log.Printf("\nActual: %v\n", actualSortable)
-	} else {
-		gaeLog.Debugf(ctx, "\nSaved: %v\n", savedSortable)
-		gaeLog.Debugf(ctx, "\nActual: %v\n", actualSortable)
 	}
 
-	return CompareSortable(savedSortable, actualSortable, ctx)
+	return CompareSortable(savedSortable, actualSortable)
 }
 
-func CompareSortable(saved model.SortableEvents, actual model.SortableEvents, ctx context.Context) ([]*model.EventModified, error) {
+func CompareSortable(saved model.SortableEvents, actual model.SortableEvents) ([]*model.EventModified, error) {
 	// sort by creation date
 	sort.Sort(model.SortableEvents(saved))  // S, i indices
 	sort.Sort(model.SortableEvents(actual)) // A, j indices
@@ -88,7 +84,6 @@ func CompareSortable(saved model.SortableEvents, actual model.SortableEvents, ct
 						d.Flag(model.UserRejected)
 					} else {
 						d.Flag(model.SomethingWonkyHappened)
-						gaeLog.Debugf(ctx, "WONKY lol: Actual %#v; Saved %#v", a, s)
 					}
 				}
 

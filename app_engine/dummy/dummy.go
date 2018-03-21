@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	stdLog "log"
 	"rental-saas/src/utils"
-	"rental-saas/src/presenter/my_datastore"
+	"rental-saas/src/model/my_datastore"
 	"rental-saas/src/view_appengine/calendar"
 )
 
