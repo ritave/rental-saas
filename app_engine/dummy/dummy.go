@@ -14,7 +14,7 @@ import (
 	stdLog "log"
 	"rental-saas/src/utils"
 	"rental-saas/src/presenter/my_datastore"
-	"rental-saas/src/view/calendar"
+	"rental-saas/src/view_appengine/calendar"
 )
 
 var lastKey *datastore.Key

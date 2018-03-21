@@ -12,7 +12,7 @@ import (
 	"rental-saas/src/utils"
 	"encoding/json"
 	"rental-saas/src/calendar_wrap"
-	"rental-saas/src/view/notify"
+	"rental-saas/src/view_appengine/notify"
 )
 
 const NotifyGet = "/notify/get"

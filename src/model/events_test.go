@@ -2,7 +2,7 @@ package model
 
 import (
 	"testing"
-	"rental-saas/src/view/calendar/event"
+	"rental-saas/src/view_appengine/calendar/event"
 )
 
 func TestEvent_IsTheSame(t *testing.T) {
