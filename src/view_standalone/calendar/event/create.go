@@ -32,7 +32,7 @@ func Create(a *wrapper.Application, r interface{}) (interface{}, error) {
 	// FIXME
 	wat := model.Event(eventRequest)
 	event := &wat
-	// TODO this should returned 'corrected' event (even a pointer to it)
+	// TODO this should return 'corrected' event (even a pointer to it)
 	err = model.EvenMoreChecksForTheEvent(*event)
 	if err != nil {
 		return nil, err

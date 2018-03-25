@@ -6,6 +6,7 @@ import (
 	"rental-saas/src/model"
 	"rental-saas/src/model/my_datastore"
 	"google.golang.org/api/calendar/v3"
+	"time"
 )
 
 type DatastoreInterface interface{
@@ -19,6 +20,7 @@ type CalendarInterface interface{
 	DeleteEvent(UUID string) (error)
 	QueryEvents() ([]*model.Event, error)
 	UpdateEvent(UUID string, event *calendar.Event) (error)
+	WatchForChanges(receiver string, expireAfter time.Duration) (error)
 }
 
 type Application struct {

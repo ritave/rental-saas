@@ -3,9 +3,7 @@ package main
 import (
 	"net/http"
 	"log"
-	"context"
 	"rental-saas/src/presenter"
-	"google.golang.org/api/calendar/v3"
 	"os"
 	"strconv"
 	"time"
@@ -77,7 +75,7 @@ func HandlerPing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Pong")
 }
 
-func init() {
+func notifySetup(application *Application) {
 
 	ticker = utils.New(3*time.Second, func(){
 		err := notifyMainApp()
@@ -88,14 +86,14 @@ func init() {
 		}
 	})
 
-	registerReceiver(cal) // TODO ticker in notify/get now
+	registerReceiver(application.Calendar) // TODO ticker in notify/get now
 	err := notifyMainApp()
 	if err != nil {
 		log.Printf("Notifying at init failed %s", err.Error())
 	}
 }
 
-func registerReceiver(cal *calendar.Service) {
+func registerReceiver(cal CalendarInterface) {
 	log.Println("Registering receiver")
 	selfAddr := getStringFromEnv(EnvApp, "https://calendarcron.appspot.com/")
 
@@ -107,7 +105,7 @@ func registerReceiver(cal *calendar.Service) {
 		log.Fatalf("ATOI: %s", err.Error())
 	}
 
-	err, channelReceipt := presenter.WatchForChanges(cal, selfAddr + NotifyGet, time.Duration(expireAfter)*time.Second)
+	err = cal.WatchForChanges(selfAddr + NotifyGet, time.Duration(expireAfter)*time.Second)
 	if err != nil {
 		log.Printf("Error sending watch request: %s", err.Error())
 
@@ -120,10 +118,6 @@ func registerReceiver(cal *calendar.Service) {
 		}()
 		return
 	}
-
-	// global thingy for pingy
-	lastReceipt = channelReceipt
-	// wat
 
 	// if everything went smoothly, carry on with usual refresh-after-an-hour-or-so
 	go func() {
