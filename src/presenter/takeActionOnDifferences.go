@@ -3,11 +3,11 @@ package presenter
 import (
 	"rental-saas/src/model"
 	"google.golang.org/api/calendar/v3"
-	"rental-saas/src/presenter/wrapper"
 	"log"
+	"rental-saas/src/presenter/interfaces"
 )
 
-func TakeActionOnDifferences(cal wrapper.CalendarInterface, diff []*model.EventModified) {
+func TakeActionOnDifferences(cal interfaces.CalendarInterface, diff []*model.EventModified) {
 	for _, event := range diff {
 		for k := range event.Modifications {
 			switch k {

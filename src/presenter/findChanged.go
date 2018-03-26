@@ -5,11 +5,11 @@ import (
 	"rental-saas/src/model"
 	"google.golang.org/appengine"
 	"log"
-	"rental-saas/src/presenter/wrapper"
+	"rental-saas/src/presenter/interfaces"
 )
 
 
-func FindChanged(ds wrapper.DatastoreInterface, cal wrapper.CalendarInterface) ([]*model.EventModified, error) {
+func FindChanged(ds interfaces.DatastoreInterface, cal interfaces.CalendarInterface) ([]*model.EventModified, error) {
 	saved, err := ds.QueryEvents()
 	if err != nil {
 		return nil, err

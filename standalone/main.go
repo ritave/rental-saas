@@ -11,10 +11,11 @@ import (
 	"rental-saas/src/view_standalone/notify"
 	"github.com/rs/cors"
 	"rental-saas/src/view_standalone/calendar/event"
-	calendar2 "rental-saas/src/view_standalone/calendar"
+	"rental-saas/src/view_standalone/calendar"
 	"fmt"
 	. "rental-saas/src/presenter/wrapper"
 	"rental-saas/src/utils/config"
+	"rental-saas/src/presenter/interfaces"
 )
 
 const NotifyGet = "/notify/get"
@@ -46,8 +47,8 @@ func main() {
 	mux.Handle("/calendar/event/delete", &AppHandler{app, event.DeleteRequest{}, event.Delete})
 
 	// calendar related
-	mux.Handle("/calendar/changed", &AppHandler{app, calendar2.ChangedRequest{}, calendar2.Changed})
-	mux.Handle("/calendar/view", &AppHandler{app, calendar2.ViewRequest{}, calendar2.View})
+	mux.Handle("/calendar/changed", &AppHandler{app, calendar.ChangedRequest{}, calendar.Changed})
+	mux.Handle("/calendar/view", &AppHandler{app, calendar.ViewRequest{}, calendar.View})
 	
 	// notify related
 	mux.HandleFunc("/notify/get", HandlerGet)
@@ -93,7 +94,7 @@ func notifySetup(application *Application) {
 	}
 }
 
-func registerReceiver(cal CalendarInterface) {
+func registerReceiver(cal interfaces.CalendarInterface) {
 	log.Println("Registering receiver")
 	selfAddr := getStringFromEnv(EnvApp, "https://calendarcron.appspot.com/")
 

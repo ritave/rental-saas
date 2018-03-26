@@ -5,16 +5,19 @@ import (
 	"rental-saas/src/model"
 	"time"
 	"fmt"
-	"context"
 	gaeLog "google.golang.org/appengine/log"
+	"context"
 )
+
+// FIXME temporary
+var ctx = context.Background()
 
 var wat = func() *bool {
 	b := false
 	return &b
 }
 
-func AddEvent(ctx context.Context, cal *calendar.Service, ev model.Event) (*model.Event, error){
+func AddEvent(cal *calendar.Service, ev *model.Event) (*model.Event, error){
 	newEvent := &calendar.Event{
 		Summary:     ev.Summary,
 		Location:    ev.Location,
