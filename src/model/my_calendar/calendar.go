@@ -8,7 +8,6 @@ import (
 )
 
 type Calendar struct {
-	GoogleCal *calendar.Calendar
 	Service *calendar.Service
 }
 
