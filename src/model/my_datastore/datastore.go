@@ -2,6 +2,11 @@ package my_datastore
 
 import (
 	"rental-saas/src/model"
+	"rental-saas/src/utils/config"
+	"database/sql"
+	"log"
+	"fmt"
+	"errors"
 )
 
 // TODO
@@ -9,9 +14,22 @@ import (
 // get some kind of a database: MySQL, SQLite?
 // worst-case scenario would be Mongo
 
+const (
+	dbFile         = "calendar.db"
+	sqlTableEvents = `
+	DROP TABLE events;
+	CREATE TABLE events (
+		uuid INTEGER NOT NULL PRIMARY KEY,
+		jsonifiedObject TEXT
+	);
+	`
+)
+
 type Datastore struct {
 	// not really a persistent database, lol
-	ds map[string]*model.Event
+	ds     map[string]*model.Event
+	dbFile string
+	db     *sql.DB
 }
 
 func (ds *Datastore) SynchroniseDatastore([]*model.EventModified) (SynchEffect) {
@@ -38,3 +56,72 @@ func (ds *Datastore) SaveEvent(event *model.Event) (error) {
 	return nil
 }
 
+func RowsToEvent(rows *sql.Rows) (*model.Event, error) {
+	var r model.Event
+	if rows.Next() {
+		err := rows.Scan(
+			&r.UUID,
+			&r.User,
+			&r.Start,
+			&r.End,
+			&r.CreationDate,
+			&r.Summary,
+			&r.Location,
+			&r.Timestamp,
+		)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, errors.New("empty rows")
+	}
+
+	return &r, nil
+}
+
+func EventToQuery(e *model.Event) (string) {
+	return fmt.Sprintf("INSERT INTO events VALUES (%s, %s, %s, %s, %s, %s, %s, %d)",
+		e.UUID,
+		e.User,
+		e.Start,
+		e.End,
+		e.CreationDate,
+		e.Summary,
+		e.Location,
+		e.Timestamp,
+	)
+}
+
+func (ds *Datastore) GetEvent(UUID string) (*model.Event, error) {
+	getFirst := fmt.Sprintf(`SELECT * FROM events WHERE uuid = %s`, UUID)
+	rows, err := ds.db.Query(getFirst)
+	defer rows.Close()
+	if err != nil {
+		return nil, err
+	}
+	return RowsToEvent(rows)
+}
+
+func (ds *Datastore) PutEvent(event *model.Event) (error) {
+	_, err := ds.db.Exec(EventToQuery(event))
+	return err
+}
+
+func New(c config.C) *Datastore {
+	db, err := sql.Open("sqlite3", dbFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//defer db.Close()
+
+	_, err = db.Exec(sqlTableEvents)
+	if err != nil {
+		log.Fatalf("%q: %s\n", err, sqlTableEvents)
+		return nil
+	}
+
+	return &Datastore{
+		db:     db,
+		dbFile: dbFile,
+	}
+}
