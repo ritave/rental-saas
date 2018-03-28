@@ -5,10 +5,20 @@ import (
 	"time"
 	"google.golang.org/api/calendar/v3"
 	"rental-saas/src/presenter"
+	"rental-saas/src/utils/config"
+	"rental-saas/src/calendar_wrap"
+	"context"
 )
 
 type Calendar struct {
 	Service *calendar.Service
+}
+
+func New(c config.C) (*Calendar) {
+	service := calendar_wrap.NewFlex(context.Background())
+	return &Calendar{
+		Service: service,
+	}
 }
 
 func (c *Calendar) QueryEvents() ([]*model.Event, error) {
@@ -36,5 +46,4 @@ func (c *Calendar) AddEvent(event *model.Event) (*model.Event, error) {
 func (c *Calendar) DeleteEvent(UUID string) (error) {
 	return DeleteEvent(c.Service, UUID)
 }
-
 

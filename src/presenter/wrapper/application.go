@@ -5,6 +5,7 @@ import (
 	"rental-saas/src/utils"
 	"rental-saas/src/presenter/interfaces"
 	"rental-saas/src/model/my_datastore"
+	"rental-saas/src/model/my_calendar"
 )
 
 type Application struct {
@@ -22,5 +23,6 @@ type Utils struct {
 func New(c config.C) *Application {
 	return &Application{
 		Datastore: my_datastore.New(c),
+		Calendar: my_calendar.New(c),
 	}
 }
