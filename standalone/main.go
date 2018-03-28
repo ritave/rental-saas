@@ -109,7 +109,7 @@ func notifySetup(application *Application) {
 		}
 	})
 
-	registerReceiver(application.Calendar) // TODO ticker in notify/get now
+	registerReceiver(application.Calendar)
 	err := notifyMainApp()
 	if err != nil {
 		log.Printf("Notifying at init failed %s", err.Error())
@@ -120,8 +120,8 @@ func registerReceiver(cal interfaces.CalendarInterface) {
 	log.Println("Registering receiver")
 	selfAddr := getStringFromEnv(EnvApp, "https://calendarcron.appspot.com/")
 
-	// TODO refresh after every some constant time interval?
-	// TODO also there are some refreshing tokens flying around soo... yeeeah...
+	//  refresh after every some constant time interval?
+	// also there are some refreshing tokens flying around soo... yeeeah...
 	
 	expireAfter, err := strconv.Atoi(getStringFromEnv(NotifyExpireAfter, "3600"))
 	if err != nil {

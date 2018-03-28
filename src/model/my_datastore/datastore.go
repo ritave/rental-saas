@@ -154,16 +154,6 @@ func (ds *Datastore) Restart() {
 	ds.db.Exec(sqlCreateTableEvents)
 }
 
-func (ds *Datastore) dryRun() (error) {
-	_, err := ds.db.Exec(sqlCreateTableEvents)
-	if err != nil {
-		log.Fatalf("%q: %s\n", err, sqlCreateTableEvents)
-		return nil
-	}
-
-	return err
-}
-
 func New(c config.C) *Datastore {
 	db, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
