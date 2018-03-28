@@ -6,21 +6,20 @@ import (
 	"database/sql"
 	"log"
 	"fmt"
-	"errors"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 // TODO create table on first run
 
 const (
-	dbFile         = "calendar.db"
+	dbFile             = "calendar.db"
 	sqlTableEventsJSON = `
 		DROP TABLE events;
 		CREATE TABLE events (
 			uuid INTEGER NOT NULL PRIMARY KEY,
 			jsonifiedObject TEXT
 		);
-		`
+	`
 	sqlCreateTableEvents = `
 		CREATE TABLE events (
 			uuid TEXT NOT NULL PRIMARY KEY,
@@ -32,13 +31,16 @@ const (
 			location TEXT,
 			timestamp_ms INT
 		);
-		`
+	`
+	sqlDropTableEvents = `
+		DROP TABLE events;
+	`
 )
+
 // (uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms)
 
 type Datastore struct {
 	// not really a persistent database, lol
-	ds     map[string]*model.Event
 	dbFile string
 	db     *sql.DB
 }
@@ -48,50 +50,45 @@ func (ds *Datastore) SynchroniseDatastore([]*model.EventModified) (SynchEffect) 
 }
 
 func (ds *Datastore) QueryEvents() ([]*model.Event, error) {
-	result := make([]*model.Event, len(ds.ds))
-	i := 0
-	for _, v := range ds.ds {
-		result[i] = v
-		i ++
+	getFirst := fmt.Sprintf(`SELECT * FROM events`)
+	rows, err := ds.db.Query(getFirst)
+	defer rows.Close()
+	if err != nil {
+		return nil, err
 	}
-	return result, nil
+	// TODO
+	return nil, nil
 }
 
 func (ds *Datastore) DeleteEvent(UUID string) (error) {
-	ds.ds[UUID] = nil
-	return nil
+	panic("implement me")
 }
 
 func (ds *Datastore) SaveEvent(event *model.Event) (error) {
-	ds.ds[event.UUID] = event
-	return nil
+	panic("implement me")
 }
 
 func RowsToEvent(rows *sql.Rows) (*model.Event, error) {
 	var r model.Event
-	if rows.Next() {
-		err := rows.Scan(
-			&r.UUID,
-			&r.User,
-			&r.Start,
-			&r.End,
-			&r.CreationDate,
-			&r.Summary,
-			&r.Location,
-			&r.Timestamp,
-		)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		return nil, errors.New("empty rows")
+	err := rows.Scan(
+		&r.UUID,
+		&r.User,
+		&r.Start,
+		&r.End,
+		&r.CreationDate,
+		&r.Summary,
+		&r.Location,
+		&r.Timestamp,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return &r, nil
 }
 
 func EventToQuery(e *model.Event) (string) {
-	return fmt.Sprintf("INSERT INTO events(uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms) " +
+	return fmt.Sprintf("INSERT INTO events(uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms) "+
 		"VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 		e.UUID,
 		e.User,
@@ -105,8 +102,9 @@ func EventToQuery(e *model.Event) (string) {
 }
 
 func (ds *Datastore) GetEvent(UUID string) (*model.Event, error) {
-	getFirst := fmt.Sprintf(`SELECT * FROM events WHERE uuid = %s`, UUID)
-	rows, err := ds.db.Query(getFirst)
+	getFirst := `SELECT * FROM events WHERE uuid = ?`
+	rows, err := ds.db.Query(getFirst, UUID)
+	log.Println(rows)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
@@ -114,9 +112,18 @@ func (ds *Datastore) GetEvent(UUID string) (*model.Event, error) {
 	return RowsToEvent(rows)
 }
 
+func (ds *Datastore) GetEvents() ([]*model.Event, error) {
+
+}
+
 func (ds *Datastore) PutEvent(event *model.Event) (error) {
 	_, err := ds.db.Exec(EventToQuery(event))
 	return err
+}
+
+func (ds *Datastore) Restart() {
+	ds.db.Exec(sqlDropTableEvents)
+	ds.db.Exec(sqlCreateTableEvents)
 }
 
 func (ds *Datastore) dryRun() (error) {
@@ -135,7 +142,6 @@ func New(c config.C) *Datastore {
 		log.Fatal(err)
 	}
 	//defer db.Close()
-
 
 	return &Datastore{
 		db:     db,

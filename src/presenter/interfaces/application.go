@@ -13,8 +13,10 @@ type DatastoreInterface interface{
 	QueryEvents() ([]*model.Event, error)
 	PutEvent(event *model.Event) (error)
 	GetEvent(UUID string) (*model.Event, error)
+	GetEvents() ([]*model.Event, error)
 	DeleteEvent(UUID string) (error)
 	SaveEvent(event *model.Event) (error)
+	Restart() ()
 	SynchroniseDatastore([]*model.EventModified) (my_datastore.SynchEffect)
 }
 type CalendarInterface interface{

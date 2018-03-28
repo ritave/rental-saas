@@ -66,6 +66,8 @@ func main() {
 	http.Handle("/", handler)
 
 	// FIXME tests beforehand
+	app.Datastore.Restart()
+
 	events, err := app.Calendar.QueryEvents()
 	if err != nil {
 		log.Fatalf("Querying from calendar: %s", err.Error())
