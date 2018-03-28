@@ -5,7 +5,6 @@ import (
 	"rental-saas/src/utils/config"
 	"database/sql"
 	"log"
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"errors"
 )
@@ -41,6 +40,13 @@ const (
 	`
 	sqlCountAll = `
 		SELECT count(*) FROM events;
+	`
+	sqlDeleteEvent = `
+		DELETE FROM events WHERE uuid = ?;
+	`
+	sqlInsertEvent = `INSERT INTO events
+		(uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms) 
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 	`
 )
 
@@ -79,7 +85,7 @@ func (ds *Datastore) QueryEvents() ([]*model.Event, error) {
 	result := make([]*model.Event, count)
 	i := 0
 	for rows.Next() {
-		ev, err := RowsToEvent(rows)
+		ev, err := RowToEvent(rows)
 		if err != nil {
 			// TODO what do?
 			log.Printf("Extracting failed: %s", err.Error())
@@ -93,14 +99,25 @@ func (ds *Datastore) QueryEvents() ([]*model.Event, error) {
 }
 
 func (ds *Datastore) DeleteEvent(UUID string) (error) {
-	panic("implement me")
+	_, err := ds.db.Exec(sqlDeleteEvent, UUID)
+	return err
 }
 
 func (ds *Datastore) SaveEvent(event *model.Event) (error) {
-	panic("implement me")
+	_, err := ds.db.Exec(sqlInsertEvent,
+		event.UUID,
+		event.User,
+		event.Start,
+		event.End,
+		event.CreationDate,
+		event.Summary,
+		event.Location,
+		event.Timestamp,
+	)
+	return err
 }
 
-func RowsToEvent(rows *sql.Rows) (*model.Event, error) {
+func RowToEvent(rows *sql.Rows) (*model.Event, error) {
 	var r model.Event
 
 	rows.Next()
@@ -121,20 +138,6 @@ func RowsToEvent(rows *sql.Rows) (*model.Event, error) {
 	return &r, nil
 }
 
-func EventToQuery(e *model.Event) (string) {
-	return fmt.Sprintf("INSERT INTO events(uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms) "+
-		"VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
-		e.UUID,
-		e.User,
-		e.Start,
-		e.End,
-		e.CreationDate,
-		e.Summary,
-		e.Location,
-		e.Timestamp,
-	)
-}
-
 func (ds *Datastore) GetEvent(UUID string) (*model.Event, error) {
 	getFirst := `SELECT * FROM events WHERE uuid = ?`
 	rows, err := ds.db.Query(getFirst, UUID)
@@ -143,12 +146,7 @@ func (ds *Datastore) GetEvent(UUID string) (*model.Event, error) {
 	if err != nil {
 		return nil, err
 	}
-	return RowsToEvent(rows)
-}
-
-func (ds *Datastore) PutEvent(event *model.Event) (error) {
-	_, err := ds.db.Exec(EventToQuery(event))
-	return err
+	return RowToEvent(rows)
 }
 
 func (ds *Datastore) Restart() {

@@ -11,7 +11,6 @@ import (
 
 type DatastoreInterface interface{
 	QueryEvents() ([]*model.Event, error)
-	PutEvent(event *model.Event) (error)
 	GetEvent(UUID string) (*model.Event, error)
 	DeleteEvent(UUID string) (error)
 	SaveEvent(event *model.Event) (error)

@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"log"
-	"rental-saas/src/presenter"
 	"os"
 	"strconv"
 	"time"
@@ -35,7 +34,6 @@ const (
 	CORSdeployed  = "https://calendarcron.appspot.com"
 )
 
-var lastReceipt presenter.ImportantChannelFields
 var ticker *utils.Ticker
 
 func main() {
@@ -65,28 +63,28 @@ func main() {
 	handler := c.Handler(mux)
 	http.Handle("/", handler)
 
-	// FIXME tests beforehand
+	// TODO make optional
 	app.Datastore.Restart()
 
-	events, err := app.Calendar.QueryEvents()
-	if err != nil {
-		log.Fatalf("Querying from calendar: %s", err.Error())
-	}
-	log.Printf("Brought %d events", len(events))
-	for _, ev := range events {
-		err := app.Datastore.PutEvent(ev)
-		if err != nil {
-			log.Printf("Putting event: %s", err.Error())
-			log.Printf("Culprit: %#v", *ev)
-		}
-	}
-
-	events, err = app.Datastore.QueryEvents()
-	if err != nil {
-		log.Fatalf("Bringing events from the dead: %s", err.Error())
-	}
-	log.Printf("Brought %d events", len(events))
-	// FIXME
+	// TODO this would make a good test (sans getting events from calendar)
+	//events, err := app.Calendar.QueryEvents()
+	//if err != nil {
+	//	log.Fatalf("Querying from calendar: %s", err.Error())
+	//}
+	//log.Printf("Brought %d events", len(events))
+	//for _, ev := range events {
+	//	err := app.Datastore.SaveEvent(ev)
+	//	if err != nil {
+	//		log.Printf("Putting event: %s", err.Error())
+	//		log.Printf("Culprit: %#v", *ev)
+	//	}
+	//}
+	//
+	//events, err = app.Datastore.QueryEvents()
+	//if err != nil {
+	//	log.Fatalf("Bringing events from the dead: %s", err.Error())
+	//}
+	//log.Printf("Brought %d events", len(events))
 
 	log.Print("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
