@@ -39,7 +39,8 @@ var lastReceipt presenter.ImportantChannelFields
 var ticker *utils.Ticker
 
 func main() {
-	app := New(config.C{})
+	conf := config.C{}
+	app := New(conf)
 	mux := http.NewServeMux()
 
 	// events related
@@ -63,6 +64,26 @@ func main() {
 	})
 	handler := c.Handler(mux)
 	http.Handle("/", handler)
+
+	// FIXME tests beforehand
+	events, err := app.Calendar.QueryEvents()
+	if err != nil {
+		log.Fatalf("Querying from calendar: %s", err.Error())
+	}
+	log.Printf("Brought %d events", len(events))
+	for _, ev := range events {
+		err := app.Datastore.PutEvent(ev)
+		if err != nil {
+			log.Printf("Putting event: %s", err.Error())
+		}
+	}
+
+	events, err = app.Datastore.QueryEvents()
+	if err != nil {
+		log.Fatalf("Bringing events from the dead: %s", err.Error())
+	}
+	log.Printf("Brought %d events", len(events))
+	// FIXME
 
 	log.Print("Listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
