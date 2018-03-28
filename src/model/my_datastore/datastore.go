@@ -14,11 +14,23 @@ import (
 
 const (
 	dbFile         = "calendar.db"
-	sqlTableEvents = `
+	sqlTableEventsJSON = `
 		DROP TABLE events;
 		CREATE TABLE events (
 			uuid INTEGER NOT NULL PRIMARY KEY,
 			jsonifiedObject TEXT
+		);
+		`
+	sqlCreateTableEvents = `
+		CREATE TABLE events (
+			uuid INTEGER NOT NULL PRIMARY KEY,
+			user text,
+			start_date text,
+			end_date text,
+			creationdate text,
+			summary text,
+			location text,
+			timestamp_ms int 
 		);
 		`
 )
@@ -105,6 +117,16 @@ func (ds *Datastore) PutEvent(event *model.Event) (error) {
 	return err
 }
 
+func (ds *Datastore) dryRun() (error) {
+	_, err := ds.db.Exec(sqlCreateTableEvents)
+	if err != nil {
+		log.Fatalf("%q: %s\n", err, sqlCreateTableEvents)
+		return nil
+	}
+
+	return err
+}
+
 func New(c config.C) *Datastore {
 	db, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
@@ -112,11 +134,6 @@ func New(c config.C) *Datastore {
 	}
 	//defer db.Close()
 
-	//_, err = db.Exec(sqlTableEvents)
-	//if err != nil {
-	//	log.Fatalf("%q: %s\n", err, sqlTableEvents)
-	//	return nil
-	//}
 
 	return &Datastore{
 		db:     db,
