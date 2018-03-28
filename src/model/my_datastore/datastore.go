@@ -10,20 +10,17 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// TODO
-// major TODO:
-// get some kind of a database: MySQL, SQLite?
-// worst-case scenario would be Mongo
+// TODO create table on first run
 
 const (
 	dbFile         = "calendar.db"
 	sqlTableEvents = `
-	DROP TABLE events;
-	CREATE TABLE events (
-		uuid INTEGER NOT NULL PRIMARY KEY,
-		jsonifiedObject TEXT
-	);
-	`
+		DROP TABLE events;
+		CREATE TABLE events (
+			uuid INTEGER NOT NULL PRIMARY KEY,
+			jsonifiedObject TEXT
+		);
+		`
 )
 
 type Datastore struct {
@@ -81,7 +78,7 @@ func RowsToEvent(rows *sql.Rows) (*model.Event, error) {
 }
 
 func EventToQuery(e *model.Event) (string) {
-	return fmt.Sprintf("INSERT INTO events VALUES (%s, %s, %s, %s, %s, %s, %s, %d)",
+	return fmt.Sprintf("INSERT INTO events VALUES (%s, '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 		e.UUID,
 		e.User,
 		e.Start,
@@ -115,11 +112,11 @@ func New(c config.C) *Datastore {
 	}
 	//defer db.Close()
 
-	_, err = db.Exec(sqlTableEvents)
-	if err != nil {
-		log.Fatalf("%q: %s\n", err, sqlTableEvents)
-		return nil
-	}
+	//_, err = db.Exec(sqlTableEvents)
+	//if err != nil {
+	//	log.Fatalf("%q: %s\n", err, sqlTableEvents)
+	//	return nil
+	//}
 
 	return &Datastore{
 		db:     db,
