@@ -75,6 +75,7 @@ func main() {
 		err := app.Datastore.PutEvent(ev)
 		if err != nil {
 			log.Printf("Putting event: %s", err.Error())
+			log.Printf("Culprit: %#v", *ev)
 		}
 	}
 

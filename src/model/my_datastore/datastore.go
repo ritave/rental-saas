@@ -23,17 +23,18 @@ const (
 		`
 	sqlCreateTableEvents = `
 		CREATE TABLE events (
-			uuid INTEGER NOT NULL PRIMARY KEY,
-			user text,
-			start_date text,
-			end_date text,
-			creationdate text,
-			summary text,
-			location text,
-			timestamp_ms int 
+			uuid TEXT NOT NULL PRIMARY KEY,
+			user TEXT,
+			start_date TEXT,
+			end_date TEXT,
+			creation_date TEXT,
+			summary TEXT,
+			location TEXT,
+			timestamp_ms INT
 		);
 		`
 )
+// (uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms)
 
 type Datastore struct {
 	// not really a persistent database, lol
@@ -90,7 +91,8 @@ func RowsToEvent(rows *sql.Rows) (*model.Event, error) {
 }
 
 func EventToQuery(e *model.Event) (string) {
-	return fmt.Sprintf("INSERT INTO events VALUES (%s, '%s', '%s', '%s', '%s', '%s', '%s', %d)",
+	return fmt.Sprintf("INSERT INTO events(uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms) " +
+		"VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)",
 		e.UUID,
 		e.User,
 		e.Start,
