@@ -7,6 +7,7 @@ import (
 	"log"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
+	"errors"
 )
 
 // TODO create table on first run
@@ -35,6 +36,12 @@ const (
 	sqlDropTableEvents = `
 		DROP TABLE events;
 	`
+	sqlQueryAll = `
+		SELECT * FROM events;
+	`
+	sqlCountAll = `
+		SELECT count(*) FROM events;
+	`
 )
 
 // (uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms)
@@ -50,14 +57,39 @@ func (ds *Datastore) SynchroniseDatastore([]*model.EventModified) (SynchEffect) 
 }
 
 func (ds *Datastore) QueryEvents() ([]*model.Event, error) {
-	getFirst := fmt.Sprintf(`SELECT * FROM events`)
-	rows, err := ds.db.Query(getFirst)
+	rows, err := ds.db.Query(sqlQueryAll)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
-	// TODO
-	return nil, nil
+
+	var count int
+	countRow, err := ds.db.Query(sqlCountAll)
+	if err != nil {
+		log.Printf("Oh ffs: %s", err.Error())
+		return nil, err
+	}
+
+	countRow.Next()
+	countRow.Scan(&count)
+	if count == 0 {
+		return nil, errors.New("empty")
+	}
+
+	result := make([]*model.Event, count)
+	i := 0
+	for rows.Next() {
+		ev, err := RowsToEvent(rows)
+		if err != nil {
+			// TODO what do?
+			log.Printf("Extracting failed: %s", err.Error())
+			continue
+		}
+		result[i] = ev
+		i ++
+	}
+
+	return result, nil
 }
 
 func (ds *Datastore) DeleteEvent(UUID string) (error) {
@@ -70,6 +102,8 @@ func (ds *Datastore) SaveEvent(event *model.Event) (error) {
 
 func RowsToEvent(rows *sql.Rows) (*model.Event, error) {
 	var r model.Event
+
+	rows.Next()
 	err := rows.Scan(
 		&r.UUID,
 		&r.User,
@@ -110,10 +144,6 @@ func (ds *Datastore) GetEvent(UUID string) (*model.Event, error) {
 		return nil, err
 	}
 	return RowsToEvent(rows)
-}
-
-func (ds *Datastore) GetEvents() ([]*model.Event, error) {
-
 }
 
 func (ds *Datastore) PutEvent(event *model.Event) (error) {
