@@ -53,7 +53,6 @@ const (
 // (uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms)
 
 type Datastore struct {
-	// not really a persistent database, lol
 	dbFile string
 	db     *sql.DB
 }

@@ -3,11 +3,11 @@ package notify
 import (
 	"net/http"
 	"rental-saas/src/presenter"
-	"rental-saas/src/calendar_wrap"
 	"context"
 	"io"
 	"encoding/json"
 	"log"
+	"rental-saas/src/utils"
 )
 
 type DeleteChannelRequest []DeleteChannelSingleRequest
@@ -32,7 +32,7 @@ func DeleteChannel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	background := context.Background()
-	cal := calendar_wrap.NewFlex(background)
+	cal := utils.NewFlex(background)
 	resp := make(DeleteChannelResponse)
 
 	for _, single := range req {

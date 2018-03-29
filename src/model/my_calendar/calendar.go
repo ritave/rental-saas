@@ -6,8 +6,8 @@ import (
 	"google.golang.org/api/calendar/v3"
 	"rental-saas/src/presenter"
 	"rental-saas/src/utils/config"
-	"rental-saas/src/calendar_wrap"
 	"context"
+	"rental-saas/src/utils"
 )
 
 type Calendar struct {
@@ -15,7 +15,7 @@ type Calendar struct {
 }
 
 func New(c config.C) (*Calendar) {
-	service := calendar_wrap.NewFlex(context.Background())
+	service := utils.NewFlex(context.Background())
 	return &Calendar{
 		Service: service,
 	}

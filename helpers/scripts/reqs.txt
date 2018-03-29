@@ -1,0 +1,2 @@
+sudo apt install gcc libc6-dev
+go get "github.com/rs/cors" "google.golang.org/api/calendar/v3" "rental-saas/src/calendar_wrap" "github.com/satori/go.uuid" "golang.org/x/net/context" "golang.org/x/oauth2/google" "google.golang.org/appengine" "github.com/mattn/go-sqlite3"

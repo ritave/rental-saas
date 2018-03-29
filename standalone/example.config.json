@@ -1,0 +1,16 @@
+{
+  "CORS": ["http://145.239.95.36", "http://localhost:5000", "http://localhost:8080"],
+  "callback:": "http://145.239.95.36/dummy",
+  "receiver": {
+    "expiration": 3600,
+    "channel": "http://145.239.95.36/notify/get"
+  },
+  "db": {
+    "restart": false
+  },
+  "server": {
+    "self": "http://145.239.95.36",
+    "address": "http://localhost",
+    "port": 8080
+  }
+}

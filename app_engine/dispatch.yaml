@@ -1,5 +1,0 @@
-dispatch:
-  - url: "*/notify/*"
-    service: notify
-  - url: "*/dummy*"
-    service: dummy

@@ -1,4 +1,4 @@
-package calendar_wrap
+package utils
 
 import (
 	"google.golang.org/api/calendar/v3"

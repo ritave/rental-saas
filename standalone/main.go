@@ -3,14 +3,12 @@ package main
 import (
 	"net/http"
 	"log"
-	"os"
-	"strconv"
 	"time"
 	"rental-saas/src/utils"
-	"rental-saas/src/view_standalone/notify"
+	"rental-saas/src/view/notify"
 	"github.com/rs/cors"
-	"rental-saas/src/view_standalone/calendar/event"
-	"rental-saas/src/view_standalone/calendar"
+	"rental-saas/src/view/calendar/event"
+	"rental-saas/src/view/calendar"
 	"fmt"
 	. "rental-saas/src/presenter/wrapper"
 	"rental-saas/src/utils/config"
@@ -18,8 +16,6 @@ import (
 )
 
 const NotifyGet = "/notify/get"
-const NotifyPing = "/notify/ping"
-const NotifyChannelDelete = "/notify/channel/delete"
 
 const (
 	EnvAppChanged = "CALENDAR_APP_CHANGED"
@@ -28,16 +24,10 @@ const (
 	NotifyExpireAfter = "NOTIFY_EXPIRE_AFTER"
 )
 
-const (
-	CORSnpmdev    = "http://localhost:5000"
-	CORSappengine = "http://localhost:8080"
-	CORSdeployed  = "https://calendarcron.appspot.com"
-)
-
 var ticker *utils.Ticker
 
 func main() {
-	conf := config.C{}
+	conf := config.GetConfig()
 	app := New(conf)
 	mux := http.NewServeMux()
 
@@ -58,13 +48,17 @@ func main() {
 
 	// cors
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{CORSnpmdev, CORSappengine, CORSdeployed},
+		AllowedOrigins: conf.CORS,
 	})
 	handler := c.Handler(mux)
 	http.Handle("/", handler)
 
-	// TODO make optional
-	app.Datastore.Restart()
+	if conf.Db.Restart {
+		log.Println("Dropping and creating tables in database")
+		app.Datastore.Restart()
+	}
+
+	notifySetup(app)
 
 	// TODO this would make a good test (sans getting events from calendar)
 	//events, err := app.Calendar.QueryEvents()
@@ -90,6 +84,10 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+
+// FIXME
+// some ugly fuckery going on down here
+
 func HandlerGet(w http.ResponseWriter, r *http.Request) {
 	ticker.Restart()
 }
@@ -99,9 +97,11 @@ func HandlerPing(w http.ResponseWriter, r *http.Request) {
 }
 
 func notifySetup(application *Application) {
+	notifyAddr := application.Config.Receiver.Channel
+	expireAfter := application.Config.Receiver.Expiration
 
-	ticker = utils.New(3*time.Second, func(){
-		err := notifyMainApp()
+	ticker = utils.New(time.Duration(application.Config.Receiver.Expiration)*time.Second, func(){
+		err := notifyMe(notifyAddr)
 		if err != nil {
 			log.Printf("Notifying error: %s", err.Error())
 		} else {
@@ -109,26 +109,18 @@ func notifySetup(application *Application) {
 		}
 	})
 
-	registerReceiver(application.Calendar)
-	err := notifyMainApp()
+	registerReceiver(application.Calendar, notifyAddr, expireAfter)
+	err := notifyMe(notifyAddr)
 	if err != nil {
 		log.Printf("Notifying at init failed %s", err.Error())
 	}
 }
 
-func registerReceiver(cal interfaces.CalendarInterface) {
-	log.Println("Registering receiver")
-	selfAddr := getStringFromEnv(EnvApp, "https://calendarcron.appspot.com/")
-
-	//  refresh after every some constant time interval?
+func registerReceiver(cal interfaces.CalendarInterface, notifyAddr string, expireAfter int) {
+	//  refresh after every some constant time interval? -- done I think
 	// also there are some refreshing tokens flying around soo... yeeeah...
-	
-	expireAfter, err := strconv.Atoi(getStringFromEnv(NotifyExpireAfter, "3600"))
-	if err != nil {
-		log.Fatalf("ATOI: %s", err.Error())
-	}
 
-	err = cal.WatchForChanges(selfAddr + NotifyGet, time.Duration(expireAfter)*time.Second)
+	err := cal.WatchForChanges(notifyAddr, time.Duration(expireAfter)*time.Second)
 	if err != nil {
 		log.Printf("Error sending watch request: %s", err.Error())
 
@@ -137,7 +129,7 @@ func registerReceiver(cal interfaces.CalendarInterface) {
 			timer := time.NewTimer(time.Duration(time.Minute))
 			refreshTime := <- timer.C
 			log.Printf("Refreshing watch channel on %s", refreshTime.Format(utils.DefaultTimeType))
-			registerReceiver(cal)
+			registerReceiver(cal, notifyAddr, expireAfter)
 		}()
 		return
 	}
@@ -148,22 +140,11 @@ func registerReceiver(cal interfaces.CalendarInterface) {
 		timer := time.NewTimer(time.Duration(expireAfter)*time.Second)
 		refreshTime := <- timer.C
 		log.Printf("Refreshing watch channel on %s", refreshTime.Format(utils.DefaultTimeType))
-		registerReceiver(cal)
+		registerReceiver(cal, notifyAddr, expireAfter)
 	}()
 }
 
-func notifyMainApp() (error) {
-	notifyAddr := getStringFromEnv(EnvAppChanged, "https://calendarcron.appspot.com/event/changed")
-
+func notifyMe(notifyAddr string) (error) {
 	_, err := http.DefaultClient.Get(notifyAddr)
 	return err
-}
-
-func getStringFromEnv(key, fallback string) string {
-	value, exists := os.LookupEnv(key)
-	if !exists {
-		log.Printf("Env var %s not found; fallback to: %s", key, fallback)
-		return fallback
-	}
-	return value
 }
