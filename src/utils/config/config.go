@@ -30,7 +30,7 @@ type C struct {
 func GetConfig() (C) {
 	v := viper.New()
 	v.AddConfigPath(".")
-	v.AddConfigPath("secrets")
+	v.AddConfigPath("configs")
 	v.SetConfigName("config")
 	v.SetConfigType("json")
 	err := v.ReadInConfig()

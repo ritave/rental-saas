@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "rental-saas-beta",
+  "private_key_id": "956cd02d95232c79f089bb125da7ad1ed0d6c0f2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/qi16e/RBMDmv\ndpgrpY861Fozg/56Nob66DjQzxS2TcrWfwaH4b/1EdLVCj443tiaa4Rv1i2Ze1lL\noex7yPKfSIewEJJhXMZMhnfhhTSs3eJv9Z3gYg7TUJAB6OuuzDdjADinZ1Q54nL8\nYr36/0kduL0YVyFIJuF4Ge5Ap2vVyULaeJeVVq5YzDSTej2aYEzfK+Y38lOiSHMj\nGI6UEjuf/LpPygrikO/JmZWKnpFBCxIgpVb9cxH7lp8DZR6RYU1naJ0mlnaOK5ry\nj3IymHstZ6pvMtA5ZBhNPscbKEWcIFaGXH/PhuDfYtNXvGaNH6KX+xc0TLfY09wz\nt8cymB/DAgMBAAECggEAF3NIZjSVUYaHgE7n1mtGx4Fk2em78JMMV9Wi4fV8SMPi\n3fSjxWtbE66PF67NpyKo6Nff19kiMiWz6ruQliKjgNacd2/HoS77OjC3qTmllML/\nKgiovOPygWtZe0pWz8e/vRaxV9YeKYjp3bRtHzEt7nuEc15xvYS4UHwHuRRi7sCf\ncIclRjPITWdwezYl3Ve1r7TJLTQVGLhX8EzOa5YwpQKZKFbr9pF0x7A8CYvvJIsl\nrfHydF75giu1cG1dXkP2EsKH2eTHFX01KyZgjvyzQzzVePQPurebow4u15yq52c5\nn/nLRn9oDBljZJIWSDBJUt6xIfI9jLnXG4WAvahkqQKBgQDoD7mttzXJi4kiP6RT\n2E3hcLtxuVqGbVslxeON8HogiewECCu648VZ4b5BtD2tMS4Tg6ynRp5qYRa1JzPw\n0X2X+8JSExCxJA9UAmxs+SzshU6R3OOfXghwXYH127NMMZsIpknAkiDjI5Pmf9vm\nAHS9C9ybGIYEVbKGiiJK0BOJywKBgQDTb6hdMJuiPulUrmPavLS7O8oPQcgEOMq8\nr6Hxipeq2/vb3/OcCzN+f8r9c8JrVXgRn0xJy7Jal8uC3KlKn2TjGYxRWiezjyrc\nwZIuQPZhVuQHKZ9R1/qjFBdc/spHzvz+mKADJ0iiM3xRA1ArK4vErKKouI2+vD/o\nxEVLgDBi6QKBgGKlhKXO0uOJGFNhwGYP9hNWS6gtRckNJYjqFTBaQGAioRyZqJU6\ni8MIjkr55pn/5PlQqQ02nNLV0MRTFOZS91OrJtCi4B6dGJL6sMKmLa2hgWPKBUzS\nuT2i0kMEELTcBW5o2cMtmyNTFWUPhxe/q+BM8YtQom+nSkuc3rT0vMl/AoGAaHEu\ndKIPLuzuq2Lddm5ixF47aJ/w4oz/MId9cmgolUDHP4x3tKwfyqvrpJkq/4QfpGzQ\n7V8Oggubfs/rXC4yUrALDSCAngTpglSoFesHCXw3dYZM6cvLRgUlqU0+tIv9kvHn\nkMc17NGL5iTB1CFVkFhKnRdVBVPOKffR1wLCZAkCgYEAqUrmo9bTt3gaW/LDTwbc\nj3faVJKoyFt8vbrLm6HqTyJ5/E1FdKTPiP4K7pj0dswlkDbqHYnD5/4KeSB+BjCq\nQlzPByMWxPd+DydyjC2kzQAFOctZy5xSB/BFefUXrRUGZS069wfi/xYm+1TVtcj9\nODdztQHLzsEl56R+usgyzuI=\n-----END PRIVATE KEY-----\n",
+  "client_email": "cleaning@rental-saas-beta.iam.gserviceaccount.com",
+  "client_id": "105190204366672977585",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cleaning%40rental-saas-beta.iam.gserviceaccount.com"
+}
