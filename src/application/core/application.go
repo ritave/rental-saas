@@ -24,5 +24,6 @@ func New(c config.C) *Application {
 	return &Application{
 		Datastore: my_datastore.New(c),
 		Calendar: my_calendar.New(c),
+		Config: c,
 	}
 }

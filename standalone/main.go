@@ -9,27 +9,23 @@ import (
 	"github.com/rs/cors"
 	"rental-saas/src/view/calendar/event"
 	"rental-saas/src/view/calendar"
-	"fmt"
-	. "rental-saas/src/presenter/wrapper"
+	. "rental-saas/src/application/core"
+	. "rental-saas/src/application/handler"
 	"rental-saas/src/utils/config"
-	"rental-saas/src/presenter/interfaces"
+	"rental-saas/src/application/interfaces"
+	"strconv"
+	"github.com/sirupsen/logrus"
+	"rental-saas/src/view"
 )
-
-const NotifyGet = "/notify/get"
-
-const (
-	EnvAppChanged = "CALENDAR_APP_CHANGED"
-	EnvApp = "CALENDAR_APP"
-
-	NotifyExpireAfter = "NOTIFY_EXPIRE_AFTER"
-)
-
-var ticker *utils.Ticker
 
 func main() {
-	conf := config.GetConfig()
-	app := New(conf)
+	app := New(config.GetConfig())
 	mux := http.NewServeMux()
+
+	// logging init
+	if app.Config.Logging.Debug {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
 
 	// events related
 	mux.Handle("/calendar/event/create", &AppHandler{app, event.CreateRequest{}, event.Create})
@@ -40,24 +36,26 @@ func main() {
 	mux.Handle("/calendar/view", &AppHandler{app, calendar.ViewRequest{}, calendar.View})
 	
 	// notify related
-	mux.HandleFunc("/notify/get", HandlerGet)
+	mux.Handle("/notify/get", &AppHandler{app, notify.GetRequest{}, notify.Get})
 	mux.HandleFunc("/notify/channel/delete", notify.DeleteChannel)
 
 	// keep alive & admin retarted
-	mux.HandleFunc("/ping", HandlerPing)
+	mux.HandleFunc("/ping", view.HandlerPing)
 
 	// cors
 	c := cors.New(cors.Options{
-		AllowedOrigins: conf.CORS,
+		AllowedOrigins: app.Config.CORS,
 	})
 	handler := c.Handler(mux)
 	http.Handle("/", handler)
 
-	if conf.Db.Restart {
+	// datastore
+	if app.Config.DB.Restart {
 		log.Println("Dropping and creating tables in database")
 		app.Datastore.Restart()
 	}
 
+	// watch notify
 	notifySetup(app)
 
 	// TODO this would make a good test (sans getting events from calendar)
@@ -80,40 +78,25 @@ func main() {
 	//}
 	//log.Printf("Brought %d events", len(events))
 
-	log.Print("Listening on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	logrus.Printf("Listening on port %d", app.Config.Server.Port)
+	logrus.Fatal(http.ListenAndServe(":"+strconv.Itoa(app.Config.Server.Port), nil))
 }
 
 
 // FIXME
 // some ugly fuckery going on down here
-
-func HandlerGet(w http.ResponseWriter, r *http.Request) {
-	ticker.Restart()
-}
-
-func HandlerPing(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Pong")
-}
-
 func notifySetup(application *Application) {
 	notifyAddr := application.Config.Receiver.Channel
 	expireAfter := application.Config.Receiver.Expiration
+	const threeSoundsFine = 3
 
-	ticker = utils.New(time.Duration(application.Config.Receiver.Expiration)*time.Second, func(){
-		err := notifyMe(notifyAddr)
-		if err != nil {
-			log.Printf("Notifying error: %s", err.Error())
-		} else {
-			log.Printf("Successful notifying")
-		}
+	// this thing aggregates multiple requests that may come at once
+	application.Utils.Ticker = utils.New(threeSoundsFine*time.Second, func(){
+		calendar.Changed(application, calendar.ChangedRequest{})
 	})
 
 	registerReceiver(application.Calendar, notifyAddr, expireAfter)
-	err := notifyMe(notifyAddr)
-	if err != nil {
-		log.Printf("Notifying at init failed %s", err.Error())
-	}
+	calendar.Changed(application, calendar.ChangedRequest{})
 }
 
 func registerReceiver(cal interfaces.CalendarInterface, notifyAddr string, expireAfter int) {
@@ -142,9 +125,4 @@ func registerReceiver(cal interfaces.CalendarInterface, notifyAddr string, expir
 		log.Printf("Refreshing watch channel on %s", refreshTime.Format(utils.DefaultTimeType))
 		registerReceiver(cal, notifyAddr, expireAfter)
 	}()
-}
-
-func notifyMe(notifyAddr string) (error) {
-	_, err := http.DefaultClient.Get(notifyAddr)
-	return err
 }

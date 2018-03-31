@@ -12,5 +12,10 @@
     "self": "http://145.239.95.36",
     "address": "http://localhost",
     "port": 8080
+  },
+  "logging":{
+    "debug": true,
+    "storeInDB": false,
+    "somethingElse": "true"
   }
 }
