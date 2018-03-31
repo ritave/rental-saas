@@ -14,7 +14,7 @@ type Application struct {
 	Config    config.C
 
 	// hidden for less clutter
-	Utils *Utils
+	Utils Utils
 }
 type Utils struct {
 	Ticker *utils.Ticker
@@ -25,5 +25,7 @@ func New(c config.C) *Application {
 		Datastore: my_datastore.New(c),
 		Calendar: my_calendar.New(c),
 		Config: c,
+
+		Utils: Utils{},
 	}
 }

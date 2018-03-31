@@ -140,7 +140,6 @@ func RowToEvent(rows *sql.Rows) (*model.Event, error) {
 func (ds *Datastore) GetEvent(UUID string) (*model.Event, error) {
 	getFirst := `SELECT * FROM events WHERE uuid = ?`
 	rows, err := ds.db.Query(getFirst, UUID)
-	logrus.Println(rows)
 	defer rows.Close()
 	if err != nil {
 		return nil, err

@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"log"
 	"time"
 	"rental-saas/src/utils"
 	"rental-saas/src/view/notify"
@@ -51,7 +50,7 @@ func main() {
 
 	// datastore
 	if app.Config.DB.Restart {
-		log.Println("Dropping and creating tables in database")
+		logrus.Println("Dropping and creating tables in database")
 		app.Datastore.Restart()
 	}
 
@@ -105,13 +104,13 @@ func registerReceiver(cal interfaces.CalendarInterface, notifyAddr string, expir
 
 	err := cal.WatchForChanges(notifyAddr, time.Duration(expireAfter)*time.Second)
 	if err != nil {
-		log.Printf("Error sending watch request: %s", err.Error())
+		logrus.Printf("Error sending watch request: %s", err.Error())
 
 		go func() {
-			log.Printf("Retrying in one minute")
+			logrus.Printf("Retrying in one minute")
 			timer := time.NewTimer(time.Duration(time.Minute))
 			refreshTime := <- timer.C
-			log.Printf("Refreshing watch channel on %s", refreshTime.Format(utils.DefaultTimeType))
+			logrus.Printf("Refreshing watch channel on %s", refreshTime.Format(utils.DefaultTimeType))
 			registerReceiver(cal, notifyAddr, expireAfter)
 		}()
 		return
@@ -119,10 +118,10 @@ func registerReceiver(cal interfaces.CalendarInterface, notifyAddr string, expir
 
 	// if everything went smoothly, carry on with usual refresh-after-an-hour-or-so
 	go func() {
-		log.Printf("Scheduled for retrying in %d second", expireAfter)
+		logrus.Printf("Scheduled for retrying in %d second", expireAfter)
 		timer := time.NewTimer(time.Duration(expireAfter)*time.Second)
 		refreshTime := <- timer.C
-		log.Printf("Refreshing watch channel on %s", refreshTime.Format(utils.DefaultTimeType))
+		logrus.Printf("Refreshing watch channel on %s", refreshTime.Format(utils.DefaultTimeType))
 		registerReceiver(cal, notifyAddr, expireAfter)
 	}()
 }
