@@ -4,8 +4,8 @@ import (
 	"rental-saas/src/model"
 	"context"
 	"google.golang.org/appengine/datastore"
-	"google.golang.org/appengine/log"
 	"errors"
+	"github.com/sirupsen/logrus"
 )
 
 type SynchEffect struct {
@@ -25,7 +25,7 @@ func SynchroniseDatastore(ctx context.Context, diff []*model.EventModified) (Syn
 
 				err := deleteEvent(ctx, event.Event)
 				if err != nil {
-					log.Debugf(ctx,"SYNCHRONISE | Event deleting FAILED: %s", err.Error())
+					logrus.Debugf("SYNCHRONISE | Event deleting FAILED: %s", err.Error())
 					result.Errors ++
 					break
 				}
@@ -37,7 +37,7 @@ func SynchroniseDatastore(ctx context.Context, diff []*model.EventModified) (Syn
 
 				err := SaveEventInDatastore(ctx, event.Event)
 				if err != nil {
-					log.Debugf(ctx, "SYNCHRONISE | Event adding FAILED: %s", err.Error())
+					logrus.Debugf("SYNCHRONISE | Event adding FAILED: %s", err.Error())
 					result.Errors ++
 					break
 				}
@@ -51,13 +51,13 @@ func SynchroniseDatastore(ctx context.Context, diff []*model.EventModified) (Syn
 				// deleting uses only the UUID and I think I'm copying it from old_modified to new_modified in findChanged()
 				err := deleteEvent(ctx, event.Event)
 				if err != nil {
-					log.Debugf(ctx,"SYNCHRONISE | Event deleting FAILED: %s", err.Error())
+					logrus.Debugf("SYNCHRONISE | Event deleting FAILED: %s", err.Error())
 					result.Errors ++
 					break
 				}
 				err = SaveEventInDatastore(ctx, event.Event)
 				if err != nil {
-					log.Debugf(ctx, "SYNCHRONISE | Event adding FAILED: %s", err.Error())
+					logrus.Debugf("SYNCHRONISE | Event adding FAILED: %s", err.Error())
 					result.Errors ++
 					break
 				}

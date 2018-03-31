@@ -2,7 +2,6 @@ package model
 
 import (
 	"testing"
-	"rental-saas/src/view_appengine/calendar/event"
 )
 
 func TestEvent_IsTheSame(t *testing.T) {
@@ -152,12 +151,6 @@ func Test_improbableButMaybeTheyHaveTheSameCreationDate(t *testing.T) {
 			}
 		})
 	}
-}
-
-// This test should compare objects.Event and handlers.CreateRequest
-func TestIfEventsMatchRequest(t *testing.T) {
-	var input = event.CreateRequest{}
-	var _ = Event(input)
 }
 
 // This test should check conversion between calendar.Event and objects.Event

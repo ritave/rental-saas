@@ -43,7 +43,7 @@ func AddEvent(cal *calendar.Service, ev *model.Event) (*model.Event, error){
 		gaeLog.Debugf(ctx, "Adding event failed %#v %s", ev, err.Error())
 		return nil, err
 	}
-		//log.Printf("Link: %s", evResp.HtmlLink)
+		//logrus.Printf("Link: %s", evResp.HtmlLink)
 		//
 		//// Creation date will be my "primary-key"
 		//eventCreationTime, err := utils.VerifyStringToTime(evResp.Created)

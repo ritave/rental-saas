@@ -4,8 +4,8 @@ import (
 	"sort"
 	"rental-saas/src/model"
 	"google.golang.org/appengine"
-	"log"
-	"rental-saas/src/application/interfaces"
+		"rental-saas/src/application/interfaces"
+	"github.com/sirupsen/logrus"
 )
 
 
@@ -24,8 +24,8 @@ func FindChanged(ds interfaces.DatastoreInterface, cal interfaces.CalendarInterf
 	actualSortable := model.SortableEvents(actual)
 
 	if appengine.IsDevAppServer() {
-		log.Printf("\nSaved: %v\n", savedSortable)
-		log.Printf("\nActual: %v\n", actualSortable)
+		logrus.Printf("\nSaved: %v\n", savedSortable)
+		logrus.Printf("\nActual: %v\n", actualSortable)
 	}
 
 	return CompareSortable(savedSortable, actualSortable)

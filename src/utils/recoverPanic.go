@@ -4,7 +4,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"errors"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 // Debugging in the cloud is rather hard
@@ -13,11 +13,11 @@ func RecoverPanic() {
 		if _, ok := r.(runtime.Error); ok {
 			panic(r)
 		} else if s, ok := r.(string); ok {
-			log.Println(string(debug.Stack()))
-			log.Println(errors.New(s))
+			logrus.Println(string(debug.Stack()))
+			logrus.Println(errors.New(s))
 		} else if e, ok := r.(error); ok {
-			log.Println(string(debug.Stack()))
-			log.Println(e)
+			logrus.Println(string(debug.Stack()))
+			logrus.Println(e)
 		} else {
 			panic(r)
 		}

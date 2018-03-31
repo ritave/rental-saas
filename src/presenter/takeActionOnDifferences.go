@@ -3,8 +3,8 @@ package presenter
 import (
 	"rental-saas/src/model"
 	"google.golang.org/api/calendar/v3"
-	"log"
-	"rental-saas/src/application/interfaces"
+		"rental-saas/src/application/interfaces"
+	"github.com/sirupsen/logrus"
 )
 
 func TakeActionOnDifferences(cal interfaces.CalendarInterface, diff []*model.EventModified) {
@@ -19,7 +19,7 @@ func TakeActionOnDifferences(cal interfaces.CalendarInterface, diff []*model.Eve
 				})
 
 				if err != nil {
-					log.Printf( "Hacking failed: %s", err.Error())
+					logrus.Printf( "Hacking failed: %s", err.Error())
 				}
 
 			case model.ModifiedLocation:

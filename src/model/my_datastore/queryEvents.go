@@ -5,8 +5,8 @@ import (
 	"google.golang.org/appengine/datastore"
 	"rental-saas/src/model"
 	"time"
-	"log"
-	"rental-saas/src/utils"
+		"rental-saas/src/utils"
+	"github.com/sirupsen/logrus"
 )
 
 const EventKeyKind = "Event"
@@ -23,7 +23,7 @@ func QueryEvents(ctx context.Context) ([]*model.Event, error) {
 
 func QueryEventsFiltered(ctx context.Context) ([]*model.Event, error) {
 	now := utils.TimeToMilliseconds(time.Now())
-	log.Printf("I want events that happenend before: %d", now)
+	logrus.Printf("I want events that happenend before: %d", now)
 	q := datastore.NewQuery(EventKeyKind).Filter("Timestamp <", now)
 
 	events := make([]*model.Event, 0)

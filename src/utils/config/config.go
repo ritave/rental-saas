@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 type C struct {
@@ -35,7 +35,7 @@ func GetConfig() (C) {
 	v.SetConfigType("json")
 	err := v.ReadInConfig()
 	if err != nil {
-		log.Fatalf("Failed to read in config: %s", err.Error())
+		logrus.Fatalf("Failed to read in config: %s", err.Error())
 	}
 
 	c := C{}

@@ -6,10 +6,10 @@ import (
 	"context"
 	"google.golang.org/api/calendar/v3"
 	"google.golang.org/appengine"
-	"log"
-	gaeLog "google.golang.org/appengine/log"
+		gaeLog "google.golang.org/appengine/log"
 	"sort"
 	"google.golang.org/appengine/urlfetch"
+	"github.com/sirupsen/logrus"
 )
 
 // FIXME this is a major temporary hack
@@ -26,8 +26,8 @@ func FindUserRejects(ctx context.Context, cal *calendar.Service) ([]*model.Event
 	actualSortable := model.SortableEvents(model.ConvertGoogleToMineSlice(actual.Items))
 
 	if appengine.IsDevAppServer() {
-		log.Printf("\nSaved: %v\n", savedSortable)
-		log.Printf("\nActual: %v\n", actualSortable)
+		logrus.Printf("\nSaved: %v\n", savedSortable)
+		logrus.Printf("\nActual: %v\n", actualSortable)
 	} else {
 		gaeLog.Debugf(ctx, "\nSaved: %v\n", savedSortable)
 		gaeLog.Debugf(ctx, "\nActual: %v\n", actualSortable)

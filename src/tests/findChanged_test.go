@@ -36,24 +36,24 @@ func TestCompareSortable(t *testing.T) {
 
 	// YO DAWG I HERD YOU LIKE VARIABLES SO WE PUT VARIABLES IN YO VARIABLES SO YOU CAN COMPUTE WHILE YOU COMPUTE
 
-	var xzibit1 = &model.Event{"summary", "user1@mail.com", tts(zeroth), tts(first), "location1", tBS[0], uuidString()}
-	var xzibit1ModifiedTimeForward = &model.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1", tBS[0], uuidString()}
-	var xzibit1ModifiedTimeForwardAndPlace = &model.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1-modified", tBS[0], uuidString()}
+	var xzibit1 = &model.Event{"summary", "user1@mail.com", tts(zeroth), tts(first), "location1", tBS[0], 0, uuidString(), ""}
+	var xzibit1ModifiedTimeForward = &model.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1", tBS[0], 0, uuidString(), ""}
+	var xzibit1ModifiedTimeForwardAndPlace = &model.Event{"summary", "user1@mail.com", tts(first), tts(second), "location1-modified", tBS[0], 0, uuidString(), ""}
 
-	var xzibit2 = &model.Event{"summary", "user2@mail.com", tts(first), tts(second), "location2", tBS[1], uuidString()}
-	var xzibit2ModifiedTimeBackward = &model.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2", tBS[1], uuidString()}
-	var xzibit2ModifiedTimeBackwardAndPlace = &model.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2-modified", tBS[1], uuidString()}
+	var xzibit2 = &model.Event{"summary", "user2@mail.com", tts(first), tts(second), "location2", tBS[1], 1, uuidString(), ""}
+	var xzibit2ModifiedTimeBackward = &model.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2", tBS[1], 1, uuidString(), ""}
+	var xzibit2ModifiedTimeBackwardAndPlace = &model.Event{"summary", "user2@mail.com", tts(zeroth), tts(first), "location2-modified", tBS[1], 1, uuidString(), ""}
 
-	var xzibit3 = &model.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3", tBS[2], uuidString()}
-	var xzibit3ModifiedPlace = &model.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3-modified", tBS[2], uuidString()}
+	var xzibit3 = &model.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3", tBS[2], 2, uuidString(), ""}
+	var xzibit3ModifiedPlace = &model.Event{"summary", "user3@mail.com", tts(second), tts(third), "location3-modified", tBS[2], 2, uuidString(), ""}
 
-	var xzibit4 = &model.Event{"summary", "user4@mail.com", tts(third), tts(fourth), "location4", tBS[3], uuidString()}
-	var xzibit4SecondEvent = &model.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4-some-other", tBS[6], uuidString()}
-	var xzibit4ThirdEvent = &model.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4", tBS[7], uuidString()}
+	var xzibit4 = &model.Event{"summary", "user4@mail.com", tts(third), tts(fourth), "location4", tBS[3], 3, uuidString(), ""}
+	var xzibit4SecondEvent = &model.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4-some-other", tBS[6], 6, uuidString(), ""}
+	var xzibit4ThirdEvent = &model.Event{"summary", "user4@mail.com", tts(fifth), tts(sixth), "location4", tBS[7], 7, uuidString(), ""}
 
-	var xzibit5 = &model.Event{"summary", "user5@mail.com", tts(fourth), tts(fifth), "location5", tBS[4], uuidString()}
+	var xzibit5 = &model.Event{"summary", "user5@mail.com", tts(fourth), tts(fifth), "location5", tBS[4], 4, uuidString(), ""}
 
-	var xzibit6 = &model.Event{"summary", "user6@mail.com", tts(fifth), tts(sixth), "location6", tBS[5], uuidString()}
+	var xzibit6 = &model.Event{"summary", "user6@mail.com", tts(fifth), tts(sixth), "location6", tBS[5], 5, uuidString(), ""}
 
 	//log.Printf("xzibit 1 %p %v\n", xzibit1, *xzibit1)
 	//log.Printf("xzibit 2 %p %v\n", xzibit2, *xzibit2)

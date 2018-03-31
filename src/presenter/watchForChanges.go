@@ -4,8 +4,8 @@ import (
 	"google.golang.org/api/calendar/v3"
 	"github.com/satori/go.uuid"
 	"time"
-	"log"
-	"rental-saas/src/utils"
+		"rental-saas/src/utils"
+	"github.com/sirupsen/logrus"
 )
 
 type ImportantChannelFields struct {
@@ -20,7 +20,7 @@ func WatchForChanges(cal *calendar.Service, receiver string, expireAfter time.Du
 
 	watchChannel, err := newChannel(cal, receiver, expireAfter)
 	if err != nil {
-		log.Printf("New channel: %s", err.Error())
+		logrus.Printf("New channel: %s", err.Error())
 	} else {
 		receipt = ImportantChannelFields{
 			ResourceId: watchChannel.ResourceId,
@@ -29,7 +29,7 @@ func WatchForChanges(cal *calendar.Service, receiver string, expireAfter time.Du
 			Receiver: watchChannel.Address,
 		}
 
-		log.Printf("ResourceId: %s | Id: %s | Receiver: %s | Expires: %s", receipt.ResourceId, receipt.Uuid, receipt.Receiver, receipt.Expiration)
+		logrus.Printf("ResourceId: %s | Id: %s | Receiver: %s | Expires: %s", receipt.ResourceId, receipt.Uuid, receipt.Receiver, receipt.Expiration)
 	}
 
 	return err, receipt

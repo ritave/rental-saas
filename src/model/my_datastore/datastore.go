@@ -4,9 +4,9 @@ import (
 	"rental-saas/src/model"
 	"rental-saas/src/utils/config"
 	"database/sql"
-	"log"
-	_ "github.com/mattn/go-sqlite3"
+		_ "github.com/mattn/go-sqlite3"
 	"errors"
+	"github.com/sirupsen/logrus"
 )
 
 // TODO create table on first run
@@ -71,7 +71,7 @@ func (ds *Datastore) QueryEvents() ([]*model.Event, error) {
 	var count int
 	countRow, err := ds.db.Query(sqlCountAll)
 	if err != nil {
-		log.Printf("Oh ffs: %s", err.Error())
+		logrus.Printf("Oh ffs: %s", err.Error())
 		return nil, err
 	}
 
@@ -87,7 +87,7 @@ func (ds *Datastore) QueryEvents() ([]*model.Event, error) {
 		ev, err := RowToEvent(rows)
 		if err != nil {
 			// TODO what do?
-			log.Printf("Extracting failed: %s", err.Error())
+			logrus.Printf("Extracting failed: %s", err.Error())
 			continue
 		}
 		result[i] = ev
@@ -140,7 +140,7 @@ func RowToEvent(rows *sql.Rows) (*model.Event, error) {
 func (ds *Datastore) GetEvent(UUID string) (*model.Event, error) {
 	getFirst := `SELECT * FROM events WHERE uuid = ?`
 	rows, err := ds.db.Query(getFirst, UUID)
-	log.Println(rows)
+	logrus.Println(rows)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
@@ -156,7 +156,7 @@ func (ds *Datastore) Restart() {
 func New(c config.C) *Datastore {
 	db, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	//defer db.Close()
 

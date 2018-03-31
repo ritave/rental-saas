@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"bytes"
 	"net/http"
-	"log"
 	"rental-saas/src/application/core"
 	"errors"
+	"github.com/sirupsen/logrus"
 )
 
 type ChangedRequest struct{}
@@ -32,7 +32,7 @@ func Changed(a *core.Application, r interface{}) (interface{}, error) {
 
 	// no errors returned, fingers crossed it works!
 	effect := a.Datastore.SynchroniseDatastore(diff)
-	log.Printf("Synchronisation had following effect: %v", effect)
+	logrus.Printf("Synchronisation had following effect: %v", effect)
 
 	response := make([]Modification, len(diff))
 
@@ -53,10 +53,10 @@ func Changed(a *core.Application, r interface{}) (interface{}, error) {
 	client := http.DefaultClient
 	resp, err := client.Post(whereTo, "application/json", bytes.NewReader(bytez))
 	if err != nil {
-		log.Printf("Error sending changes to %s: %s", whereTo, err.Error())
+		logrus.Printf("Error sending changes to %s: %s", whereTo, err.Error())
 	} else {
-		log.Println("Success sending that son of a bitch")
-		log.Println(*resp)
+		logrus.Println("Success sending that son of a bitch")
+		logrus.Println(*resp)
 	}
 
 	presenter.TakeActionOnDifferences(a.Calendar, diff)

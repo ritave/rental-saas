@@ -6,8 +6,8 @@ import (
 	"context"
 	"io"
 	"encoding/json"
-	"log"
 	"rental-saas/src/utils"
+	"github.com/sirupsen/logrus"
 )
 
 type DeleteChannelRequest []DeleteChannelSingleRequest
@@ -26,7 +26,7 @@ type DeleteChannelResponse map[string]string
 func DeleteChannel(w http.ResponseWriter, r *http.Request) {
 	req, err := extractDeleteChannelRequest(r.Body)
 	if err != nil {
-		w.Write(mustMarshalResponse(DeleteChannelResponse{"error":err.Error()}))
+		w.Write(mustMarshalResponse(DeleteChannelResponse{"error": err.Error()}))
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -58,7 +58,7 @@ func extractDeleteChannelRequest(r io.ReadCloser) (DeleteChannelRequest, error) 
 func mustMarshalResponse(response DeleteChannelResponse) ([]byte) {
 	bytez, err := json.Marshal(response)
 	if err != nil {
-		log.Println("Wooooo, it really failed")
+		logrus.Println("Wooooo, it really failed")
 		return []byte{}
 	}
 	return bytez
