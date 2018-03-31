@@ -131,17 +131,17 @@ if (isProd === true) {
                 }
                 // mangle:  true
             }),
-            new webpack.EnvironmentPlugin(["BACKEND"]),
-            new WebpackShellPlugin({
-                // onBuildStart: ['rd /s /q ..\\..\\app_engine\\default\\static'],
-                // onBuildEnd: ['xcopy .\\dist ..\\..\\app_engine\\default /s /e']
-                onBuildStart: [
-                    'powershell Remove-Item -Recurse -Force -Path ..\\..\\app_engine\\default\\static'
-                ],
-                onBuildEnd: [
-                    'powershell Copy-Item -Recurse -Force .\\dist\\* ..\\..\\app_engine\\default\\'
-                ]
-            })
+            new webpack.EnvironmentPlugin(["BACKEND"])
+            // new WebpackShellPlugin({
+            //     // onBuildStart: ['rd /s /q ..\\..\\app_engine\\default\\static'],
+            //     // onBuildEnd: ['xcopy .\\dist ..\\..\\app_engine\\default /s /e']
+            //     onBuildStart: [
+            //         'powershell Remove-Item -Recurse -Force -Path ..\\..\\app_engine\\default\\static'
+            //     ],
+            //     onBuildEnd: [
+            //         'powershell Copy-Item -Recurse -Force .\\dist\\* ..\\..\\app_engine\\default\\'
+            //     ]
+            // })
         ]
     });
 }
