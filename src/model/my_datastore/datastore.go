@@ -4,12 +4,11 @@ import (
 	"rental-saas/src/model"
 	"rental-saas/src/utils/config"
 	"database/sql"
-		_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 	"errors"
 	"github.com/sirupsen/logrus"
+	"os"
 )
-
-// TODO create table on first run
 
 const (
 	dbFile             = "calendar.db"
@@ -57,16 +56,18 @@ type Datastore struct {
 	db     *sql.DB
 }
 
+// TODO distribute this between files
+
 func (ds *Datastore) SynchroniseDatastore([]*model.EventModified) (SynchEffect) {
 	panic("implement me")
 }
 
 func (ds *Datastore) QueryEvents() ([]*model.Event, error) {
 	rows, err := ds.db.Query(sqlQueryAll)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close() // defering it after the check: rows may be nil
 
 	var count int
 	countRow, err := ds.db.Query(sqlCountAll)
@@ -148,8 +149,12 @@ func (ds *Datastore) GetEvent(UUID string) (*model.Event, error) {
 }
 
 func (ds *Datastore) Restart() {
-	ds.db.Exec(sqlDropTableEvents)
-	ds.db.Exec(sqlCreateTableEvents)
+	restart(ds.db)
+}
+
+func restart (db *sql.DB) {
+	db.Exec(sqlDropTableEvents)
+	db.Exec(sqlCreateTableEvents)
 }
 
 func New(c config.C) *Datastore {
@@ -157,7 +162,11 @@ func New(c config.C) *Datastore {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	//defer db.Close()
+
+	if _, err := os.Stat(dbFile); os.IsNotExist(err) {
+		logrus.Fatalln("Database does not exist")
+		restart(db)
+	}
 
 	return &Datastore{
 		db:     db,

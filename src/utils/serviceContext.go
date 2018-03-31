@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const secretsLocation = "secrets"
+const secretsLocation = "configs"
 
 func NewStandard(r *http.Request) *calendar.Service {
 	//if !appengine.IsDevAppServer() {
