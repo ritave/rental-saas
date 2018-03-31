@@ -4,7 +4,7 @@ import (
 	"rental-saas/src/model"
 	"google.golang.org/api/calendar/v3"
 	"log"
-	"rental-saas/src/presenter/interfaces"
+	"rental-saas/src/application/interfaces"
 )
 
 func TakeActionOnDifferences(cal interfaces.CalendarInterface, diff []*model.EventModified) {

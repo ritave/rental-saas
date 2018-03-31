@@ -2,7 +2,7 @@ package event
 
 import (
 	"rental-saas/src/model"
-	"rental-saas/src/presenter/wrapper"
+	"rental-saas/src/application/core"
 	"errors"
 )
 
@@ -22,7 +22,7 @@ type CreateResponse struct {
 	Message string `json:"message"`
 }
 
-func Create(a *wrapper.Application, r interface{}) (interface{}, error) {
+func Create(a *core.Application, r interface{}) (interface{}, error) {
 	var err error
 	eventRequest, ok := r.(CreateRequest)
 	if !ok {

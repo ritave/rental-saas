@@ -1,8 +1,11 @@
 package calendar
 
-import "net/http"
+import (
+	"rental-saas/src/application/core"
+)
 
 // integrity check
-func Check(w http.ResponseWriter, r *http.Request) {
+func Check(a *core.Application, r interface{}) (interface{}, error) {
 
+	return nil, nil
 }

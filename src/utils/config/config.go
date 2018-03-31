@@ -12,7 +12,7 @@ type C struct {
 		Expiration int    `json:"expiration"`
 		Channel    string `json:"channel"`
 	} `json:"receiver"`
-	Db struct {
+	DB struct {
 		Restart bool `json:"restart"`
 	} `json:"db"`
 	Server struct {
@@ -20,6 +20,11 @@ type C struct {
 		Address string `json:"address"`
 		Port    int    `json:"port"`
 	} `json:"server"`
+	Logging struct {
+		Debug         bool   `json:"debug"`
+		StoreInDB     bool   `json:"storeInDB"`
+		SomethingElse string `json:"somethingElse"`
+	} `json:"logging"`
 }
 
 func GetConfig() (C) {
@@ -34,7 +39,6 @@ func GetConfig() (C) {
 	}
 
 	c := C{}
-
 	v.Unmarshal(&c)
 	return c
 }

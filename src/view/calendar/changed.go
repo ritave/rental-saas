@@ -7,7 +7,7 @@ import (
 	"bytes"
 	"net/http"
 	"log"
-	"rental-saas/src/presenter/wrapper"
+	"rental-saas/src/application/core"
 	"errors"
 )
 
@@ -18,7 +18,7 @@ type Modification struct {
 	model.Event
 }
 
-func Changed(a *wrapper.Application, r interface{}) (interface{}, error) {
+func Changed(a *core.Application, r interface{}) (interface{}, error) {
 	var err error
 	_, ok := r.(ChangedRequest)
 	if !ok {

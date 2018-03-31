@@ -1,7 +1,7 @@
 package event
 
 import (
-	"rental-saas/src/presenter/wrapper"
+	"rental-saas/src/application/core"
 	"errors"
 )
 
@@ -13,7 +13,7 @@ type DeleteResponse struct {
 	Message string `json:"message"`
 }
 
-func Delete(a *wrapper.Application, r interface{}) (interface{}, error) {
+func Delete(a *core.Application, r interface{}) (interface{}, error) {
 	var err error
 	request, ok := r.(DeleteRequest)
 	if !ok {

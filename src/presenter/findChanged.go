@@ -5,7 +5,7 @@ import (
 	"rental-saas/src/model"
 	"google.golang.org/appengine"
 	"log"
-	"rental-saas/src/presenter/interfaces"
+	"rental-saas/src/application/interfaces"
 )
 
 

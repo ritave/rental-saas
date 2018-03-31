@@ -1,9 +1,9 @@
-package wrapper
+package core
 
 import (
 	"rental-saas/src/utils/config"
 	"rental-saas/src/utils"
-	"rental-saas/src/presenter/interfaces"
+	"rental-saas/src/application/interfaces"
 	"rental-saas/src/model/my_datastore"
 	"rental-saas/src/model/my_calendar"
 )

@@ -1,16 +1,17 @@
-package wrapper
+package handler
 
 import (
 	"io/ioutil"
 	"encoding/json"
 	"net/http"
+	"rental-saas/src/application/core"
 )
 
 // this generality will be a loss in performance, I can guarantee that
 type AppHandler struct {
-	App *Application
+	App *core.Application
 	RequestTemplate interface{}
-	Handler func(a *Application, r interface{}) (interface{}, error)
+	Handler func(a *core.Application, r interface{}) (interface{}, error)
 }
 
 func (h *AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
