@@ -88,7 +88,7 @@ if (isDev === true) {
         plugins: [
             new webpack.EnvironmentPlugin(
                 {
-                    'BACKEND': 'http://localhost:8080/'
+                    'BACKEND': 'http://localhost:8080/api/'
                 }
             )
         ]
