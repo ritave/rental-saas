@@ -47,6 +47,4 @@ type CreateActionRequest struct {
 	CouponID  string `json:"coupon_id"`
 }
 
-func (p Provider) CreateAction() {
-
-}
+const CreateAction = "/api/apiorders/create"

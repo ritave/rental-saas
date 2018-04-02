@@ -23,7 +23,7 @@ func (p Provider) SendRequest(api string, payload interface{}) (*http.Response, 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "*/*")
 
-	logrus.Infof("Request: %#v", *req)
+	logrus.Debugf("Request: %#v", *req)
 
 	return p.Client.Do(req)
 }
