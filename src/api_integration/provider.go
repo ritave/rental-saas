@@ -1,12 +1,9 @@
 package api_integration
 
-type MostGenericJSON struct {
-
-}
-
+import "net/http"
 
 type Provider struct {
-	Credentials struct {
-		Idk string
-	}
+	Client *http.Client
+	API string
 }
+
