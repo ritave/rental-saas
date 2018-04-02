@@ -19,4 +19,5 @@ kiedykolwiek wprowadzone? Jak tak to jak sie do nich dobrac?
     2. Serwis z boku, który oni podpinaja pod swoj ciag wydarzen przy
     tworzeniu nowego zlecenia
     2. W sumie to nie widze innych opcji
+1. Zdecydowanie potrzebuje jakichs testowych userow.
     
