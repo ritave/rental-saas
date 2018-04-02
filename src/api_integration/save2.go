@@ -23,6 +23,20 @@ type Save2Request struct {
 	Cleaners  []int  `json:"cleaners"`
 }
 
-func (p Provider) Save2Action() {
+const Save2Action = "/api/apiorders/save2"
+
+/*
+{"status":"ERROR","message":"Brak address_id lub user_id. Zam\u00f3wienie nie mo\u017ce by\u0107 zapisane"}
+
+
+
+*/
+
+type Save2ResponseError struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+type Save2ResponseSuccess struct {
 
 }
