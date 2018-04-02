@@ -6,6 +6,8 @@ import (
 	"rental-saas/src/application/interfaces"
 	"rental-saas/src/model/my_datastore"
 	"rental-saas/src/model/my_calendar"
+	"rental-saas/src/api_integration"
+	"net/http"
 )
 
 type Application struct {
@@ -18,6 +20,7 @@ type Application struct {
 }
 type Utils struct {
 	Ticker *utils.Ticker
+	Pozamiatane api_integration.Provider
 }
 
 func New(c config.C) *Application {
@@ -26,6 +29,11 @@ func New(c config.C) *Application {
 		Calendar: my_calendar.New(c),
 		Config: c,
 
-		Utils: Utils{},
+		Utils: Utils{
+			Pozamiatane: api_integration.Provider{
+				Client: http.DefaultClient,
+				Server: c.Pozamiatane.Address,
+			},
+		},
 	}
 }

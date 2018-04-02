@@ -1,16 +1,18 @@
 package model
 
 type Event struct {
-	Summary  string `json:"summary"`
-	User     string `json:"user"`
-	Start    string `json:"start"`
-	End      string `json:"end"`
-	Location string `json:"location"`
+	Summary      string `json:"summary"`
+	User         string `json:"user"`
+	Start        string `json:"start"`
+	End          string `json:"end"`
+	Location     string `json:"location"`
+	OrderID      int    `json:"order_id"`
+	UserID       int    `json:"user_id"`
 	CreationDate string `json:"creationDate"`
 	// number of MILLISECONDS (agreeing on Google's terms)
-	Timestamp    int64  `json:"timestamp"`
-	UUID         string `json:"uuid"`
-	TestFields   string `json:"testFields"`
+	Timestamp  int64  `json:"timestamp"`
+	UUID       string `json:"uuid"`
+	TestFields string `json:"testFields"`
 }
 
 //IsTheSame checks if two events have the same fields (used in checking if they've been changed).

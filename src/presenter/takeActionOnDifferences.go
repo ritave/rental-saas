@@ -5,9 +5,10 @@ import (
 	"google.golang.org/api/calendar/v3"
 		"rental-saas/src/application/interfaces"
 	"github.com/sirupsen/logrus"
+	"rental-saas/src/api_integration"
 )
 
-func TakeActionOnDifferences(cal interfaces.CalendarInterface, diff []*model.EventModified) {
+func TakeActionOnDifferences(pozamiatane api_integration.Provider, cal interfaces.CalendarInterface, diff []*model.EventModified) {
 	for _, event := range diff {
 		for k := range event.Modifications {
 			switch k {
@@ -23,8 +24,7 @@ func TakeActionOnDifferences(cal interfaces.CalendarInterface, diff []*model.Eve
 				}
 
 			case model.ModifiedLocation:
-				// YOU KNOW WHAT TO DO
-				// TODO lol
+
 			case model.ModifiedTime:
 				// YOU KNOW WHAT TO DO
 				// TODO lol

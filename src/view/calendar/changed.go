@@ -3,9 +3,6 @@ package calendar
 import (
 	"rental-saas/src/model"
 	"rental-saas/src/presenter"
-	"encoding/json"
-	"bytes"
-	"net/http"
 	"rental-saas/src/application/core"
 	"errors"
 	"github.com/sirupsen/logrus"
@@ -43,23 +40,9 @@ func Changed(a *core.Application, r interface{}) (interface{}, error) {
 		}
 	}
 
-	bytez, err := json.Marshal(&response)
-	if err != nil {
-		return nil, err
-	}
+	logrus.Debugf("Things that chagned:\n%#v", response)
 
-	whereTo := "https://calendarcron.appspot.com/dummy/send"
-
-	client := http.DefaultClient
-	resp, err := client.Post(whereTo, "application/json", bytes.NewReader(bytez))
-	if err != nil {
-		logrus.Printf("Error sending changes to %s: %s", whereTo, err.Error())
-	} else {
-		logrus.Println("Success sending that son of a bitch")
-		logrus.Println(*resp)
-	}
-
-	presenter.TakeActionOnDifferences(a.Calendar, diff)
+	presenter.TakeActionOnDifferences(a.Utils.Pozamiatane, a.Calendar, diff)
 
 	return ChangedResponse{}, nil
 }

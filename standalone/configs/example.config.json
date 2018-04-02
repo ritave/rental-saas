@@ -1,9 +1,10 @@
 {
   "CORS": ["http://145.239.95.36", "http://localhost:5000", "http://localhost:8080"],
-  "callback:": "http://145.239.95.36/dummy",
-  "receiver": {
-    "expiration": 3600,
-    "channel": "http://145.239.95.36/notify/get"
+  "google": {
+    "receiver": {
+      "expiration": 3600,
+      "channel": "http://145.239.95.36/api/notify/get"
+    }
   },
   "db": {
     "restart": false
@@ -17,5 +18,8 @@
     "debug": true,
     "storeInDB": false,
     "somethingElse": "true"
+  },
+  "pozamiatane": {
+    "address": "https://stage.pozamiatane.pl/"
   }
 }

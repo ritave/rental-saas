@@ -25,6 +25,8 @@ const (
 			user TEXT,
 			start_date TEXT,
 			end_date TEXT,
+			order_id INT,
+			user_id INT,
 			creation_date TEXT,
 			summary TEXT,
 			location TEXT,
@@ -44,8 +46,8 @@ const (
 		DELETE FROM events WHERE uuid = ?;
 	`
 	sqlInsertEvent = `INSERT INTO events
-		(uuid, user, start_date, end_date, creation_date, summary, location, timestamp_ms) 
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+		(uuid, user, start_date, end_date, order_id, user_id, creation_date, summary, location, timestamp_ms) 
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`
 )
 
@@ -109,6 +111,8 @@ func (ds *Datastore) SaveEvent(event *model.Event) (error) {
 		event.User,
 		event.Start,
 		event.End,
+			event.OrderID,
+				event.UserID,
 		event.CreationDate,
 		event.Summary,
 		event.Location,

@@ -7,11 +7,12 @@ import (
 
 type C struct {
 	CORS     []string `json:"CORS"`
-	Callback string   `json:"callback:"`
-	Receiver struct {
-		Expiration int    `json:"expiration"`
-		Channel    string `json:"channel"`
-	} `json:"receiver"`
+	Google   struct {
+		Receiver struct {
+			Expiration int    `json:"expiration"`
+			Channel    string `json:"channel"`
+		} `json:"receiver"`
+	} `json:"google"`
 	DB struct {
 		Restart bool `json:"restart"`
 	} `json:"db"`
@@ -25,6 +26,9 @@ type C struct {
 		StoreInDB     bool   `json:"storeInDB"`
 		SomethingElse string `json:"somethingElse"`
 	} `json:"logging"`
+	Pozamiatane struct {
+		Address string `json:"address"`
+	} `json:"pozamiatane"`
 }
 
 func GetConfig() (C) {

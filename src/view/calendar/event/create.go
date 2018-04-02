@@ -12,10 +12,12 @@ type CreateRequest struct {
 	Start        string `json:"start"`
 	End          string `json:"end"`
 	Location     string `json:"location"`
+	OrderID      int    `json:"order_id,omitempty"`
+	UserID       int    `json:"user_id,omitempty"`
 	CreationDate string `json:"-"`
 	Timestamp    int64  `json:"-"`
 	UUID         string `json:"-"`
-	TestFields string `json:"-"`
+	TestFields   string `json:"-"`
 }
 
 type CreateResponse struct {
@@ -29,11 +31,7 @@ func Create(a *core.Application, r interface{}) (interface{}, error) {
 		return nil, errors.New("reflection failed")
 	}
 
-	// FIXME
-	wat := model.Event(eventRequest)
-	event := &wat
-	// TODO this should return 'corrected' event (even a pointer to it)
-	err = model.EvenMoreChecksForTheEvent(*event)
+	event, err := model.ValidateEventFromRequest(model.Event(eventRequest))
 	if err != nil {
 		return nil, err
 	}

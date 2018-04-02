@@ -85,8 +85,8 @@ func main() {
 // FIXME
 // some ugly fuckery going on down here
 func notifySetup(application *Application) {
-	notifyAddr := application.Config.Receiver.Channel
-	expireAfter := application.Config.Receiver.Expiration
+	notifyAddr := application.Config.Google.Receiver.Channel
+	expireAfter := application.Config.Google.Receiver.Expiration
 	const threeSoundsFine = 3
 
 	// this thing aggregates multiple requests that may come at once
