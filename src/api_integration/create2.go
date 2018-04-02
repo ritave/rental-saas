@@ -45,11 +45,7 @@ lub dla nowego klienta
 
 type Create2ActionRequest struct {
 	ClientID int `json:"client_id"`
-	Address  struct {
-		Street string `json:"street"`
-		Zip    string `json:"zip"`
-		City   string `json:"city"`
-	} `json:"address"`
+	Address  Address `json:"address"`
 	Frequency int     `json:"frequency"`
 	Start     string  `json:"start"`
 	Length    float64 `json:"length"`
@@ -63,6 +59,10 @@ type Create2ActionRequest struct {
 	CouponID  int     `json:"coupon_id"`
 }
 
-func (p Provider) Create2Action() {
-
+type Address struct {
+	Street string `json:"street"`
+	Zip    string `json:"zip"`
+	City   string `json:"city"`
 }
+
+const Create2Action = "/api/apiorders/create2"

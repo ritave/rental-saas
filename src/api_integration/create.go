@@ -27,7 +27,7 @@ if "address_id" is not set and "client_id" is not set, then "address_id" suffice
 "frequency": 0 -> 'once', 7 -> '7days', else -> '14days'
  */
 
-type CreateAction struct {
+type CreateActionRequest struct {
 	ClientID string `json:"client_id"`
 	Address  struct {
 		Street string `json:"street"`
