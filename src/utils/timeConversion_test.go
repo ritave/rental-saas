@@ -17,7 +17,7 @@ func TestVerifyStringToTime(t *testing.T) {
 		wantErr bool
 	}{
 		{"UTC", args{"2017-07-13T13:07:00Z"}, time.Date(2017, 7, 13, 13, 7, 0, 0, time.UTC), false},
-		{"CEST", args{"2017-07-13T13:07:00+02:00"}, time.Date(2017, 7, 13, 13, 7, 0, 0, time.Local), false},
+		{"CET", args{"2017-07-13T13:07:00+01:00"}, time.Date(2017, 7, 13, 13, 7, 0, 0, CET), false},
 		// Fun fact: this test fails when given as want: time.Date(..., local) where local, _ := time.LoadLocation("Poland")
 		{"Invalid", args{"2017-07-13T13:07:00Z+02:00"}, time.Time{}, true},
 	}
@@ -28,7 +28,7 @@ func TestVerifyStringToTime(t *testing.T) {
 				t.Errorf("VerifyStringToTime() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !got.Equal(tt.want) {
 				t.Errorf("VerifyStringToTime() = %v, want %v", got, tt.want)
 				t.Errorf("(Unix) Got: %d, want: %d", got.Unix(), tt.want.Unix())
 			}
@@ -46,11 +46,11 @@ func TestStringToTime(t *testing.T) {
 		want time.Time
 	}{
 		{"UTC", args{"2017-07-13T13:07:00Z"}, time.Date(2017, 7, 13, 13, 7, 0, 0, time.UTC)},
-		{"CEST", args{"2017-07-13T13:07:00+02:00"}, time.Date(2017, 7, 13, 13, 7, 0, 0, time.Local)},
+		{"CET", args{"2017-07-13T13:07:00+01:00"}, time.Date(2017, 7, 13, 13, 7, 0, 0, CET)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := StringToTime(tt.args.in); !reflect.DeepEqual(got, tt.want) {
+			if got := StringToTime(tt.args.in); !got.Equal(tt.want) {
 				t.Errorf("(%s) StringToTime() = %v, want %v", tt.name, got, tt.want)
 			}
 		})
@@ -66,8 +66,8 @@ func TestTimeToString(t *testing.T) {
 		args args
 		want string
 	}{
-		{"UTC", args{time.Date(2017, 7, 13, 13, 7, 0, 0, time.UTC)}, "2017-07-13T13:07:00Z"},
-		{"CEST", args{ time.Date(2017, 7, 13, 13, 7, 0, 0, time.Local)}, "2017-07-13T13:07:00+02:00"},
+		{"UTC", args{time.Date(2017, 7, 13, 13, 7, 0, 0, time.UTC)}, "2017-07-13T14:07:00+01:00"},
+		{"CET", args{ time.Date(2017, 7, 13, 13, 7, 0, 0, CET)}, "2017-07-13T13:07:00+01:00"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -138,9 +138,9 @@ func TestPOZAMIATANE_DatetimeToDateString(t *testing.T) {
 		want string
 	}{
 		{"UTC", args{time.Date(2017, 7, 13, 13, 7, 0, 0, time.UTC)}, "2017-07-13"},
-		{"CEST", args{ time.Date(2017, 7, 13, 13, 7, 0, 0, time.Local)}, "2017-07-13"},
+		{"CET", args{ time.Date(2017, 7, 13, 13, 7, 0, 0, CET)}, "2017-07-13"},
 		{"UTC", args{time.Date(2017, 7, 13, 23, 59, 0, 0, time.UTC)}, "2017-07-14"}, // ^^ cheeky
-		{"CEST", args{ time.Date(2017, 7, 13, 23, 59, 0, 0, time.Local)}, "2017-07-13"},
+		{"CET", args{ time.Date(2017, 7, 13, 23, 59, 0, 0, CET)}, "2017-07-13"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -160,10 +160,10 @@ func TestPOZAMIATANE_DatetimeToTimeString(t *testing.T) {
 		args args
 		want string
 	}{
-		{"UTC", args{time.Date(2017, 7, 13, 13, 7, 0, 0, time.UTC)}, "13:07:00"},
-		{"CEST", args{ time.Date(2017, 7, 13, 13, 7, 0, 0, time.Local)}, "13:07:00"},
-		{"UTC", args{time.Date(2017, 7, 13, 23, 59, 0, 0, time.UTC)}, "01:59:00"}, // ^^ cheeky
-		{"CEST", args{ time.Date(2017, 7, 13, 23, 59, 0, 0, time.Local)}, "23:59:00"},
+		{"UTC", args{time.Date(2017, 7, 13, 13, 7, 0, 0, time.UTC)}, "14:07:00"},
+		{"CET", args{ time.Date(2017, 7, 13, 13, 7, 0, 0, CET)}, "13:07:00"},
+		{"UTC", args{time.Date(2017, 7, 13, 23, 59, 0, 0, time.UTC)}, "00:59:00"}, // ^^ cheeky
+		{"CET", args{ time.Date(2017, 7, 13, 23, 59, 0, 0, CET)}, "23:59:00"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
