@@ -20,7 +20,7 @@ func test1() {
 			UserID: i,
 		}
 
-		resp, err := p.SendRequest(api_integration.EditAction, test)
+		resp, err := p.SendPayload(api_integration.EditAction, test)
 		if err != nil {
 			logrus.Printf("error: %s \n", err.Error())
 		} else {

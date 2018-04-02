@@ -20,6 +20,7 @@ type EditRequest struct {
 	CleaningDate string  `json:"cleaning_date"`
 	CleaningTime string  `json:"cleaning_time"`
 	Length       float64 `json:"length"`
+	Address      Address `json:"address"`
 }
 
 const EditAction = "/api/apiorders/edit"
@@ -35,5 +36,3 @@ type EditResponseError struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
-
-

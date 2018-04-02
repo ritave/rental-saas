@@ -32,3 +32,15 @@ func MillisecondsToTime(in int64) (time.Time) {
 func TimeToMilliseconds(in time.Time) (int64) {
 	return in.UnixNano()/million
 }
+
+const POZAMIATANE_DateFormat = "2006-01-02"
+//'documentation' suggest they are using this format: '2018-06-01 12:00:00'
+func POZAMIATANE_DatetimeToDateString(in time.Time) (string) {
+	return in.Local().Format(POZAMIATANE_DateFormat)
+}
+
+const POZAMIATANE_TimeFormat = "15:04:05"
+//'documentation' suggest they are using this format: '2018-06-01 12:00:00'
+func POZAMIATANE_DatetimeToTimeString(in time.Time) (string) {
+	return in.Local().Format(POZAMIATANE_TimeFormat)
+}

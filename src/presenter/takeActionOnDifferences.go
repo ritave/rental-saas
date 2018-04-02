@@ -6,6 +6,7 @@ import (
 		"rental-saas/src/application/interfaces"
 	"github.com/sirupsen/logrus"
 	"rental-saas/src/api_integration"
+	"rental-saas/src/utils"
 )
 
 func TakeActionOnDifferences(pozamiatane api_integration.Provider, cal interfaces.CalendarInterface, diff []*model.EventModified) {
@@ -24,10 +25,44 @@ func TakeActionOnDifferences(pozamiatane api_integration.Provider, cal interface
 				}
 
 			case model.ModifiedLocation:
+				userID := event.Event.UserID
+				orderID := event.Event.OrderID
+
+				cleaningEdit := api_integration.EditRequest{
+					UserID: userID,
+					OrderID: orderID,
+					Address: api_integration.Address{
+						Street: event.Event.Location, // FIXME well fuck...
+					},
+				}
+
+				req, err := pozamiatane.NewRequest(api_integration.EditAction, cleaningEdit)
+				if err != nil {
+					logrus.Printf("Modified location: %s", err.Error())
+				}
+
+				pozamiatane.SendRequestJustLog(req)
 
 			case model.ModifiedTime:
-				// YOU KNOW WHAT TO DO
-				// TODO lol
+				userID := event.Event.UserID
+				orderID := event.Event.OrderID
+
+				start := utils.StringToTime(event.Event.Start)
+				end := utils.StringToTime(event.Event.End)
+
+				cleaningEdit := api_integration.EditRequest{
+					UserID: userID,
+					OrderID: orderID,
+					CleaningDate: event.Event.Start, // this SHOULD work...
+					CleaningTime: start.t
+				}
+
+				req, err := pozamiatane.NewRequest(api_integration.EditAction, cleaningEdit)
+				if err != nil {
+					logrus.Printf("Modified location: %s", err.Error())
+				}
+
+				pozamiatane.SendRequestJustLog(req)
 			}
 		}
 	}
