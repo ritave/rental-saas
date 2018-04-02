@@ -22,6 +22,18 @@ type EditRequest struct {
 	Length       float64 `json:"length"`
 }
 
-func (p Provider) EditAction() {
+const EditAction = "/api/apiorders/edit"
 
+/*
+{"status":"ERROR","message":" Nie znaleziono zam\u00f3wienia o ID 1"}
+{"status":"ERROR","message":"Improper client ID!"}
+
+
+*/
+
+type EditResponseError struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
 }
+
+
