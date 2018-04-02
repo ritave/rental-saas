@@ -49,17 +49,19 @@ func TakeActionOnDifferences(pozamiatane api_integration.Provider, cal interface
 
 				start := utils.StringToTime(event.Event.Start)
 				end := utils.StringToTime(event.Event.End)
+				cleaningDuration := end.Sub(start).Hours() // fingers-fucking-crossed
 
 				cleaningEdit := api_integration.EditRequest{
 					UserID: userID,
 					OrderID: orderID,
-					CleaningDate: event.Event.Start, // this SHOULD work...
-					CleaningTime: start.t
+					CleaningDate: utils.POZAMIATANE_DatetimeToDateString(start), // this SHOULD work...
+					CleaningTime: utils.POZAMIATANE_DatetimeToTimeString(start),
+					Length: cleaningDuration,
 				}
 
 				req, err := pozamiatane.NewRequest(api_integration.EditAction, cleaningEdit)
 				if err != nil {
-					logrus.Printf("Modified location: %s", err.Error())
+					logrus.Printf("Modified time: %s", err.Error())
 				}
 
 				pozamiatane.SendRequestJustLog(req)
