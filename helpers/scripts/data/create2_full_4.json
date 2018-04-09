@@ -1,0 +1,17 @@
+{
+  "client_id": 11592,
+  "address_id": 29,
+  "frequency": 7,
+  "start": "2018-06-01 12:00:00",
+  "length": 3.5,
+  "zip": "00-001",
+  "chemicals": 1,
+  "pets": 0,
+  "eng": 1,
+  "services": [
+    12
+  ],
+  "osource": "A",
+  "info": "DODATKOWY OPIS SPRZATANIA",
+  "coupon_id": 123
+}

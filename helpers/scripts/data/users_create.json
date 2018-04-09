@@ -1,0 +1,15 @@
+{
+  "type": "0",
+  "firstname": "John",
+  "lastname": "Doe",
+  "email": "john.doe@example.com",
+  "password": "Igorap3#",
+  "confirm_password": "Igorap3#",
+  "phone": "111222333",
+  "agreements": "4",
+  "address": "Testowa 3",
+  "zip": "00-000",
+  "city": "Testowo",
+  "source": "0",
+  "source_description": ""
+}
