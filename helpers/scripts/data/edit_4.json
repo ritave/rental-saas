@@ -1,0 +1,10 @@
+{
+  "order_id": 106731,
+  "user_id": 11592,
+  "cleaner_id": "10526",
+  "address": {
+    "street": "Testowa",
+    "zip": "00-001",
+    "city": "Testowo"
+  }
+}
