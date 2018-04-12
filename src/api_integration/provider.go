@@ -13,6 +13,13 @@ type Provider struct {
 	Server string
 }
 
+func NewProvider() Provider {
+	return Provider{
+		Client: http.DefaultClient,
+		Server: "https://stage.pozamiatane.pl",
+	}
+}
+
 func (p Provider) SendPayload(api string, payload interface{}) (*http.Response, error) {
 	req, err := p.NewRequest(api, payload)
 	if err != nil {

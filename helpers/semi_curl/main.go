@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"encoding/json"
 )
 
 var _ = fmt.Printf
@@ -13,10 +12,7 @@ var _ = http.Get
 
 func main() {
 	logrus.SetLevel(logrus.InfoLevel)
-	p := api_integration.Provider{
-		Client: http.DefaultClient,
-		Server: "https://stage.pozamiatane.pl",
-	}
+	p := api_integration.NewProvider()
 
 	create := api_integration.Create2ActionRequest{
 		ClientID: 1,
@@ -37,6 +33,14 @@ func main() {
 		Info:      "extra",
 		CouponID:  123,
 	}
+
+	createSuc, err := p.Create2(create)
+	if err != nil {
+		fmt.Printf(err.Error())
+		return
+	}
+
+	fmt.Println(createSuc)
 
 
 }

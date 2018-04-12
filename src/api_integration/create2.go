@@ -1,5 +1,13 @@
 package api_integration
 
+import (
+	"encoding/json"
+	"io/ioutil"
+	"errors"
+	"fmt"
+	"strings"
+)
+
 /*
 {
   "client_id": 1,
@@ -102,6 +110,33 @@ type Create2ResponseSuccess struct {
 }
 
 type Create2ResponseError []string
+
+func (p Provider) Create2(payload Create2ActionRequest) (suc Create2ResponseSuccess, err error) {
+	resp, err := p.SendPayload(Create2Action, payload)
+	if err != nil {
+		return suc, err
+	}
+
+	btz, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return suc, err
+	}
+
+	err = json.Unmarshal(btz, &suc)
+	if err != nil {
+		// try again but with fail version
+		fail := Create2ResponseError{}
+		err2 := json.Unmarshal(btz, &fail)
+		if err2 != nil {
+			return suc, err
+		} else {
+			return suc, errors.New(strings.Join(fail, " "))
+		}
+	}
+
+	return suc, err
+}
 
 var create2Test = Create2ActionRequest{
 	ClientID: 1,
