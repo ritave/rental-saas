@@ -73,7 +73,7 @@ func TestTimeToString(t *testing.T) {
 	}
 
 	// this is stupid
-	timeTravel.To(CET)
+	timeTravel.To(CET, CETNumeric)
 	defer timeTravel.Back()
 
 	for _, tt := range tests {
@@ -99,7 +99,7 @@ func TestTimeToString2(t *testing.T) {
 	}
 
 	// this is stupid
-	timeTravel.To(CEST)
+	timeTravel.To(CEST, CESTNumeric)
 	defer timeTravel.Back()
 
 	for _, tt := range tests {
@@ -176,7 +176,7 @@ func TestPOZAMIATANE_DatetimeToDateString(t *testing.T) {
 		{"CET", args{time.Date(2017, 7, 13, 23, 59, 0, 0, CET)}, "2017-07-13"},
 	}
 
-	timeTravel.To(CET)
+	timeTravel.To(CET, CETNumeric)
 	defer timeTravel.Back()
 
 	for _, tt := range tests {
@@ -203,7 +203,7 @@ func TestPOZAMIATANE_DatetimeToTimeString(t *testing.T) {
 		{"CET", args{time.Date(2017, 7, 13, 23, 59, 0, 0, CET)}, "23:59:00"},
 	}
 
-	timeTravel.To(CET)
+	timeTravel.To(CET, CETNumeric)
 	defer timeTravel.Back()
 
 	for _, tt := range tests {
@@ -230,7 +230,7 @@ func TestPOZAMIATANE_DatetimeToTimeStringCEST(t *testing.T) {
 		{"CEST", args{time.Date(2017, 7, 13, 23, 59, 0, 0, CEST)}, "23:59:00"},
 	}
 
-	timeTravel.To(CEST)
+	timeTravel.To(CEST, CESTNumeric)
 	defer timeTravel.Back()
 
 	for _, tt := range tests {
@@ -257,7 +257,7 @@ func TestPOZAMIATANE_DatetimeToDatetimeString(t *testing.T) {
 		{"CET", args{time.Date(2017, 7, 13, 23, 59, 0, 0, CET)}, "2017-07-13 23:59:00"},
 	}
 	
-	timeTravel.To(CET)
+	timeTravel.To(CET, CETNumeric)
 	defer timeTravel.Back()
 	
 	for _, tt := range tests {
@@ -284,7 +284,7 @@ func TestPOZAMIATANE_DatetimeToDatetimeStringCEST(t *testing.T) {
 		{"CEST", args{time.Date(2017, 7, 13, 23, 59, 0, 0, CEST)}, "2017-07-13 23:59:00"},
 	}
 
-	timeTravel.To(CEST)
+	timeTravel.To(CEST, CESTNumeric)
 	defer timeTravel.Back()
 
 	for _, tt := range tests {
@@ -296,7 +296,7 @@ func TestPOZAMIATANE_DatetimeToDatetimeStringCEST(t *testing.T) {
 	}
 }
 
-func TestPOZAMIATANE_StringToDatetimeLOCAL(t *testing.T) {
+func TestPOZAMIATANE_StringToDatetime(t *testing.T) {
 	type args struct {
 		in string
 	}
@@ -306,12 +306,50 @@ func TestPOZAMIATANE_StringToDatetimeLOCAL(t *testing.T) {
 		want    time.Time
 		wantErr bool
 	}{
-		{"currentTZ local", args{"2017-07-13 13:07:00"}, time.Date(2017, 7, 13, 13, 7, 0, 0, currentTZ), false},
+		{"CET local", args{"2017-07-13 13:07:00"}, time.Date(2017, 7, 13, 13, 7, 0, 0, CET), false},
 		{"invalid format", args{"2017-07-13T13:07:00"}, NullDate, true},
 		{"invalid date", args{"2017-99-99 13:07:00"}, NullDate, true},
 		{"timezone supplied", args{"2017-99-99 13:07:00-0700"}, NullDate, true},
 		{"null", args{""}, NullDate, true},
 	}
+
+	timeTravel.To(CET, CETNumeric)
+	defer timeTravel.Back()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := POZAMIATANE_StringToDatetimeLOCAL(tt.args.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("POZAMIATANE_StringToDatetimeLOCAL() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !got.Equal(tt.want) {
+				t.Errorf("POZAMIATANE_StringToDatetimeLOCAL() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPOZAMIATANE_StringToDatetimeCEST(t *testing.T) {
+	type args struct {
+		in string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    time.Time
+		wantErr bool
+	}{
+		{"CEST local", args{"2017-07-13 13:07:00"}, time.Date(2017, 7, 13, 13, 7, 0, 0, CEST), false},
+		{"invalid format", args{"2017-07-13T13:07:00"}, NullDate, true},
+		{"invalid date", args{"2017-99-99 13:07:00"}, NullDate, true},
+		{"timezone supplied", args{"2017-99-99 13:07:00-0700"}, NullDate, true},
+		{"null", args{""}, NullDate, true},
+	}
+
+	timeTravel.To(CEST, CESTNumeric)
+	defer timeTravel.Back()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := POZAMIATANE_StringToDatetimeLOCAL(tt.args.in)

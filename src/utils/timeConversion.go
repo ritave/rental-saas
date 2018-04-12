@@ -25,15 +25,20 @@ var currentTZNumeric = CESTNumeric
 var timeTravel = TimeTravel{}
 type TimeTravel struct {
 	before *time.Location
+	beforeNum string
 	mutex sync.Mutex
 }
-func (tt *TimeTravel) To(t *time.Location) {
+func (tt *TimeTravel) To(t *time.Location, tNum string) {
 	tt.mutex.Lock()
 	tt.before = currentTZ
+	tt.beforeNum = tNum
+
 	currentTZ = t
+	currentTZNumeric = tNum
 }
 func (tt *TimeTravel) Back() {
 	currentTZ = tt.before
+	currentTZNumeric = tt.beforeNum
 	tt.mutex.Unlock()
 }
 
