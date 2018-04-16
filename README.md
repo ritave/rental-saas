@@ -1,8 +1,7 @@
-## TODO  
-- Run a check every few minutes or so for changes
-- New modification: user abandoned the ship -> this might mean several things:  
-    1. clicked "delete" in his calendar -> bring it back with link inside the description that
-    will truly allow him to delete the event
-    1. declined the event -> just send it again
-- Reorganise handlers and logic
-- MyEvent == GoogleEvent, don't bother with translating it
+# rental-saas
+The Monorepo of all things connected to vertical integration AirBnB SaaS service
+
+# TODO's  
+- Finally perform some edits on orders created with test accounts in the service
+- Implementing abstractions for actions using Pozamiatane API
+- HTTPS or otherwise Google won't respond to me
