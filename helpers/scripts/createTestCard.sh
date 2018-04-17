@@ -1,0 +1,1 @@
+curl -i https://sandbox.espago.com/api/tokens -H 'Accept: application/vnd.espago.v3+json' -H 'Authorization: Basic eUQzZ1FEWng5Q3NOTkU4TWp4c3Q=' -d "card[first_name]=Jan" -d "card[last_name]=Kowalski" -d "card[number]=4242424242424242" -d "card[verification_value]=123" -d "card[year]=2020" -d "card[month]=01"
