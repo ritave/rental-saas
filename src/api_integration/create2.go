@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -53,24 +52,25 @@ lub dla nowego klienta
 
 type Create2ActionRequest struct {
 	ClientID  int     `json:"client_id"`
-	Address   Address `json:"address"`
-	Frequency int     `json:"frequency"`
-	Start     string  `json:"start"`
-	Length    float64 `json:"length"`
-	Zip       string  `json:"zip"`
-	Chemicals int     `json:"chemicals"`
-	Pets      int     `json:"pets"`
-	Eng       int     `json:"eng"`
-	Services  []int   `json:"services"`
-	Osource   string  `json:"osource"`
-	Info      string  `json:"info"`
-	CouponID  int     `json:"coupon_id"`
+	Address   Address `json:"address,omitempty"`
+	AddressID int     `json:"address_id,omitempty"`
+	Frequency int     `json:"frequency,omitempty"`
+	Start     string  `json:"start,omitempty"`
+	Length    float64 `json:"length,omitempty"`
+	Zip       string  `json:"zip,omitempty"`
+	Chemicals int     `json:"chemicals,omitempty"`
+	Pets      int     `json:"pets,omitempty"`
+	Eng       int     `json:"eng,omitempty"`
+	Services  []int   `json:"services,omitempty"`
+	Osource   string  `json:"osource,omitempty"`
+	Info      string  `json:"info,omitempty"`
+	CouponID  int     `json:"coupon_id,omitempty"`
 }
 
 type Address struct {
-	Street string `json:"street"`
-	Zip    string `json:"zip"`
-	City   string `json:"city"`
+	Street string `json:"street,omitempty"`
+	Zip    string `json:"zip,omitempty"`
+	City   string `json:"city,omitempty"`
 }
 
 const Create2Action = "/api/apiorders/create2"
@@ -106,7 +106,23 @@ const Create2Action = "/api/apiorders/create2"
 
 type Create2ResponseSuccess struct {
 	OrderID  string        `json:"order_id"`
-	Cleaners []interface{} `json:"cleaners"`
+	Cleaners []Create2ResponseCleaner `json:"cleaners"`
+}
+type Create2ResponseCleaner struct {
+	ID        int           `json:"id"`
+	Priority  string        `json:"priority"`
+	Avatar    interface{}   `json:"avatar"`
+	Name      string        `json:"name"`
+	ShortName string        `json:"short_name"`
+	Services  []interface{} `json:"services"`
+	Rates     []interface{} `json:"rates"`
+	Rate      int           `json:"rate"`
+	Overall   struct {
+		Count int         `json:"count"`
+		Avg   interface{} `json:"avg"`
+	} `json:"overall"`
+	Stage int `json:"stage"`
+	Type  int `json:"type"`
 }
 
 type Create2ResponseError []string
