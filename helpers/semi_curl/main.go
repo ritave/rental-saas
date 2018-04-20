@@ -1,7 +1,7 @@
 package main
 
 import (
-	"rental-saas/src/api_integration"
+	"rental-saas/service/src/api_integration"
 	"net/http"
 	"fmt"
 	"github.com/sirupsen/logrus"
